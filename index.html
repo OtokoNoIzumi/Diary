@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鹏十三不下山大会 | 纪念页</title>
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script>
+        // 定制Tailwind配置
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#FFF7ED',
+                            100: '#FFEDD5',
+                            200: '#FED7AA',
+                            300: '#FDBA74',
+                            400: '#FB923C',
+                            500: '#F97316', // 主橘色
+                            600: '#EA580C',
+                            700: '#C2410C',
+                            800: '#9A3412',
+                            900: '#7C2D12',
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+
+        // 初始化深色/浅色模式
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        .card {
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px) scale(1.01);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .dark .card:hover {
+            box-shadow: 0 10px 25px -5px rgba(255, 255, 255, 0.05), 0 10px 10px -5px rgba(255, 255, 255, 0.02);
+        }
+
+        /* 图片悬停效果 */
+        .img-container {
+            overflow: hidden;
+            border-radius: 0.5rem;
+        }
+
+        .img-container img {
+            transition: transform 0.5s ease;
+        }
+
+        .img-container:hover img {
+            transform: scale(1.05);
+        }
+
+        /* 按钮效果 */
+        .btn {
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-orange-50 to-white dark:from-gray-900 dark:to-gray-800 min-h-screen transition-colors duration-300">
+    <!-- 顶部导航栏 -->
+    <header class="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-mountain text-primary-500 text-2xl"></i>
+                <h1 class="text-xl font-bold text-gray-800 dark:text-white">鹏十三·不下山大会</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                    <i class="fas fa-sun text-yellow-500 dark:hidden"></i>
+                    <i class="fas fa-moon text-blue-300 hidden dark:block"></i>
+                </button>
+                <a href="#about" class="hidden md:block text-sm font-medium text-gray-700 hover:text-primary-500 dark:text-gray-300 dark:hover:text-primary-400 transition-colors">活动故事</a>
+                <a href="#messages" class="hidden md:block text-sm font-medium text-gray-700 hover:text-primary-500 dark:text-gray-300 dark:hover:text-primary-400 transition-colors">小伙伴说</a>
+                <a href="#gallery" class="hidden md:block text-sm font-medium text-gray-700 hover:text-primary-500 dark:text-gray-300 dark:hover:text-primary-400 transition-colors">欢聚瞬间</a>
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <i class="fas fa-bars text-gray-700 dark:text-gray-300"></i>
+                </button>
+            </div>
+        </div>
+        <!-- 移动端导航菜单 -->
+        <div id="mobile-menu" class="md:hidden hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 animate-fade-in">
+            <div class="container mx-auto px-4 py-3 flex flex-col space-y-3">
+                <a href="#about" class="text-sm font-medium text-gray-700 hover:text-primary-500 dark:text-gray-300 dark:hover:text-primary-400 transition-colors">活动故事</a>
+                <a href="#messages" class="text-sm font-medium text-gray-700 hover:text-primary-500 dark:text-gray-300 dark:hover:text-primary-400 transition-colors">小伙伴说</a>
+                <a href="#gallery" class="text-sm font-medium text-gray-700 hover:text-primary-500 dark:text-gray-300 dark:hover:text-primary-400 transition-colors">欢聚瞬间</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主横幅 -->
+    <section class="relative bg-gradient-to-r from-primary-600 to-primary-400 text-white py-16 md:py-24">
+        <div class="absolute inset-0 bg-cover bg-center opacity-20" style="background-image: url('https://iili.io/3nN8n6b.webp');"></div>
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="max-w-3xl mx-auto text-center">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4 animate-fade-in">鹏十三·不下山大会</h1>
+                <p class="text-xl md:text-2xl opacity-90 mb-8 animate-slide-up">
+                    <i class="fas fa-quote-left text-sm align-super mr-2 opacity-70"></i>
+                    刮风也要来，下雨也要聚，从广州、汕头过来也没得问题！
+                    <i class="fas fa-quote-right text-sm align-super ml-2 opacity-70"></i>
+                </p>
+                <div class="flex justify-center space-x-4 animate-slide-up" style="animation-delay: 0.2s;">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full bg-white/20 text-sm">
+                        <i class="fas fa-calendar-alt mr-2"></i>
+                        2025年3月15日
+                    </span>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full bg-white/20 text-sm">
+                        <i class="fas fa-map-marker-alt mr-2"></i>
+                        香蜜湖海岛花园
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页面主体内容容器 -->
+    <main class="container mx-auto px-4 py-12">
+        <!-- 活动故事 -->
+        <section id="about" class="mb-16 animate-on-scroll">
+            <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-8 flex items-center">
+                <i class="fas fa-book-open text-primary-500 mr-3"></i>
+                活动故事
+                <span class="ml-3 text-sm font-normal text-primary-500 bg-primary-50 dark:bg-primary-900/30 px-2 py-1 rounded-full">暴雨中的温暖聚会✨</span>
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- 活动介绍卡片 -->
+                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="https://iili.io/3nN8ft9.webp" alt="活动场景" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                            <div class="p-4 text-white">
+                                <h3 class="text-xl font-bold">大雨天的相聚</h3>
+                                <p class="text-sm opacity-80">风雨无阻的友谊</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-700 dark:text-gray-300 mb-4">
+                            <i class="fas fa-quote-left text-xs align-super mr-1 text-primary-400"></i>
+                            尽管下午深圳乌云密布，狂风暴雨，但，这群人依然风雨无阻，跨城跨区奔赴而来！谁说暴雨会阻挡友情？鹏十三的友谊可不怕淋湿啦！🌧️
+                            <i class="fas fa-quote-right text-xs align-super ml-1 text-primary-400"></i>
+                        </p>
+                        <div class="flex items-center space-x-3 mt-4">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200">
+                                <i class="fas fa-users mr-1"></i>
+                                相聚时刻
+                            </span>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                <i class="fas fa-heart mr-1"></i>
+                                友谊长存
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 活动目的卡片 -->
+                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">✨ 聚会小心思 ✨</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center mr-4">
+                                    <i class="fas fa-plane-departure text-primary-500"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-medium text-gray-800 dark:text-white">给勇闯天涯的小伙伴送祝福</h4>
+                                    <p class="text-gray-600 dark:text-gray-400">两位宝藏女生即将飞往中亚、澳洲深造！我们这不得好好送行嘛～学霸们冲鸭！🚀</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center mr-4">
+                                    <i class="fas fa-glass-cheers text-primary-500"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-medium text-gray-800 dark:text-white">吃喝玩乐不能少</h4>
+                                    <p class="text-gray-600 dark:text-gray-400">秀英的威士忌品鉴也太专业了吧！还有湖边音乐会和烤肉，嗨到不行～👏</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center mr-4">
+                                    <i class="fas fa-umbrella-beach text-primary-500"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-medium text-gray-800 dark:text-white">绝美场地</h4>
+                                    <p class="text-gray-600 dark:text-gray-400">香蜜湖海岛花园也太治愈了！即使下雨天也能感受到满满的温暖～🏝️</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <img src="https://iili.io/3nN8Ja4.webp" alt="组织者" class="h-10 w-10 rounded-full object-cover mr-3">
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-800 dark:text-white">谢博</h4>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">超强操办人👏</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">
+                                    <i class="fas fa-calendar mr-1"></i> 2025.03.15
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 班级介绍卡片 -->
+                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md md:col-span-2">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center">
+                            <span class="bg-gradient-to-r from-primary-400 to-primary-600 text-white px-3 py-1 rounded-full text-sm mr-3">鹏十三 · 不下山小分队</span>
+                        </h3>
+                        <div class="flex flex-col md:flex-row gap-6">
+                            <div class="flex-1">
+                                <p class="text-gray-700 dark:text-gray-300 mb-4">
+                                    这次聚会也太暖心了吧！❤️ 暴雨天还是一大波人从四面八方赶来，简直就是修罗场级别的友情现场！果然是"得鹏友者得天下"～
+                                </p>
+                                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 my-4 border-l-4 border-primary-500">
+                                    <p class="text-gray-700 dark:text-gray-300 italic">
+                                        "暴雨？不怕！班级聚会，风雨无阻！面对挑战，我们从不躺平，永远向前～"
+                                        <span class="block text-right mt-2 text-sm text-gray-500 dark:text-gray-400">—— 谢博</span>
+                                    </p>
+                                </div>
+                                <div class="flex flex-wrap gap-2 mt-4">
+                                    <span class="px-3 py-1 bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-300 rounded-full text-sm"># 暴雨中的聚会</span>
+                                    <span class="px-3 py-1 bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-300 rounded-full text-sm"># 友谊万岁</span>
+                                    <span class="px-3 py-1 bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-300 rounded-full text-sm"># 鹏十三不下山</span>
+                                </div>
+                            </div>
+                            <div class="md:w-1/3">
+                                <div class="space-y-2">
+                                    <div class="img-container">
+                                        <img src="https://iili.io/3nN8d8l.webp" alt="大合影" class="w-full h-48 object-cover rounded-lg">
+                                    </div>
+                                    <div class="img-container">
+                                        <img src="https://iili.io/3nN8Kw7.webp" alt="小鹏十三2" class="w-full h-32 object-cover rounded-lg">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 朋友圈 -->
+        <section id="messages" class="mb-16 animate-on-scroll">
+            <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-8 flex items-center">
+                <i class="fas fa-comment-dots text-primary-500 mr-3"></i>
+                小伙伴说
+            </h2>
+
+            <div class="flex items-center mb-8 overflow-x-auto pb-2 scrollbar-hide whitespace-nowrap">
+                <span class="inline-block px-4 py-2 rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 text-sm mr-2 whitespace-nowrap">
+                    <i class="fas fa-heart mr-1"></i> 感动瞬间
+                </span>
+                <span class="inline-block px-4 py-2 rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 text-sm mr-2 whitespace-nowrap">
+                    <i class="fas fa-smile-beam mr-1"></i> 欢乐时光
+                </span>
+                <span class="inline-block px-4 py-2 rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 text-sm mr-2 whitespace-nowrap">
+                    <i class="fas fa-glass-cheers mr-1"></i> 威士忌品鉴
+                </span>
+                <span class="inline-block px-4 py-2 rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 text-sm mr-2 whitespace-nowrap">
+                    <i class="fas fa-umbrella mr-1"></i> 风雨同行
+                </span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- 屈源的分享 -->
+                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                    <div class="p-5">
+                        <div class="flex items-center mb-4">
+                            <div class="h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center mr-3">
+                                <span class="text-primary-500 font-bold">屈</span>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-800 dark:text-white">屈源</h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">班报代笔</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <p class="text-gray-700 dark:text-gray-300">
+                                鹏十三不下山小会
+                            </p>
+                            <p class="text-gray-700 dark:text-gray-300">
+                                能在大雨天让我出科兴，过几十条马路的这帮人，都是过命的交情(｡･ω･)ﾉ☂️
+                            </p>
+                            <p class="text-gray-700 dark:text-gray-300">
+                                用一天多赶出来的 demo 总算赶上发布，可惜只来得及做出规划的 3 成……0.3 总好过 0 无数倍啦哈哈
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 谢博的分享 -->
+                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                    <div class="p-5">
+                        <div class="flex items-center mb-4">
+                            <img src="https://iili.io/3nN8Ja4.webp" alt="谢博" class="h-10 w-10 rounded-full object-cover mr-3">
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-800 dark:text-white">谢博-班长-辣个男人</h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">组织者</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <p class="text-gray-700 dark:text-gray-300 font-bold">
+                                【鹏十三·不下山大会】
+                            </p>
+                            <p class="text-gray-700 dark:text-gray-300">
+                                刮风也要来，下雨也要聚，从广州、汕头过来也没得问题！(๑•̀ㅂ•́)و✧
+                            </p>
+                            <p class="text-gray-700 dark:text-gray-300">
+                                一说要为班里即将勇闯天涯的两位巾帼践行，风雨雷电、长途奔袭都阻挡不了鹏十三相聚的心[呲牙][呲牙][呲牙]
+                            </p>
+                            <p class="text-gray-700 dark:text-gray-300">
+                                虽然暴风雨是不可预料的，但面对暴风雨灵活应变、抓大放小、快速决策是有必要的;
+                            </p>
+                            <p class="text-gray-700 dark:text-gray-300">
+                                虽然大环境是不可预料的，但面对挑战积极进取、审时度势、必要时纵身一跃的信仰是少不了的。
+                            </p>
+                            <p class="text-gray-700 dark:text-gray-300">
+                                这群人压力是不小，但他们也绝不躺平<i class="fas fa-running text-primary-500 mx-1"></i>
+                            </p>
+                            <p class="text-gray-700 dark:text-gray-300">
+                                我呢？就持续做好组织工作，助力这个温暖的集体能更长久地互相陪伴，互助成长。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 淑如的分享 -->
+                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                    <div class="p-5">
+                        <div class="flex items-center mb-4">
+                            <div class="h-10 w-10 rounded-full bg-pink-100 dark:bg-pink-900 flex items-center justify-center mr-3">
+                                <span class="text-pink-500 font-bold">淑</span>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-800 dark:text-white">淑如</h4>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <p class="text-gray-700 dark:text-gray-300">
+                                难得一聚，破格熬夜，值<i class="fas fa-grin-beam text-yellow-500 mx-1"></i>
+                            </p>
+                            <p class="text-gray-700 dark:text-gray-300">
+                                <i class="fas fa-award text-primary-500 mr-1"></i>俩位勇闯异国的宝藏同学，闯出属于自己的一片天地，能量满满，向前冲鸭<i class="fas fa-fist-raised text-primary-500 mx-1"></i><i class="fas fa-fist-raised text-primary-500 mx-1"></i><i class="fas fa-heart text-red-500 mx-1"></i>
+                            </p>
+                            <p class="text-gray-700 dark:text-gray-300">
+                                学业有成哈，加油<i class="fas fa-gift text-primary-500 mx-1"></i><i class="fas fa-gift text-primary-500 mx-1"></i>向你学习，希望等我家小宝大一点，我还能有这份勇气出去深造<i class="fas fa-user-graduate text-primary-500 mx-1"></i>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 佩芬的分享 -->
+                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                    <div class="relative overflow-hidden">
+                        <img src="https://iili.io/3nN8392.webp" alt="合影" class="w-full object-cover h-48">
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                            <h3 class="text-white font-bold">风雨无阻的聚会</h3>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-center mb-4">
+                            <div class="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center mr-3">
+                                <span class="text-green-500 font-bold">芬</span>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-800 dark:text-white">佩芬</h4>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <p class="text-gray-700 dark:text-gray-300">
+                                今天大家为即将赴中亚、澳洲的同学践行～
+                            </p>
+                            <p class="text-gray-700 dark:text-gray-300">
+                                尽管下午深圳乌云密布 狂风暴雨
+                            </p>
+                            <p class="text-gray-700 dark:text-gray-300">
+                                但，这群人依然风雨无阻
+                                跨城跨区奔赴而来～
+                            </p>
+                            <p class="text-gray-700 dark:text-gray-300">
+                                因为大家在一起就会很开心啊😁
+                            </p>
+                            <p class="text-gray-700 dark:text-gray-300">
+                                祝愿得到高研院鹏十三的同学们平安 顺利!
+                            </p>
+                            <p class="text-gray-700 dark:text-gray-300">
+                                最后给右下角那白白胖胖的班长点赞 <i class="fas fa-thumbs-up text-primary-500 mx-1"></i>
+                                一个人可以张罗完40人的聚会 还得是我博哥
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 歆如的分享 -->
+                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                    <div class="p-5">
+                        <div class="flex items-center mb-4">
+                            <div class="h-10 w-10 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center mr-3">
+                                <span class="text-purple-500 font-bold">歆</span>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-800 dark:text-white">歆如</h4>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <p class="text-gray-700 dark:text-gray-300">
+                                为异国逐梦同窗饯行，今晚快乐不打烊
+                            </p>
+                            <p class="text-gray-700 dark:text-gray-300">
+                                祝学业有成，平安吉祥<i class="fas fa-rose text-red-500 mx-1"></i>
+                            </p>
+                        </div>
+                        <div class="mt-4 grid grid-cols-2 gap-2">
+                            <div class="img-container">
+                                <img src="https://iili.io/3nN8FuS.webp" alt="聚会照片" class="w-full h-24 object-cover">
+                            </div>
+                            <div class="img-container">
+                                <img src="https://iili.io/3nN8Bne.webp" alt="小鹏十三" class="w-full h-24 object-cover">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 红艳的分享 -->
+                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                    <div class="p-5">
+                        <div class="flex items-center mb-4">
+                            <div class="h-10 w-10 rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center mr-3">
+                                <span class="text-red-500 font-bold">红</span>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-800 dark:text-white">红艳</h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">生意巨子</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <p class="text-gray-700 dark:text-gray-300">
+                                每一份向前的勇气，都是来自好友的肯定、推动！大家越来越好！<i class="fas fa-heart text-red-500 mx-1"></i>
+                            </p>
+                            <div class="pl-4 border-l-2 border-gray-200 dark:border-gray-700 my-3">
+                                <p class="text-gray-600 dark:text-gray-400 italic text-sm">
+                                    <i class="fas fa-heart text-red-500 mx-1"></i><i class="fas fa-heart text-red-500 mx-1"></i>谢谢！
+                                </p>
+                                <p class="text-gray-600 dark:text-gray-400 italic text-sm mt-2">
+                                    带着鹏十三满满的能量，走向中亚！
+                                </p>
+                            </div>
+                            <div class="pl-4 border-l-2 border-gray-200 dark:border-gray-700 my-3">
+                                <p class="text-gray-600 dark:text-gray-400 italic text-sm">
+                                    大家的祝福都收到<i class="fas fa-heart text-red-500 mx-1"></i>！
+                                </p>
+                                <p class="text-gray-600 dark:text-gray-400 italic text-sm mt-2">
+                                    祝班级同学:万事胜意！
+                                </p>
+                                <p class="text-gray-600 dark:text-gray-400 italic text-sm mt-2">
+                                    已经顺利到达阿拉木图！期待下次见！
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center mt-4 pt-3 border-t border-gray-100 dark:border-gray-700">
+                            <div class="flex space-x-3">
+                                <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                                    <i class="far fa-heart mr-1"></i> 32
+                                </span>
+                                <span class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
+                                    <i class="far fa-comment mr-1"></i> 8
+                                </span>
+                            </div>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">3月16日</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 天天的分享 -->
+                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                    <div class="p-5">
+                        <div class="flex items-center mb-4">
+                            <div class="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mr-3">
+                                <span class="text-blue-500 font-bold">天</span>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-800 dark:text-white">天天</h4>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <p class="text-gray-700 dark:text-gray-300 font-bold">
+                                #得到创业班鹏十三
+                            </p>
+                            <p class="text-gray-700 dark:text-gray-300">
+                                暴风雨的最佳选择，就是出去和同学们聚会<i class="fas fa-umbrella text-blue-500 mx-1"></i>
+                            </p>
+                            <p class="text-gray-700 dark:text-gray-300">
+                                跨城跨区奔赴而来～财神爷都要给你们点赞<i class="fas fa-thumbs-up text-yellow-500 mx-1"></i>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Abbie的分享 -->
+                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                    <div class="p-5">
+                        <div class="flex items-center mb-4">
+                            <div class="h-10 w-10 rounded-full bg-yellow-100 dark:bg-yellow-900 flex items-center justify-center mr-3">
+                                <span class="text-yellow-500 font-bold">A</span>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-800 dark:text-white">Abbie</h4>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <p class="text-gray-700 dark:text-gray-300">
+                                😁😁开心*鹏十三
+                            </p>
+                            <p class="text-gray-700 dark:text-gray-300">
+                                暴雨也阻止不了要见面的心<i class="fas fa-heart text-red-500 mx-1"></i>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 瑜瑜的分享 -->
+                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                    <div class="p-5">
+                        <div class="flex items-center mb-4">
+                            <div class="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center mr-3">
+                                <span class="text-indigo-500 font-bold">瑜</span>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-800 dark:text-white">瑜瑜</h4>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <p class="text-gray-700 dark:text-gray-300">
+                                纪念鹏十三的又一次相聚<i class="fas fa-camera text-primary-500 mx-1"></i>
+                            </p>
+                            <p class="text-gray-700 dark:text-gray-300">
+                                一场大雨也阻止不了不如见一面的信念<i class="fas fa-umbrella text-blue-500 mx-1"></i><i class="fas fa-users text-green-500 mx-1"></i>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 秀英的分享 -->
+                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                    <div class="p-5">
+                        <div class="flex items-center mb-4">
+                            <div class="h-10 w-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mr-3">
+                                <span class="text-gray-500 font-bold">英</span>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-800 dark:text-white">秀英</h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">品鉴专家</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <p class="text-gray-700 dark:text-gray-300">
+                                今天喝的桶强威士忌arran的泥煤风味的<i class="fas fa-glass-whiskey text-amber-500 mx-1"></i>
+                            </p>
+                            <p class="text-gray-700 dark:text-gray-300">
+                                谢谢班长 谢谢大家 给我机会说说威士忌<i class="fas fa-smile-beam text-yellow-500 mx-1"></i>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 欢聚瞬间 -->
+        <section id="gallery" class="mb-16 animate-on-scroll">
+            <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-8 flex items-center">
+                <i class="fas fa-camera-retro text-primary-500 mr-3"></i>
+                欢聚瞬间
+                <span class="ml-3 text-sm font-normal text-primary-500 bg-primary-50 dark:bg-primary-900/30 px-2 py-1 rounded-full">超多小伙伴齐聚一堂✨</span>
+            </h2>
+
+            <!-- 图片瀑布流 -->
+            <div class="mb-12">
+                <div class="flex items-center mb-6 overflow-x-auto pb-2 scrollbar-hide whitespace-nowrap">
+                    <span class="inline-block px-4 py-2 rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 text-sm mr-2 whitespace-nowrap">
+                        <i class="fas fa-users mr-1"></i> 大合影
+                    </span>
+                    <span class="inline-block px-4 py-2 rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 text-sm mr-2 whitespace-nowrap">
+                        <i class="fas fa-baby mr-1"></i> 小鹏十三
+                    </span>
+                    <span class="inline-block px-4 py-2 rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 text-sm mr-2 whitespace-nowrap">
+                        <i class="fas fa-umbrella mr-1"></i> 风雨无阻
+                    </span>
+                    <span class="inline-block px-4 py-2 rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 text-sm mr-2 whitespace-nowrap">
+                        <i class="fas fa-glass-cheers mr-1"></i> 欢聚时刻
+                    </span>
+                </div>
+
+                <!-- 图片瀑布流 布局 -->
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <!-- 图片1 - 大图 跨两列 -->
+                    <div class="col-span-2 row-span-2">
+                        <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden h-full">
+                            <div class="relative h-full">
+                                <div class="img-container h-full">
+                                    <img src="https://iili.io/3nN8d8l.webp" alt="大合影" class="w-full h-full object-cover">
+                                </div>
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent flex flex-col justify-end p-4">
+                                    <div class="bg-black/30 backdrop-blur-sm px-3 py-2 rounded-lg inline-block self-start mb-2">
+                                        <span class="text-white text-xs"><i class="fas fa-map-marker-alt mr-1"></i> 香蜜湖海岛花园</span>
+                                    </div>
+                                    <h3 class="text-white font-bold">鹏十三全家福</h3>
+                                    <p class="text-white/80 text-sm">爱了爱了！这一大波人从四面八方冲过来也太震撼了吧！✨</p>
+                                </div>
+                                <button class="absolute top-3 right-3 bg-white/20 backdrop-blur-sm p-2 rounded-full text-white hover:bg-white/40 transition-colors lightbox-trigger" data-img="https://iili.io/3nN8d8l.webp">
+                                    <i class="fas fa-expand-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 图片2 -->
+                    <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                        <div class="relative">
+                            <div class="img-container aspect-square">
+                                <img src="https://iili.io/3nN8FuS.webp" alt="佳人" class="w-full h-full object-cover">
+                            </div>
+                            <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 via-black/30 to-transparent">
+                                <p class="text-white text-sm font-medium">美丽笑容</p>
+                            </div>
+                            <button class="absolute top-3 right-3 bg-white/20 backdrop-blur-sm p-2 rounded-full text-white hover:bg-white/40 transition-colors lightbox-trigger" data-img="https://iili.io/3nN8FuS.webp">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 图片3 -->
+                    <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                        <div class="relative">
+                            <div class="img-container aspect-square">
+                                <img src="https://iili.io/3nN8Bne.webp" alt="小鹏十三1" class="w-full h-full object-cover">
+                            </div>
+                            <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 via-black/30 to-transparent">
+                                <p class="text-white text-sm font-medium">小鹏十三</p>
+                            </div>
+                            <div class="absolute top-3 left-3 bg-primary-500 text-white text-xs px-2 py-1 rounded-full">
+                                萌娃
+                            </div>
+                            <button class="absolute top-3 right-3 bg-white/20 backdrop-blur-sm p-2 rounded-full text-white hover:bg-white/40 transition-colors lightbox-trigger" data-img="https://iili.io/3nN8Bne.webp">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 图片4 -->
+                    <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                        <div class="relative">
+                            <div class="img-container aspect-square">
+                                <img src="https://iili.io/3nN8Ja4.webp" alt="辣个男人" class="w-full h-full object-cover">
+                            </div>
+                            <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 via-black/30 to-transparent">
+                                <p class="text-white text-sm font-medium">辣个男人！谢博哥</p>
+                            </div>
+                            <div class="absolute top-3 left-3 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+                                组织者
+                            </div>
+                            <button class="absolute top-3 right-3 bg-white/20 backdrop-blur-sm p-2 rounded-full text-white hover:bg-white/40 transition-colors lightbox-trigger" data-img="https://iili.io/3nN8Ja4.webp">
+                                <i class="fas fa-expand-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 图片5-6组合 -->
+                    <div class="col-span-2">
+                        <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                            <div class="grid grid-cols-2 gap-1">
+                                <div class="relative">
+                                    <div class="img-container aspect-[4/3]">
+                                        <img src="https://iili.io/3nN8CMu.webp" alt="相聚一刻" class="w-full h-full object-cover">
+                                    </div>
+                                    <button class="absolute top-3 right-3 bg-white/20 backdrop-blur-sm p-2 rounded-full text-white hover:bg-white/40 transition-colors lightbox-trigger" data-img="https://iili.io/3nN8CMu.webp">
+                                        <i class="fas fa-expand-alt"></i>
+                                    </button>
+                                </div>
+                                <div class="relative">
+                                    <div class="img-container aspect-[4/3]">
+                                        <img src="https://iili.io/3nN8392.webp" alt="大合影2" class="w-full h-full object-cover">
+                                    </div>
+                                    <button class="absolute top-3 right-3 bg-white/20 backdrop-blur-sm p-2 rounded-full text-white hover:bg-white/40 transition-colors lightbox-trigger" data-img="https://iili.io/3nN8392.webp">
+                                        <i class="fas fa-expand-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="p-3">
+                                <p class="text-gray-700 dark:text-gray-300 text-sm">
+                                    虽然下着大雨，但和小伙伴们一起的时光也太温暖了吧！☔️✨
+                                </p>
+                                <div class="flex items-center mt-2">
+                                    <div class="flex -space-x-2">
+                                        <div class="h-6 w-6 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center border-2 border-white dark:border-gray-800">
+                                            <span class="text-primary-500 text-xs font-bold">谢</span>
+                                        </div>
+                                        <div class="h-6 w-6 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center border-2 border-white dark:border-gray-800">
+                                            <span class="text-blue-500 text-xs font-bold">屈</span>
+                                        </div>
+                                        <div class="h-6 w-6 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center border-2 border-white dark:border-gray-800">
+                                            <span class="text-green-500 text-xs font-bold">+4</span>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400 ml-2">喜欢了</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 视频区域 -->
+            <div class="relative">
+                <div class="absolute -top-6 -left-2 transform -rotate-12 z-10">
+                    <div class="bg-primary-500 text-white text-sm px-3 py-1 rounded-lg shadow-lg">
+                        超赞品鉴现场！
+                    </div>
+                </div>
+
+                <!-- 视频卡片 -->
+                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                    <div class="relative">
+                        <div class="aspect-video">
+                            <iframe src="https://player.bilibili.com/player.html?isOutside=true&aid=114175179231010&bvid=BV13oQeYWEYN&cid=28905701800&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" class="w-full h-full"></iframe>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-xl font-bold text-gray-800 dark:text-white">威士忌品鉴大会！干杯！</h3>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">03-15</span>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4">
+                            秀英小姐姐的超专业品鉴，大家明明是第一次喝，但气氛超级嗨！不得不说，这届鹏友也太会玩了吧！🥃✨
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <img src="https://iili.io/3nN8Ja4.webp" alt="上传者" class="h-8 w-8 rounded-full object-cover border-2 border-primary-200 dark:border-primary-800 mr-2">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-800 dark:text-white">谢博</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">视频记录员</div>
+                                </div>
+                            </div>
+                            <div class="flex space-x-3">
+                                <span class="inline-flex items-center text-primary-500">
+                                    <i class="fas fa-heart mr-1"></i> 26
+                                </span>
+                                <span class="inline-flex items-center text-gray-500 dark:text-gray-400">
+                                    <i class="fas fa-comment mr-1"></i> 8
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 参与者统计 -->
+            <div class="flex flex-wrap items-center justify-center gap-4 my-12 bg-primary-50 dark:bg-primary-900/20 py-4 px-6 rounded-xl">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-primary-500">40+</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">参与人数</div>
+                </div>
+                <div class="text-2xl text-gray-300 dark:text-gray-600">|</div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-blue-500">29</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">大人们</div>
+                </div>
+                <div class="text-2xl text-gray-300 dark:text-gray-600">|</div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-pink-500">10+</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">小朋友</div>
+                </div>
+                <div class="text-2xl text-gray-300 dark:text-gray-600">|</div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-green-500">4+</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">城市</div>
+                </div>
+            </div>
+
+            <!-- 参与者头像墙 -->
+            <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-12">
+                <h3 class="text-lg font-medium text-gray-800 dark:text-white mb-4">
+                    全员大集合
+                    <span class="text-sm font-normal text-primary-500 bg-primary-50 dark:bg-primary-900/30 px-2 py-1 rounded-full ml-2">全部29位同学</span>
+                </h3>
+
+                <div class="flex flex-wrap justify-center gap-2 md:gap-3">
+                    <!-- 头像1 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center mx-auto mb-1">
+                            <img src="https://iili.io/3nN8Ja4.webp" alt="谢博" class="h-full w-full object-cover rounded-full border-2 border-primary-300">
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">谢博</p>
+                    </div>
+
+                    <!-- 头像2 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-primary-500 font-bold">源</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">屈源</p>
+                    </div>
+
+                    <!-- 头像3 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-primary-500 font-bold">峰</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">张峰</p>
+                    </div>
+
+                    <!-- 头像4 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-green-500 font-bold">芬</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">冼佩芬</p>
+                    </div>
+
+                    <!-- 头像5 - 莫志国 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-blue-500 font-bold">志</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">莫志国</p>
+                    </div>
+
+                    <!-- 头像6 - 莉莉 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-purple-500 font-bold">莉</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">吴莉娟</p>
+                    </div>
+
+                    <!-- 头像7 - 秀英 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-gray-500 font-bold">英</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">陈秀英</p>
+                    </div>
+
+                    <!-- 头像8 - 罗 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-red-500 font-bold">艳</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">罗红艳</p>
+                    </div>
+
+                    <!-- 头像9 - 小波 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-cyan-100 dark:bg-cyan-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-cyan-500 font-bold">波</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">刘晓波</p>
+                    </div>
+
+                    <!-- 头像10 - 清 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-green-500 font-bold">清</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">汤统清</p>
+                    </div>
+
+                    <!-- 头像11 - 陈静 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-indigo-500 font-bold">静</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">陈静</p>
+                    </div>
+
+                    <!-- 头像12 - 卡门 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-pink-100 dark:bg-pink-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-pink-500 font-bold">C</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">卡门</p>
+                    </div>
+
+                    <!-- 头像13 - Abbie -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-yellow-100 dark:bg-yellow-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-yellow-500 font-bold">A</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">宋前宏</p>
+                    </div>
+
+                    <!-- 头像14 - Catherine -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-amber-500 font-bold">莎</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">李莎莎</p>
+                    </div>
+
+                    <!-- 头像15 - 淑如 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-pink-100 dark:bg-pink-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-pink-500 font-bold">淑</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">姚淑如</p>
+                    </div>
+
+                    <!-- 头像16 - 王瑞坤 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-orange-500 font-bold">坤</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">王瑞坤</p>
+                    </div>
+
+                    <!-- 头像17 - 刘瑜 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-indigo-500 font-bold">瑜</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">刘瑜</p>
+                    </div>
+
+                    <!-- 头像18 - 吕庭彬 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-lime-100 dark:bg-lime-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-lime-500 font-bold">庭</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">吕庭彬</p>
+                    </div>
+
+                    <!-- 头像19 - Sara熊 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-rose-100 dark:bg-rose-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-rose-500 font-bold">S</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">Sara</p>
+                    </div>
+
+                    <!-- 头像20 - 王晓华 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-fuchsia-100 dark:bg-fuchsia-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-fuchsia-500 font-bold">华</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">王晓华</p>
+                    </div>
+
+                    <!-- 头像21 - 一鹏 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-emerald-500 font-bold">鹏</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">刘一鹏</p>
+                    </div>
+
+                    <!-- 头像22 - Mirana花花子 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-pink-100 dark:bg-pink-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-pink-500 font-bold">花</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">梁嘉轩(报名)</p>
+                    </div>
+
+                    <!-- 头像23 - 吴昊 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-sky-100 dark:bg-sky-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-sky-500 font-bold">昊</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">吴昊</p>
+                    </div>
+
+                    <!-- 头像24 - 李霞 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-red-500 font-bold">霞</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">李霞</p>
+                    </div>
+
+                    <!-- 头像25 - 陈洵 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-indigo-500 font-bold">洵</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">陈洵(报名)</p>
+                    </div>
+
+                    <!-- 头像26 - 陈福平 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-lime-100 dark:bg-lime-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-lime-500 font-bold">福</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">陈福平</p>
+                    </div>
+
+                    <!-- 头像27 - 林歆如 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-purple-500 font-bold">如</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">林歆如</p>
+                    </div>
+
+                    <!-- 头像28 - 汪连丁 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-blue-500 font-bold">汪</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">汪连丁</p>
+                    </div>
+
+                    <!-- 头像29 - 育萍 -->
+                    <div class="text-center">
+                        <div class="h-14 w-14 rounded-full bg-teal-100 dark:bg-teal-900 flex items-center justify-center mx-auto mb-1">
+                            <span class="text-teal-500 font-bold">萍</span>
+                        </div>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">杨育萍</p>
+                    </div>
+                </div>
+
+                <!-- 活动信息卡片 -->
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mt-6">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-calendar-check text-primary-500 text-xl"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-gray-800 dark:text-white">活动小档案</h3>
+                            <div class="mt-2 text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                <p><span class="font-medium text-gray-700 dark:text-gray-200">时间：</span>3月15日 16:00-21:00</p>
+                                <p><span class="font-medium text-gray-700 dark:text-gray-200">地点：</span>香蜜湖海岛花园·营地烤肉</p>
+                                <p><span class="font-medium text-gray-700 dark:text-gray-200">内容：</span>威士忌品鉴、湖边音乐会、聊天、烤肉</p>
+                                <p class="italic mt-2 text-primary-500 dark:text-primary-300">为了在红艳和莉莉勇闯海外前欢聚，特意发起的"鹏十三·不下山聚会" 🎉</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 灯箱效果 -->
+        <div id="lightbox" class="fixed inset-0 bg-black/90 z-50 hidden items-center justify-center p-4">
+            <button id="close-lightbox" class="absolute top-4 right-4 text-white hover:text-primary-300 text-2xl">
+                <i class="fas fa-times"></i>
+            </button>
+            <img id="lightbox-img" src="" alt="放大图片" class="max-w-full max-h-[90vh] object-contain">
+            <button id="prev-img" class="absolute left-4 text-white hover:text-primary-300 text-2xl opacity-70 hover:opacity-100">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button id="next-img" class="absolute right-4 text-white hover:text-primary-300 text-2xl opacity-70 hover:opacity-100">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 py-12">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-white flex items-center">
+                        <i class="fas fa-feather-alt text-primary-500 mr-2"></i>
+                        Izumi.屈源
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-400 mt-2">周报代笔</p>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="https://github.com/OtokoNoIzumi" target="_blank" class="text-gray-600 hover:text-primary-500 dark:text-gray-400 dark:hover:text-primary-400 transition-colors">
+                        <i class="fab fa-github text-2xl"></i>
+                    </a>
+                    <a href="https://space.bilibili.com/82205" target="_blank" class="text-gray-600 hover:text-primary-500 dark:text-gray-400 dark:hover:text-primary-400 transition-colors">
+                        <i class="fab fa-bilibili text-2xl"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800">
+                <p class="text-center text-gray-600 dark:text-gray-400 text-sm">
+                    &copy; 2025 Izumi.屈源 鹏十三全员 版权所有
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 深色/浅色模式切换
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+        });
+
+        // 移动端菜单
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.remove('hidden');
+            } else {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+
+        // 移动端菜单项点击后关闭菜单
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', function() {
+                document.getElementById('mobile-menu').classList.add('hidden');
+            });
+        });
+
+        // 滚动动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-fade-in');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.animate-on-scroll').forEach(item => {
+                observer.observe(item);
+            });
+
+            // 灯箱效果
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            const closeLightbox = document.getElementById('close-lightbox');
+            const prevImg = document.getElementById('prev-img');
+            const nextImg = document.getElementById('next-img');
+            const triggers = document.querySelectorAll('.lightbox-trigger');
+            let currentImgIndex = 0;
+            let imgUrls = [];
+
+            // 收集所有图片URL
+            triggers.forEach(trigger => {
+                imgUrls.push(trigger.getAttribute('data-img'));
+            });
+
+            // 打开灯箱
+            triggers.forEach((trigger, index) => {
+                trigger.addEventListener('click', function() {
+                    const imgUrl = this.getAttribute('data-img');
+                    currentImgIndex = index;
+                    lightboxImg.src = imgUrl;
+                    lightbox.classList.remove('hidden');
+                    lightbox.classList.add('flex');
+                    document.body.style.overflow = 'hidden';
+                });
+            });
+
+            // 关闭灯箱
+            closeLightbox.addEventListener('click', function() {
+                lightbox.classList.add('hidden');
+                lightbox.classList.remove('flex');
+                document.body.style.overflow = '';
+            });
+
+            // 点击灯箱背景也关闭
+            lightbox.addEventListener('click', function(e) {
+                if (e.target === lightbox) {
+                    lightbox.classList.add('hidden');
+                    lightbox.classList.remove('flex');
+                    document.body.style.overflow = '';
+                }
+            });
+
+            // 上一张图片
+            prevImg.addEventListener('click', function() {
+                currentImgIndex = (currentImgIndex - 1 + imgUrls.length) % imgUrls.length;
+                lightboxImg.src = imgUrls[currentImgIndex];
+            });
+
+            // 下一张图片
+            nextImg.addEventListener('click', function() {
+                currentImgIndex = (currentImgIndex + 1) % imgUrls.length;
+                lightboxImg.src = imgUrls[currentImgIndex];
+            });
+
+            // 键盘导航
+            document.addEventListener('keydown', function(e) {
+                if (!lightbox.classList.contains('hidden')) {
+                    if (e.key === 'Escape') {
+                        lightbox.classList.add('hidden');
+                        lightbox.classList.remove('flex');
+                        document.body.style.overflow = '';
+                    } else if (e.key === 'ArrowLeft') {
+                        currentImgIndex = (currentImgIndex - 1 + imgUrls.length) % imgUrls.length;
+                        lightboxImg.src = imgUrls[currentImgIndex];
+                    } else if (e.key === 'ArrowRight') {
+                        currentImgIndex = (currentImgIndex + 1) % imgUrls.length;
+                        lightboxImg.src = imgUrls[currentImgIndex];
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
