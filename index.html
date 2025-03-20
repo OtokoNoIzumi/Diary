@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- 主题系统 -->
+    <link rel="stylesheet" href="theme.css">
     <script>
         // 定制Tailwind配置
         tailwind.config = {
@@ -16,16 +18,16 @@
                 extend: {
                     colors: {
                         primary: {
-                            50: '#FFF7ED',
-                            100: '#FFEDD5',
-                            200: '#FED7AA',
-                            300: '#FDBA74',
-                            400: '#FB923C',
-                            500: '#F97316', // 主橘色
-                            600: '#EA580C',
-                            700: '#C2410C',
-                            800: '#9A3412',
-                            900: '#7C2D12',
+                            50: 'var(--color-primary-50)',
+                            100: 'var(--color-primary-100)',
+                            200: 'var(--color-primary-200)',
+                            300: 'var(--color-primary-300)',
+                            400: 'var(--color-primary-400)',
+                            500: 'var(--color-primary-500)', // 主橘色
+                            600: 'var(--color-primary-600)',
+                            700: 'var(--color-primary-700)',
+                            800: 'var(--color-primary-800)',
+                            900: 'var(--color-primary-900)',
                         }
                     },
                     animation: {
@@ -45,13 +47,6 @@
                 }
             }
         }
-
-        // 初始化深色/浅色模式
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
     </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
@@ -61,70 +56,62 @@
             scroll-behavior: smooth;
         }
 
-        .card {
-            transition: all 0.3s ease;
+        /* 自定义动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
-        .card:hover {
-            transform: translateY(-5px) scale(1.01);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
-        .dark .card:hover {
-            box-shadow: 0 10px 25px -5px rgba(255, 255, 255, 0.05), 0 10px 10px -5px rgba(255, 255, 255, 0.02);
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in-out;
         }
 
-        /* 图片悬停效果 */
-        .img-container {
-            overflow: hidden;
-            border-radius: 0.5rem;
-        }
-
-        .img-container img {
-            transition: transform 0.5s ease;
-        }
-
-        .img-container:hover img {
-            transform: scale(1.05);
-        }
-
-        /* 按钮效果 */
-        .btn {
-            transition: all 0.2s ease;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn:active {
-            transform: translateY(1px);
+        .animate-slide-up {
+            animation: slideUp 0.5s ease-out;
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-orange-50 to-white dark:from-gray-900 dark:to-gray-800 min-h-screen transition-colors duration-300">
+<body class="bg-gradient-to-br from-primary-50 to-white dark:from-gray-900 dark:to-gray-800 min-h-screen transition-colors duration-300">
     <!-- 顶部导航栏 -->
-    <header class="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm border-b border-gray-200 dark:border-gray-700">
+    <header class="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm theme-border-b">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-2">
                 <i class="fas fa-mountain text-primary-500 text-2xl"></i>
                 <h1 class="text-xl font-bold text-gray-800 dark:text-white">鹏十三·不下山大会</h1>
             </div>
             <div class="flex items-center space-x-4">
-                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                    <i class="fas fa-sun text-yellow-500 dark:hidden"></i>
-                    <i class="fas fa-moon text-blue-300 hidden dark:block"></i>
-                </button>
+                <!-- 主题切换按钮 -->
+                <div class="flex items-center">
+                    <button id="theme-toggle" class="p-2 rounded-lg text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white theme-btn">
+                        <svg class="w-5 h-5 moon-icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                        </svg>
+                        <svg class="w-5 h-5 sun-icon hidden" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+
+                    <!-- 主题选择器 -->
+                    <select id="custom-theme-selector" class="ml-2 text-xs p-1 rounded bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 theme-btn">
+                        <option value="theme-default">默认主题</option>
+                        <option value="theme-macaron">马卡龙主题</option>
+                    </select>
+                </div>
                 <a href="#about" class="hidden md:block text-sm font-medium text-gray-700 hover:text-primary-500 dark:text-gray-300 dark:hover:text-primary-400 transition-colors">活动故事</a>
                 <a href="#messages" class="hidden md:block text-sm font-medium text-gray-700 hover:text-primary-500 dark:text-gray-300 dark:hover:text-primary-400 transition-colors">小伙伴说</a>
                 <a href="#gallery" class="hidden md:block text-sm font-medium text-gray-700 hover:text-primary-500 dark:text-gray-300 dark:hover:text-primary-400 transition-colors">欢聚瞬间</a>
-                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800">
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 theme-btn">
                     <i class="fas fa-bars text-gray-700 dark:text-gray-300"></i>
                 </button>
             </div>
         </div>
         <!-- 移动端导航菜单 -->
-        <div id="mobile-menu" class="md:hidden hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 animate-fade-in">
+        <div id="mobile-menu" class="md:hidden hidden bg-white dark:bg-gray-900 theme-border-b animate-fade-in">
             <div class="container mx-auto px-4 py-3 flex flex-col space-y-3">
                 <a href="#about" class="text-sm font-medium text-gray-700 hover:text-primary-500 dark:text-gray-300 dark:hover:text-primary-400 transition-colors">活动故事</a>
                 <a href="#messages" class="text-sm font-medium text-gray-700 hover:text-primary-500 dark:text-gray-300 dark:hover:text-primary-400 transition-colors">小伙伴说</a>
@@ -134,7 +121,7 @@
     </header>
 
     <!-- 主横幅 -->
-    <section class="relative bg-gradient-to-r from-primary-600 to-primary-400 text-white py-16 md:py-24">
+    <section class="relative theme-banner py-16 md:py-24">
         <div class="absolute inset-0 bg-cover bg-center opacity-20" style="background-image: url('https://iili.io/3nN8n6b.webp');"></div>
         <div class="container mx-auto px-4 relative z-10">
             <div class="max-w-3xl mx-auto text-center">
@@ -162,15 +149,15 @@
     <main class="container mx-auto px-4 py-12">
         <!-- 活动故事 -->
         <section id="about" class="mb-16 animate-on-scroll">
-            <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-8 flex items-center">
-                <i class="fas fa-book-open text-primary-500 mr-3"></i>
+            <h2 class="theme-section-title text-3xl font-bold">
+                <i class="fas fa-book-open"></i>
                 活动故事
                 <span class="ml-3 text-sm font-normal text-primary-500 bg-primary-50 dark:bg-primary-900/30 px-2 py-1 rounded-full">暴雨中的温暖聚会✨</span>
             </h2>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <!-- 活动介绍卡片 -->
-                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                <div class="theme-card">
                     <div class="relative h-48 overflow-hidden">
                         <img src="https://iili.io/3nN8ft9.webp" alt="活动场景" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
@@ -187,11 +174,11 @@
                             <i class="fas fa-quote-right text-xs align-super ml-1 text-primary-400"></i>
                         </p>
                         <div class="flex items-center space-x-3 mt-4">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200">
+                            <span class="theme-badge">
                                 <i class="fas fa-users mr-1"></i>
                                 相聚时刻
                             </span>
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                            <span class="theme-badge bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
                                 <i class="fas fa-heart mr-1"></i>
                                 友谊长存
                             </span>
@@ -200,12 +187,12 @@
                 </div>
 
                 <!-- 活动目的卡片 -->
-                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md">
+                <div class="theme-card">
                     <div class="p-6">
                         <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">✨ 聚会小心思 ✨</h3>
                         <div class="space-y-4">
                             <div class="flex items-start">
-                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center mr-4">
+                                <div class="flex-shrink-0 h-10 w-10 theme-avatar bg-primary-100 dark:bg-primary-900 mr-4">
                                     <i class="fas fa-plane-departure text-primary-500"></i>
                                 </div>
                                 <div>
@@ -214,7 +201,7 @@
                                 </div>
                             </div>
                             <div class="flex items-start">
-                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center mr-4">
+                                <div class="flex-shrink-0 h-10 w-10 theme-avatar bg-primary-100 dark:bg-primary-900 mr-4">
                                     <i class="fas fa-glass-cheers text-primary-500"></i>
                                 </div>
                                 <div>
@@ -223,7 +210,7 @@
                                 </div>
                             </div>
                             <div class="flex items-start">
-                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center mr-4">
+                                <div class="flex-shrink-0 h-10 w-10 theme-avatar bg-primary-100 dark:bg-primary-900 mr-4">
                                     <i class="fas fa-umbrella-beach text-primary-500"></i>
                                 </div>
                                 <div>
@@ -232,7 +219,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <div class="mt-6 pt-6 theme-border-t">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center">
                                     <img src="https://iili.io/3nN8Ja4.webp" alt="组织者" class="h-10 w-10 rounded-full object-cover mr-3">
@@ -250,7 +237,7 @@
                 </div>
 
                 <!-- 班级介绍卡片 -->
-                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md md:col-span-2">
+                <div class="theme-card md:col-span-2">
                     <div class="p-6">
                         <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center">
                             <span class="bg-gradient-to-r from-primary-400 to-primary-600 text-white px-3 py-1 rounded-full text-sm mr-3">鹏十三 · 不下山小分队</span>
@@ -266,18 +253,18 @@
                                     </p>
                                 </div>
                                 <div class="flex flex-wrap gap-2 mt-4">
-                                    <span class="px-3 py-1 bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-300 rounded-full text-sm"># 暴雨中的聚会</span>
-                                    <span class="px-3 py-1 bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-300 rounded-full text-sm"># 友谊万岁</span>
-                                    <span class="px-3 py-1 bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-300 rounded-full text-sm"># 鹏十三不下山</span>
+                                    <span class="theme-badge"># 暴雨中的聚会</span>
+                                    <span class="theme-badge"># 友谊万岁</span>
+                                    <span class="theme-badge"># 鹏十三不下山</span>
                                 </div>
                             </div>
                             <div class="md:w-1/3">
                                 <div class="space-y-2">
-                                    <div class="img-container">
-                                        <img src="https://iili.io/3nN8d8l.webp" alt="大合影" class="w-full h-48 object-cover rounded-lg">
+                                    <div class="theme-img-container">
+                                        <img src="https://iili.io/3nN8d8l.webp" alt="大合影" class="w-full h-48 object-cover">
                                     </div>
-                                    <div class="img-container">
-                                        <img src="https://iili.io/3nN8Kw7.webp" alt="小鹏十三2" class="w-full h-32 object-cover rounded-lg">
+                                    <div class="theme-img-container">
+                                        <img src="https://iili.io/3nN8Kw7.webp" alt="小鹏十三2" class="w-full h-32 object-cover">
                                     </div>
                                 </div>
                             </div>
@@ -289,32 +276,32 @@
 
         <!-- 朋友圈 -->
         <section id="messages" class="mb-16 animate-on-scroll">
-            <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-8 flex items-center">
-                <i class="fas fa-comment-dots text-primary-500 mr-3"></i>
+            <h2 class="theme-section-title text-3xl font-bold">
+                <i class="fas fa-comment-dots"></i>
                 小伙伴说
             </h2>
 
             <div class="flex items-center mb-8 overflow-x-auto pb-2 scrollbar-hide whitespace-nowrap">
-                <span class="inline-block px-4 py-2 rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 text-sm mr-2 whitespace-nowrap">
+                <span class="theme-badge mr-2 whitespace-nowrap">
                     <i class="fas fa-heart mr-1"></i> 感动瞬间
                 </span>
-                <span class="inline-block px-4 py-2 rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 text-sm mr-2 whitespace-nowrap">
+                <span class="theme-badge mr-2 whitespace-nowrap">
                     <i class="fas fa-smile-beam mr-1"></i> 欢乐时光
                 </span>
-                <span class="inline-block px-4 py-2 rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 text-sm mr-2 whitespace-nowrap">
+                <span class="theme-badge mr-2 whitespace-nowrap">
                     <i class="fas fa-glass-cheers mr-1"></i> 威士忌品鉴
                 </span>
-                <span class="inline-block px-4 py-2 rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 text-sm mr-2 whitespace-nowrap">
+                <span class="theme-badge mr-2 whitespace-nowrap">
                     <i class="fas fa-umbrella mr-1"></i> 风雨同行
                 </span>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- 屈源的分享 -->
-                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                <div class="theme-card overflow-hidden">
                     <div class="p-5">
                         <div class="flex items-center mb-4">
-                            <div class="h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center mr-3">
+                            <div class="h-10 w-10 theme-avatar bg-primary-100 dark:bg-primary-900 mr-3">
                                 <span class="text-primary-500 font-bold">屈</span>
                             </div>
                             <div>
@@ -337,7 +324,7 @@
                 </div>
 
                 <!-- 谢博的分享 -->
-                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                <div class="theme-card overflow-hidden">
                     <div class="p-5">
                         <div class="flex items-center mb-4">
                             <img src="https://iili.io/3nN8Ja4.webp" alt="谢博" class="h-10 w-10 rounded-full object-cover mr-3">
@@ -373,10 +360,10 @@
                 </div>
 
                 <!-- 淑如的分享 -->
-                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                <div class="theme-card overflow-hidden">
                     <div class="p-5">
                         <div class="flex items-center mb-4">
-                            <div class="h-10 w-10 rounded-full bg-pink-100 dark:bg-pink-900 flex items-center justify-center mr-3">
+                            <div class="h-10 w-10 theme-avatar bg-pink-100 dark:bg-pink-900 mr-3">
                                 <span class="text-pink-500 font-bold">淑</span>
                             </div>
                             <div>
@@ -398,7 +385,7 @@
                 </div>
 
                 <!-- 佩芬的分享 -->
-                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                <div class="theme-card overflow-hidden">
                     <div class="relative overflow-hidden">
                         <img src="https://iili.io/3nN8392.webp" alt="合影" class="w-full object-cover h-48">
                         <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
@@ -440,7 +427,7 @@
                 </div>
 
                 <!-- 歆如的分享 -->
-                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                <div class="theme-card overflow-hidden">
                     <div class="p-5">
                         <div class="flex items-center mb-4">
                             <div class="h-10 w-10 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center mr-3">
@@ -470,7 +457,7 @@
                 </div>
 
                 <!-- 红艳的分享 -->
-                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                <div class="theme-card overflow-hidden">
                     <div class="p-5">
                         <div class="flex items-center mb-4">
                             <div class="h-10 w-10 rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center mr-3">
@@ -520,10 +507,10 @@
                 </div>
 
                 <!-- 天天的分享 -->
-                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                <div class="theme-card overflow-hidden">
                     <div class="p-5">
                         <div class="flex items-center mb-4">
-                            <div class="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mr-3">
+                            <div class="h-10 w-10 theme-avatar bg-blue-100 dark:bg-blue-900 mr-3">
                                 <span class="text-blue-500 font-bold">天</span>
                             </div>
                             <div>
@@ -545,10 +532,10 @@
                 </div>
 
                 <!-- Abbie的分享 -->
-                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                <div class="theme-card overflow-hidden">
                     <div class="p-5">
                         <div class="flex items-center mb-4">
-                            <div class="h-10 w-10 rounded-full bg-yellow-100 dark:bg-yellow-900 flex items-center justify-center mr-3">
+                            <div class="h-10 w-10 theme-avatar bg-yellow-100 dark:bg-yellow-900 mr-3">
                                 <span class="text-yellow-500 font-bold">A</span>
                             </div>
                             <div>
@@ -567,10 +554,10 @@
                 </div>
 
                 <!-- 瑜瑜的分享 -->
-                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                <div class="theme-card overflow-hidden">
                     <div class="p-5">
                         <div class="flex items-center mb-4">
-                            <div class="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center mr-3">
+                            <div class="h-10 w-10 theme-avatar bg-indigo-100 dark:bg-indigo-900 mr-3">
                                 <span class="text-indigo-500 font-bold">瑜</span>
                             </div>
                             <div>
@@ -589,10 +576,10 @@
                 </div>
 
                 <!-- 秀英的分享 -->
-                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                <div class="theme-card overflow-hidden">
                     <div class="p-5">
                         <div class="flex items-center mb-4">
-                            <div class="h-10 w-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mr-3">
+                            <div class="h-10 w-10 theme-avatar bg-gray-100 dark:bg-gray-700 mr-3">
                                 <span class="text-gray-500 font-bold">英</span>
                             </div>
                             <div>
@@ -615,8 +602,8 @@
 
         <!-- 欢聚瞬间 -->
         <section id="gallery" class="mb-16 animate-on-scroll">
-            <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-8 flex items-center">
-                <i class="fas fa-camera-retro text-primary-500 mr-3"></i>
+            <h2 class="theme-section-title text-3xl font-bold">
+                <i class="fas fa-camera-retro"></i>
                 欢聚瞬间
                 <span class="ml-3 text-sm font-normal text-primary-500 bg-primary-50 dark:bg-primary-900/30 px-2 py-1 rounded-full">超多小伙伴齐聚一堂✨</span>
             </h2>
@@ -624,16 +611,16 @@
             <!-- 图片瀑布流 -->
             <div class="mb-12">
                 <div class="flex items-center mb-6 overflow-x-auto pb-2 scrollbar-hide whitespace-nowrap">
-                    <span class="inline-block px-4 py-2 rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 text-sm mr-2 whitespace-nowrap">
+                    <span class="theme-badge mr-2 whitespace-nowrap">
                         <i class="fas fa-users mr-1"></i> 大合影
                     </span>
-                    <span class="inline-block px-4 py-2 rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 text-sm mr-2 whitespace-nowrap">
+                    <span class="theme-badge mr-2 whitespace-nowrap">
                         <i class="fas fa-baby mr-1"></i> 小鹏十三
                     </span>
-                    <span class="inline-block px-4 py-2 rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 text-sm mr-2 whitespace-nowrap">
+                    <span class="theme-badge mr-2 whitespace-nowrap">
                         <i class="fas fa-umbrella mr-1"></i> 风雨无阻
                     </span>
-                    <span class="inline-block px-4 py-2 rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 text-sm mr-2 whitespace-nowrap">
+                    <span class="theme-badge mr-2 whitespace-nowrap">
                         <i class="fas fa-glass-cheers mr-1"></i> 欢聚时刻
                     </span>
                 </div>
@@ -642,9 +629,9 @@
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                     <!-- 图片1 - 大图 跨两列 -->
                     <div class="col-span-2 row-span-2">
-                        <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden h-full">
+                        <div class="theme-card h-full">
                             <div class="relative h-full">
-                                <div class="img-container h-full">
+                                <div class="theme-img-container h-full">
                                     <img src="https://iili.io/3nN8d8l.webp" alt="大合影" class="w-full h-full object-cover">
                                 </div>
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent flex flex-col justify-end p-4">
@@ -654,7 +641,7 @@
                                     <h3 class="text-white font-bold">鹏十三全家福</h3>
                                     <p class="text-white/80 text-sm">爱了爱了！这一大波人从四面八方冲过来也太震撼了吧！✨</p>
                                 </div>
-                                <button class="absolute top-3 right-3 bg-white/20 backdrop-blur-sm p-2 rounded-full text-white hover:bg-white/40 transition-colors lightbox-trigger" data-img="https://iili.io/3nN8d8l.webp">
+                                <button class="absolute top-3 right-3 bg-white/20 backdrop-blur-sm p-2 rounded-full text-white hover:bg-white/40 transition-colors lightbox-trigger theme-btn" data-img="https://iili.io/3nN8d8l.webp">
                                     <i class="fas fa-expand-alt"></i>
                                 </button>
                             </div>
@@ -662,24 +649,24 @@
                     </div>
 
                     <!-- 图片2 -->
-                    <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                    <div class="theme-card">
                         <div class="relative">
-                            <div class="img-container aspect-square">
+                            <div class="theme-img-container aspect-square">
                                 <img src="https://iili.io/3nN8FuS.webp" alt="佳人" class="w-full h-full object-cover">
                             </div>
                             <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 via-black/30 to-transparent">
                                 <p class="text-white text-sm font-medium">美丽笑容</p>
                             </div>
-                            <button class="absolute top-3 right-3 bg-white/20 backdrop-blur-sm p-2 rounded-full text-white hover:bg-white/40 transition-colors lightbox-trigger" data-img="https://iili.io/3nN8FuS.webp">
+                            <button class="absolute top-3 right-3 bg-white/20 backdrop-blur-sm p-2 rounded-full text-white hover:bg-white/40 transition-colors lightbox-trigger theme-btn" data-img="https://iili.io/3nN8FuS.webp">
                                 <i class="fas fa-expand-alt"></i>
                             </button>
                         </div>
                     </div>
 
                     <!-- 图片3 -->
-                    <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                    <div class="theme-card">
                         <div class="relative">
-                            <div class="img-container aspect-square">
+                            <div class="theme-img-container aspect-square">
                                 <img src="https://iili.io/3nN8Bne.webp" alt="小鹏十三1" class="w-full h-full object-cover">
                             </div>
                             <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 via-black/30 to-transparent">
@@ -688,16 +675,16 @@
                             <div class="absolute top-3 left-3 bg-primary-500 text-white text-xs px-2 py-1 rounded-full">
                                 萌娃
                             </div>
-                            <button class="absolute top-3 right-3 bg-white/20 backdrop-blur-sm p-2 rounded-full text-white hover:bg-white/40 transition-colors lightbox-trigger" data-img="https://iili.io/3nN8Bne.webp">
+                            <button class="absolute top-3 right-3 bg-white/20 backdrop-blur-sm p-2 rounded-full text-white hover:bg-white/40 transition-colors lightbox-trigger theme-btn" data-img="https://iili.io/3nN8Bne.webp">
                                 <i class="fas fa-expand-alt"></i>
                             </button>
                         </div>
                     </div>
 
                     <!-- 图片4 -->
-                    <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                    <div class="theme-card">
                         <div class="relative">
-                            <div class="img-container aspect-square">
+                            <div class="theme-img-container aspect-square">
                                 <img src="https://iili.io/3nN8Ja4.webp" alt="辣个男人" class="w-full h-full object-cover">
                             </div>
                             <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 via-black/30 to-transparent">
@@ -706,7 +693,7 @@
                             <div class="absolute top-3 left-3 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
                                 组织者
                             </div>
-                            <button class="absolute top-3 right-3 bg-white/20 backdrop-blur-sm p-2 rounded-full text-white hover:bg-white/40 transition-colors lightbox-trigger" data-img="https://iili.io/3nN8Ja4.webp">
+                            <button class="absolute top-3 right-3 bg-white/20 backdrop-blur-sm p-2 rounded-full text-white hover:bg-white/40 transition-colors lightbox-trigger theme-btn" data-img="https://iili.io/3nN8Ja4.webp">
                                 <i class="fas fa-expand-alt"></i>
                             </button>
                         </div>
@@ -766,7 +753,7 @@
                 </div>
 
                 <!-- 视频卡片 -->
-                <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                <div class="theme-card overflow-hidden">
                     <div class="relative">
                         <div class="aspect-video">
                             <iframe src="https://player.bilibili.com/player.html?isOutside=true&aid=114175179231010&bvid=BV13oQeYWEYN&cid=28905701800&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" class="w-full h-full"></iframe>
@@ -825,16 +812,16 @@
             </div>
 
             <!-- 参与者头像墙 -->
-            <div class="card bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-12">
+            <div class="theme-card p-6 mb-12">
                 <h3 class="text-lg font-medium text-gray-800 dark:text-white mb-4">
                     全员大集合
-                    <span class="text-sm font-normal text-primary-500 bg-primary-50 dark:bg-primary-900/30 px-2 py-1 rounded-full ml-2">全部29位同学</span>
+                    <span class="theme-badge ml-2">全部29位同学</span>
                 </h3>
 
                 <div class="flex flex-wrap justify-center gap-2 md:gap-3">
                     <!-- 头像1 -->
                     <div class="text-center">
-                        <div class="h-14 w-14 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center mx-auto mb-1">
+                        <div class="h-14 w-14 theme-avatar bg-primary-100 dark:bg-primary-900 mx-auto mb-1">
                             <img src="https://iili.io/3nN8Ja4.webp" alt="谢博" class="h-full w-full object-cover rounded-full border-2 border-primary-300">
                         </div>
                         <p class="text-xs text-gray-600 dark:text-gray-400">谢博</p>
@@ -1066,7 +1053,8 @@
                 </div>
 
                 <!-- 活动信息卡片 -->
-                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mt-6">
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 mt-6">
+                <!-- <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 my-4 border-l-4 border-primary-500"> -->
                     <div class="flex items-start">
                         <div class="flex-shrink-0">
                             <i class="fas fa-calendar-check text-primary-500 text-xl"></i>
@@ -1087,21 +1075,21 @@
 
         <!-- 灯箱效果 -->
         <div id="lightbox" class="fixed inset-0 bg-black/90 z-50 hidden items-center justify-center p-4">
-            <button id="close-lightbox" class="absolute top-4 right-4 text-white hover:text-primary-300 text-2xl">
+            <button id="close-lightbox" class="absolute top-4 right-4 text-white hover:text-primary-300 text-2xl theme-btn">
                 <i class="fas fa-times"></i>
             </button>
             <img id="lightbox-img" src="" alt="放大图片" class="max-w-full max-h-[90vh] object-contain">
-            <button id="prev-img" class="absolute left-4 text-white hover:text-primary-300 text-2xl opacity-70 hover:opacity-100">
+            <button id="prev-img" class="absolute left-4 text-white hover:text-primary-300 text-2xl opacity-70 hover:opacity-100 theme-btn">
                 <i class="fas fa-chevron-left"></i>
             </button>
-            <button id="next-img" class="absolute right-4 text-white hover:text-primary-300 text-2xl opacity-70 hover:opacity-100">
+            <button id="next-img" class="absolute right-4 text-white hover:text-primary-300 text-2xl opacity-70 hover:opacity-100 theme-btn">
                 <i class="fas fa-chevron-right"></i>
             </button>
         </div>
     </main>
 
     <!-- 页脚 -->
-    <footer class="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 py-12">
+    <footer class="bg-gray-50 dark:bg-gray-900 theme-border-t py-12">
         <div class="container mx-auto px-4">
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div class="mb-6 md:mb-0">
@@ -1120,7 +1108,7 @@
                     </a>
                 </div>
             </div>
-            <div class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800">
+            <div class="mt-8 pt-8 theme-border-t">
                 <p class="text-center text-gray-600 dark:text-gray-400 text-sm">
                     &copy; 2025 Izumi.屈源 鹏十三全员 版权所有
                 </p>
@@ -1130,17 +1118,6 @@
 
     <!-- JavaScript -->
     <script>
-        // 深色/浅色模式切换
-        document.getElementById('theme-toggle').addEventListener('click', function() {
-            if (document.documentElement.classList.contains('dark')) {
-                document.documentElement.classList.remove('dark');
-                localStorage.theme = 'light';
-            } else {
-                document.documentElement.classList.add('dark');
-                localStorage.theme = 'dark';
-            }
-        });
-
         // 移动端菜单
         document.getElementById('mobile-menu-button').addEventListener('click', function() {
             const mobileMenu = document.getElementById('mobile-menu');
@@ -1245,5 +1222,8 @@
             });
         });
     </script>
+
+    <!-- 主题切换器脚本 -->
+    <script src="theme-switcher.js"></script>
 </body>
 </html>
