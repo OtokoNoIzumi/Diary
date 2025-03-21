@@ -151,3 +151,11 @@ document.write(`
 4. 保持导航一致性，避免用户迷失
 
 您想要开始创建哪种类型的多页面结构？我可以帮您设计更具体的文件组织方案或准备示例代码。
+
+
+credit:
+https://xiangyangqiaomu.feishu.cn/wiki/KMN3wucYPiri0qkNlC4cKBZCnRh?fromScene=spaceOverview
+https://mp.weixin.qq.com/s/f1IozQKgIEDODfLRP5E2qg
+
+Lucide Icon
+https://lucide.dev/

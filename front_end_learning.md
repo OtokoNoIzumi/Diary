@@ -52,7 +52,7 @@
 - 结果：CDN版本不支持此功能，需要构建工具
 
 **尝试3：外部CSS文件映射方案**
-- 创建`component-styles.css`文件，使用精确的选择器匹配Tailwind类组合
+- 创建`tailwind-classes.js`文件，使用精确的选择器匹配Tailwind类组合
 - 结果：选择器极其冗长，文件大小增加，没有实现真正的简化
 
 **尝试4：JavaScript类映射方案** ✅
