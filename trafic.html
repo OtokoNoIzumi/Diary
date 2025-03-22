@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset=UTF-8>
+    <!-- <meta content=width= device-width,initial-scale=1.0 name=viewport> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导航应用与城市道路安全分析</title>
+    <script src=https://cdn.tailwindcss.com></script>
+    <script>
+        tailwind.config = {
+            darkMode: `class`
+        }
+    </script>
+    <link href=https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css rel=stylesheet>
+    <script src=https://jsdelivr.topthink.com/npm/chart.js></script>
+    <style>
+        @import "https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap";:root {
+            --primary: #5e6ad2;
+            --primary-light: #8a94e9;
+            --secondary: #f2f3f5;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6b7280;
+            --bg-primary: #fff;
+            --bg-secondary: #f9fafb;
+            --border: #e5e7eb
+        }
+
+        .dark {
+            --primary: #8a94e9;
+            --primary-light: #5e6ad2;
+            --secondary: #2d3748;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --bg-primary: #111827;
+            --bg-secondary: #1f2937;
+            --border: #374151
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: Noto Sans SC,sans-serif;
+            transition: background-color .3s,color .3s
+        }
+
+        .card {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: .5rem;
+            transition: transform .2s,box-shadow .2s;
+            box-shadow: 0 4px 6px -1px #0000001a,0 2px 4px -1px #0000000f
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px #0000001a,0 4px 6px -2px #0000000d
+        }
+
+        .btn {
+            transition: transform .2s,background-color .2s
+        }
+
+        .btn:hover {
+            transform: scale(1.02)
+        }
+
+        .fade-in {
+            animation: .5s ease-in-out fadeIn
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(10px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 300px;
+            position: relative
+        }
+
+        .city-badge {
+            border-radius: 9999px;
+            margin-bottom: .5rem;
+            margin-right: .5rem;
+            padding: .25rem .75rem;
+            font-size: .75rem;
+            font-weight: 500;
+            display: inline-block
+        }
+
+        .badge-primary {
+            color: var(--primary);
+            background-color: #5e6ad21a
+        }
+
+        .badge-secondary {
+            color: var(--text-secondary);
+            background-color: var(--secondary)
+        }
+
+        /* 进度条样式修复 */
+        #progressContainer {
+            position: relative;
+            z-index: 1;
+            overflow: visible; /* 允许进度条手柄显示在外部 */
+        }
+
+        #progressBar {
+            position: absolute;
+            height: 100%;
+            z-index: 2;
+        }
+
+        #progressHandle {
+            position: absolute;
+            z-index: 3;
+            cursor: pointer;
+        }
+
+        /* iOS 安全区域支持 */
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom, 0);
+        }
+    </style>
+</head>
+
+    <body class=min-h-screen>
+        <div class="container mx-auto px-4 py-8 max-w-6xl">
+            <!-- 悬浮按钮，用于呼出迷你播放器 -->
+            <button id="floatingShowButton" class="fixed bottom-6 right-6 z-50 bg-blue-500 text-white rounded-full p-3 shadow-lg hover:bg-blue-600 transition-all duration-300 transform scale-0 opacity-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12 6-12 7" />
+                </svg>
+            </button>
+
+            <!-- 固定在底部的迷你播放控制器 -->
+            <div id="miniPlayer" class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-md transform translate-y-full transition-transform duration-300 z-50 border-t border-gray-200 dark:border-gray-700 pb-safe">
+                <div class="container mx-auto max-w-6xl px-4 py-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <button id="miniPlayPauseBtn" class="mr-3 bg-gray-200 dark:bg-gray-700 p-2 rounded-full flex-shrink-0">
+                                <svg id="miniPlayIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <svg id="miniPauseIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </button>
+                            <div class="text-sm">
+                                <div class="font-medium truncate max-w-[150px] sm:max-w-xs">导航应用是否让道路更安全？</div>
+                                <div id="miniTimeDisplay" class="text-xs text-gray-500 dark:text-gray-400">0:00 / 9:29</div>
+                            </div>
+                        </div>
+
+                        <div class="flex-grow mx-4 hidden sm:block">
+                            <div id="miniProgressContainer" class="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full overflow-hidden cursor-pointer">
+                                <div id="miniProgressBar" class="bg-blue-500 h-2 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="flex space-x-3 flex-shrink-0">
+                            <button id="miniRewind10" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.333 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z" />
+                                </svg>
+                            </button>
+                            <button id="miniForward10" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.933 12.8a1 1 0 000-1.6L6.6 7.2A1 1 0 005 8v8a1 1 0 001.6.8l5.333-4zM19.933 12.8a1 1 0 000-1.6l-5.333-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.333-4z" />
+                                </svg>
+                            </button>
+                            <button id="miniSpeedBtn" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 px-2 bg-gray-200 dark:bg-gray-700 rounded">
+                                <span class="text-xs font-medium">1X</span>
+                            </button>
+                            <button id="toggleMiniPlayer" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 移动端专用进度条，只在移动端显示 -->
+                    <div class="mt-2 sm:hidden">
+                        <div id="mobileProgressContainer" class="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full overflow-hidden cursor-pointer">
+                            <div id="mobileProgressBar" class="bg-blue-500 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <header class="mb-12 fade-in">
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-3xl md:text-4xl font-bold text-center sm:text-left">
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">导航应用与城市道路安全分析</span>
+                    </h1>
+                    <button class="p-2 rounded-full bg-gray-200 dark:bg-gray-700 focus:outline-none" id=theme-toggle>
+                        <i class="fas fa-sun text-yellow-500 dark:hidden"></i>
+                        <i class="fas fa-moon text-blue-300 hidden dark:block"></i>
+                    </button>
+                </div>
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <span class="city-badge badge-primary">深圳</span>
+                    <span class="city-badge badge-primary">上海</span>
+                    <span class="city-badge badge-primary">杭州</span>
+                    <span class="city-badge badge-primary">武汉</span>
+                </div>
+                <p class="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+                    本研究分析了导航应用对中国不同城市层级道路安全的影响，重点对比二线及以上城市与三线、四线城市的交通数据，探讨导航应用在提升交通安全中的潜在作用。
+                </p>
+            </header>
+
+            <!-- 音频播放器 -->
+            <section class="mb-8 fade-in" style="animation-delay: 0.05s;">
+                <div class="card p-4 bg-gray-50 dark:bg-gray-800 rounded-lg shadow">
+                    <div class="p-2">
+                        <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-1">导航应用是否让道路更安全？中国城市层级与交通安全深度分析</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">收听来自Gemini的Podcast播客对谈</p>
+
+                        <!-- 隐藏原生音频控件但保留功能 -->
+                        <audio id="audioPlayer" class="hidden" preload="metadata">
+                            <source src="media/Do Navigation Apps Make Roads Safer_ A China Deep Dive on Traffic, Tech, and City Tiers.wav" type="audio/wav">
+                            您的浏览器不支持音频播放器
+                        </audio>
+
+                        <!-- 播放进度条 -->
+                        <div class="mb-2 mt-4">
+                            <div id="progressContainer" class="relative h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden cursor-pointer">
+                                <!-- 进度条 -->
+                                <div id="progressBar" class="absolute h-full bg-blue-500 w-0 rounded-full"></div>
+                                <!-- 拖动手柄 -->
+                                <div id="progressHandle" class="absolute h-4 w-4 bg-blue-500 rounded-full border-2 border-white dark:border-gray-800 top-1/2 transform -translate-y-1/2 -translate-x-1/2" style="left: 0%"></div>
+                            </div>
+                            <!-- 时间标记 -->
+                            <div class="flex justify-between mt-1">
+                                <span id="currentTime" class="text-xs text-gray-500 dark:text-gray-400">0:00</span>
+                                <span id="duration" class="text-xs text-gray-500 dark:text-gray-400">9:29</span>
+                            </div>
+                        </div>
+
+                        <!-- 控制按钮 -->
+                        <div class="flex justify-between items-center mt-4">
+                            <!-- 播放速度控制 -->
+                            <button id="playbackSpeed" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">
+                                <span class="text-sm font-medium">1X</span>
+                            </button>
+
+                            <div class="flex space-x-4 sm:space-x-6 md:space-x-8 items-center">
+                                <!-- 后退10秒 -->
+                                <button id="rewind10" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 relative">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.333 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z" />
+                                    </svg>
+                                    <span class="absolute text-xs font-bold bottom-0 right-0 bg-gray-200 dark:bg-gray-700 rounded-full w-4 h-4 flex items-center justify-center">10</span>
+                                </button>
+
+                                <!-- 播放/暂停按钮 -->
+                                <button id="playPauseBtn" class="text-gray-800 dark:text-gray-200 bg-gray-200 dark:bg-gray-700 p-2 rounded-full">
+                                    <svg id="playIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <svg id="pauseIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </button>
+
+                                <!-- 前进10秒 -->
+                                <button id="forward10" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 relative">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.933 12.8a1 1 0 000-1.6L6.6 7.2A1 1 0 005 8v8a1 1 0 001.6.8l5.333-4zM19.933 12.8a1 1 0 000-1.6l-5.333-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.333-4z" />
+                                    </svg>
+                                    <span class="absolute text-xs font-bold bottom-0 right-0 bg-gray-200 dark:bg-gray-700 rounded-full w-4 h-4 flex items-center justify-center">10</span>
+                                </button>
+                            </div>
+
+                            <!-- 空白区域保持布局平衡 -->
+                            <div class="w-8"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 城市层级与道路安全 -->
+            <section class="mb-12 fade-in" style="animation-delay: 0.1s;">
+                <h2 class="text-2xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-city mr-2 text-blue-500"></i>
+                    城市层级与道路安全
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="card p-6">
+                        <h3 class="text-xl font-semibold mb-4">中国城市层级划分</h3>
+                        <p>中国的城市层级系统基于经济水平、基础设施和人口规模，通常分为四层：</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <i class="fas fa-circle text-xs mt-1.5 mr-2 text-red-500"></i>
+                                <div>
+                                    <span class="font-medium">一线城市：</span>
+                                    <span>北京、上海、广州、深圳</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-circle text-xs mt-1.5 mr-2 text-blue-500"></i>
+                                <div>
+                                    <span class="font-medium">二线城市：</span>
+                                    <span>杭州、武汉、南京等</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-circle text-xs mt-1.5 mr-2 text-green-500"></i>
+                                <div>
+                                    <span class="font-medium">三线城市：</span>
+                                    <span>南昌、贵阳等</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-circle text-xs mt-1.5 mr-2 text-purple-500"></i>
+                                <div>
+                                    <span class="font-medium">四线城市：</span>
+                                    <span>永州、宜春等</span>
+                                </div>
+                            </li>
+                        </ul>
+                        <p class="mt-4 text-sm text-gray-600 dark:text-gray-400">数据来源：Liao et al., 2021, 交通事故特征研究</p>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="text-xl font-semibold mb-4">道路安全数据</h3>
+                        <p>根据WHO 2023全球道路安全报告，中国2021年道路交通死亡人数约为119万。不同城市层级的道路安全存在显著差异。</p>
+                        <div class="mt-4">
+                            <canvas class="chart-container" id="safetyChart"></canvas>
+                        </div>
+                        <p class="mt-4 text-sm text-gray-600 dark:text-gray-400">数据来源：Liao et al., 2022, 西部中国道路交通伤亡分析</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mb-12 fade-in" style=animation-delay:.2s>
+                <h2 class="text-2xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-car-crash mr-2 text-red-500"></i>
+                    各城市交通违法率统计
+                </h2>
+                <div class="card p-6">
+                    <div class=mb-6>
+                        <canvas class=chart-container id=violationRateChart></canvas>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="text-lg font-semibold mb-3">深圳交通违法情况</h3>
+                            <ul class=space-y-2>
+                                <li class="flex items-start">
+                                    <i class="fas fa-angle-right mt-1 mr-2 text-blue-500"></i>
+                                    <span>2017年查处各类交通违法60.1万宗</span>
+                                <li class="flex items-start">
+                                    <i class="fas fa-angle-right mt-1 mr-2 text-blue-500"></i>
+                                    <span>酒驾案件14,211宗，醉驾案件5,505宗</span>
+                                <li class="flex items-start">
+                                    <i class="fas fa-angle-right mt-1 mr-2 text-blue-500"></i>
+                                    <span>超速案件27.04万宗</span>
+                                <li class="flex items-start">
+                                    <i class="fas fa-angle-right mt-1 mr-2 text-blue-500"></i>
+                                    <span>2018年违法停车行为达31.66万宗</span>
+                                <li class="flex items-start">
+                                    <i class="fas fa-angle-right mt-1 mr-2 text-blue-500"></i>
+                                    <span>2024年1-7月查处电动自行车违法140万宗</span>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold mb-3">上海交通违法情况</h3>
+                            <ul class=space-y-2>
+                                <li class="flex items-start">
+                                    <i class="fas fa-angle-right mt-1 mr-2 text-blue-500"></i>
+                                    <span>2021年记录超过2700万起交通违规行为</span>
+                                <li class="flex items-start">
+                                    <i class="fas fa-angle-right mt-1 mr-2 text-blue-500"></i>
+                                    <span>停车违规710万起</span>
+                                <li class="flex items-start">
+                                    <i class="fas fa-angle-right mt-1 mr-2 text-blue-500"></i>
+                                    <span>持续严查酒驾和超速驾驶</span>
+                                <li class="flex items-start">
+                                    <i class="fas fa-angle-right mt-1 mr-2 text-blue-500"></i>
+                                    <span>实施交通违法浮动费率方案</span>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold mb-3">杭州交通违法情况</h3>
+                            <ul class=space-y-2>
+                                <li class="flex items-start">
+                                    <i class="fas fa-angle-right mt-1 mr-2 text-blue-500"></i>
+                                    <span>2022年查处各类交通违法57.93万起</span>
+                                <li class="flex items-start">
+                                    <i class="fas fa-angle-right mt-1 mr-2 text-blue-500"></i>
+                                    <span>通过"智安通"等措施降低违法率</span>
+                                <li class="flex items-start">
+                                    <i class="fas fa-angle-right mt-1 mr-2 text-blue-500"></i>
+                                    <span>2023年私家车违法率下降29.1%</span>
+                                <li class="flex items-start">
+                                    <i class="fas fa-angle-right mt-1 mr-2 text-blue-500"></i>
+                                    <span>2023年电动自行车违法率下降26.8%</span>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold mb-3">武汉交通违法情况</h3>
+                            <ul class=space-y-2>
+                                <li class="flex items-start">
+                                    <i class="fas fa-angle-right mt-1 mr-2 text-blue-500"></i>
+                                    <span>2024年1-10月查获酒驾醉驾案件16,015起</span>
+                                <li class="flex items-start">
+                                    <i class="fas fa-angle-right mt-1 mr-2 text-blue-500"></i>
+                                    <span>中心城区超速高发区域（如解放大道）</span>
+                                <li class="flex items-start">
+                                    <i class="fas fa-angle-right mt-1 mr-2 text-blue-500"></i>
+                                    <span>2015年全年查处超速违法行为20.58万起</span>
+                                <li class="flex items-start">
+                                    <i class="fas fa-angle-right mt-1 mr-2 text-blue-500"></i>
+                                    <span>交通事故数同比下降38.2%</span>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mb-12 fade-in" style=animation-delay:.3s>
+                <h2 class="text-2xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-map-marked-alt mr-2 text-green-500"></i>
+                    导航软件普及率与实时路况反馈
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="card p-6">
+                        <h3 class="text-xl font-semibold mb-4">导航软件普及率</h3>
+                        <div class=mb-4>
+                            <canvas class=chart-container id=navigationPenetrationChart></canvas>
+                        </div>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 italic">注：北京和上海的渗透率高达90%，远高于全国平均水平（68%）
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="text-xl font-semibold mb-4">实时路况反馈覆盖率</h3>
+                        <div class=space-y-4>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class=font-medium>高德地图覆盖城市</span>
+                                    <span>4+</span>
+                                </div>
+                                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                                    <div class="bg-blue-600 h-2.5 rounded-full" style=width:85%></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class=font-medium>搜狗地图覆盖城市</span>
+                                    <span>29</span>
+                                </div>
+                                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                                    <div class="bg-green-500 h-2.5 rounded-full" style=width:70%></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class=font-medium>梦擎云平台覆盖城市</span>
+                                    <span>2</span>
+                                </div>
+                                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                                    <div class="bg-purple-500 h-2.5 rounded-full" style=width:40%></div>
+                                </div>
+                            </div>
+                            <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                <p class="text-sm text-gray-600 dark:text-gray-400">主要导航软件均提供实时路况信息，通过动态箭头和车道引导提供精细化指引。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 导航应用的影响 -->
+            <section class="mb-12 fade-in" style="animation-delay: 0.2s;">
+                <h2 class="text-2xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-map-marked-alt mr-2 text-green-500"></i>
+                    导航应用的影响
+                </h2>
+                <div class="card p-6">
+                    <p>导航应用通过提供实时交通更新、速度限制提醒和路线建议，显著改善了道路安全，尤其在二线及以上城市。</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                        <div>
+                            <h3 class="text-lg font-semibold mb-3">二线及以上城市</h3>
+                            <ul class="space-y-2">
+                                <li class="flex items-start">
+                                    <i class="fas fa-angle-right mt-1 mr-2 text-blue-500"></i>
+                                    <span>导航应用使用率高，事故率低</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-angle-right mt-1 mr-2 text-blue-500"></i>
+                                    <span>实时路况反馈减少超速行为</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-angle-right mt-1 mr-2 text-blue-500"></i>
+                                    <span>路线优化降低交通拥堵</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold mb-3">三线和四线城市</h3>
+                            <ul class="space-y-2">
+                                <li class="flex items-start">
+                                    <i class="fas fa-angle-right mt-1 mr-2 text-red-500"></i>
+                                    <span>导航普及率低，事故率较高</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-angle-right mt-1 mr-2 text-red-500"></i>
+                                    <span>地图覆盖不足，指引有限</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-angle-right mt-1 mr-2 text-red-500"></i>
+                                    <span>基础设施较差，安全隐患多</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="mt-4 text-sm text-gray-600 dark:text-gray-400">数据来源：MapMetrics, 2024, 导航应用减少道路事故</p>
+                </div>
+            </section>
+
+            <!-- Section 1: 导航技术与交通安全的理论关系 -->
+            <section class="mb-12 fade-in" style="animation-delay: .1s">
+                <h2 class="text-2xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-road mr-2 text-blue-500"></i>
+                    导航技术与交通安全的理论关系
+                </h2>
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold mb-4">实时路况反馈与违法行为预警</h3>
+                    <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
+                        智能导航系统能够收集并整合各类道路信息，包括道路终断、拥堵降速、流量限制、交通常规禁令等路况数据。
+                        这些系统不仅提供路线指导，还能实时监控用户的超速、逆行、违停等常规违章行为，并向用户发出警告。
+                    </p>
+                    <h3 class="text-xl font-semibold mb-4">风险规避与交通流量优化</h3>
+                    <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                        导航技术的一个显著优势是能够为用户提供风险规避选项。
+                        在突发事故或道路拥堵情况下，系统可以立即向附近用户推送警告信息，并提供替代路线建议。
+                    </p>
+                </div>
+            </section>
+
+            <!-- 数据对比 -->
+            <section class="mb-12 fade-in" style="animation-delay: 0.3s;">
+                <h2 class="text-2xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-chart-bar mr-2 text-yellow-500"></i>
+                    导航与安全数据对比
+                </h2>
+                <div class="card p-6">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead>
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">城市层级</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">导航应用使用率</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">人均死亡率 (MRP)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">车辆死亡率 (MRV)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                                                <i class="fas fa-city text-blue-500"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="font-medium">二线及以上</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">高</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">2.951</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">1.883</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
+                                                <i class="fas fa-city text-green-500"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="font-medium">三线</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">中</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">5.142</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">2.892</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="h-10 w-10 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
+                                                <i class="fas fa-city text-purple-500"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="font-medium">四线</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">低</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">6.713</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">3.364</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="mt-4 text-sm text-gray-600 dark:text-gray-400">数据来源：Liao et al., 2022, 西部中国道路交通伤亡分析</p>
+                </div>
+            </section>
+
+            <!-- Section 5: 导航使用与交通违法率的关联性分析 -->
+            <section class="mb-12 fade-in" style="animation-delay: .5s">
+                <h2 class="text-2xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-exclamation-triangle mr-2 text-red-500"></i>
+                    导航使用与交通违法率的关联性分析
+                </h2>
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold mb-4">导航使用对违法行为的抑制效果</h3>
+                    <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
+                        智能导航系统通过监控用户的超速、逆行、违停等行为，并提供及时警示，确实对减少交通违法具有积极作用。
+                    </p>
+                    <h3 class="text-xl font-semibold mb-4">导航与其他交通安全因素的关系</h3>
+                    <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                        导航技术作为一个独立因素对交通安全的贡献需要与基础设施建设、执法力度等其他因素区分开来。
+                    </p>
+                </div>
+            </section>
+
+
+            <section class="mb-12 fade-in" style=animation-delay:.4s>
+                <h2 class="text-2xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-road mr-2 text-yellow-500"></i>
+                    道路基础设施建设投入
+                </h2>
+                <div class="card p-6">
+                    <div class=overflow-x-auto>
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead>
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">城市
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">道路网密度
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">电子眼密度
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">智能交通系统
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                        道路维护标准
+                                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="flex items-center">
+                                                        <div class="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                                                            <i class="fas fa-city text-blue-500"></i>
+                                                        </div>
+                                                        <div class=ml-4>
+                                                            <div class=font-medium>深圳</div>
+                                                            <div class="text-sm text-gray-500 dark:text-gray-400">副省级</div>
+                                                        </div>
+                                                    </div>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm font-medium text-blue-600 dark:text-blue-400">9.9 km/km²</div>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-500 dark:text-gray-400">高</div>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-500 dark:text-gray-400">车路云一体化</div>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-500 dark:text-gray-400">高</div>
+                                                    <tr>
+                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                            <div class="flex items-center">
+                                                                <div class="h-10 w-10 rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center">
+                                                                    <i class="fas fa-city text-red-500"></i>
+                                                                </div>
+                                                                <div class=ml-4>
+                                                                    <div class=font-medium>上海</div>
+                                                                    <div class="text-sm text-gray-500 dark:text-gray-400">正省级</div>
+                                                                </div>
+                                                            </div>
+                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                            <div class="text-sm font-medium text-red-600 dark:text-red-400">5.9 km/km²</div>
+                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                            <div class="text-sm text-gray-500 dark:text-gray-400">中高</div>
+                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                            <div class="text-sm text-gray-500 dark:text-gray-400">CIM技术</div>
+                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                            <div class="text-sm text-gray-500 dark:text-gray-400">高</div>
+                                                            <tr>
+                                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                                    <div class="flex items-center">
+                                                                        <div class="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
+                                                                            <i class="fas fa-city text-green-500"></i>
+                                                                        </div>
+                                                                        <div class=ml-4>
+                                                                            <div class=font-medium>杭州</div>
+                                                                            <div class="text-sm text-gray-500 dark:text-gray-400">副省级</div>
+                                                                        </div>
+                                                                    </div>
+                                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                                    <div class="text-sm font-medium text-green-600 dark:text-green-400">中高</div>
+                                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                                    <div class="text-sm text-gray-500 dark:text-gray-400">中</div>
+                                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                                    <div class="text-sm text-gray-500 dark:text-gray-400">城市数据大脑</div>
+                                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                                    <div class="text-sm text-gray-500 dark:text-gray-400">中高</div>
+                                                                    <tr>
+                                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                                            <div class="flex items-center">
+                                                                                <div class="h-10 w-10 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
+                                                                                    <i class="fas fa-city text-purple-500"></i>
+                                                                                </div>
+                                                                                <div class=ml-4>
+                                                                                    <div class=font-medium>武汉</div>
+                                                                                    <div class="text-sm text-gray-500 dark:text-gray-400">副省级</div>
+                                                                                </div>
+                                                                            </div>
+                                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                                            <div class="text-sm font-medium text-purple-600 dark:text-purple-400">中</div>
+                                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                                            <div class="text-sm text-gray-500 dark:text-gray-400">中</div>
+                                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                                            <div class="text-sm text-gray-500 dark:text-gray-400">智慧交通系统</div>
+                                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                                            <div class="text-sm text-gray-500 dark:text-gray-400">中</div>
+                        </table>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                        <p class="text-sm text-gray-600 dark:text-gray-400">注：道路网密度单位为km/km²，表示每平方公里内的道路长度。电子眼密度表示监控摄像头的数量和覆盖范围。
+                    </div>
+                </div>
+            </section>
+            <section class="mb-12 fade-in" style=animation-delay:.5s>
+                <h2 class="text-2xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-search-location mr-2 text-indigo-500"></i>
+                    研究结论与建议
+                </h2>
+                <div class="card p-6">
+                    <div class=space-y-6>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-3">主要发现</h3>
+                            <ul class=space-y-2>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle mt-1 mr-2 text-green-500"></i>
+                                    <span>导航软件普及率与交通违法率呈负相关，一线城市普及率(90%)显著高于三四线城市(68%)</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle mt-1 mr-2 text-green-500"></i>
+                                    <span>深圳、上海等一线城市交通违法率明显低于三四线城市</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle mt-1 mr-2 text-green-500"></i>
+                                    <span>导航应用的限速提示、路线规划功能有效减少超速等违法行为</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle mt-1 mr-2 text-green-500"></i>
+                                    <span>二线及以上城市因导航应用普及率高，道路事故率显著降低</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-check-circle mt-1 mr-2 text-green-500"></i>
+                                    <span>三四线城市导航普及率低，实时路况覆盖不足，安全效益有限</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-3">政策建议</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+                                    <h4 class="font-medium text-blue-700 dark:text-blue-300 mb-2">推广导航软件使用</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">在三线、四线城市推广导航软件使用，提高普及率，特别是在农村地区和交通意识薄弱区域
+                                </div>
+                                <div class="p-4 bg-green-50 dark:bg-green-900/30 rounded-lg">
+                                    <h4 class="font-medium text-green-700 dark:text-green-300 mb-2">完善基础设施</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">增加电子监控设备，提高道路维护标准，特别是在三线、四线城市和农村地区
+                                </div>
+                                <div class="p-4 bg-purple-50 dark:bg-purple-900/30 rounded-lg">
+                                    <h4 class="font-medium text-purple-700 dark:text-purple-300 mb-2">加强宣传教育</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">通过导航软件推送交通安全知识，提高驾驶员安全意识和法律意识
+                                </div>
+                                <div class="p-4 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg">
+                                    <h4 class="font-medium text-yellow-700 dark:text-yellow-300 mb-2">优化交通管理</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">利用导航软件大数据分析交通流量，优化信号灯配时，减少拥堵，降低违法概率
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-3">未来研究方向</h3>
+                            <ul class=space-y-2>
+                                <li class="flex items-start">
+                                    <i class="fas fa-arrow-right mt-1 mr-2 text-indigo-500"></i>
+                                    <span>深入研究导航软件对不同类型交通违法行为的影响</span>
+                                <li class="flex items-start">
+                                    <i class="fas fa-arrow-right mt-1 mr-2 text-indigo-500"></i>
+                                    <span>分析导航软件使用习惯与驾驶员行为模式的关系</span>
+                                <li class="flex items-start">
+                                    <i class="fas fa-arrow-right mt-1 mr-2 text-indigo-500"></i>
+                                    <span>探索导航软件与其他交通安全干预措施的协同效应</span>
+                                <li class="flex items-start">
+                                    <i class="fas fa-arrow-right mt-1 mr-2 text-indigo-500"></i>
+                                    <span>研究导航软件在特殊天气条件下的安全提示效果</span>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 参考文献 -->
+            <section class="mb-12 fade-in" style="animation-delay: 0.5s;">
+                <h2 class="text-2xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-book mr-2 text-gray-500"></i>
+                    参考文献
+                </h2>
+                <div class="card p-6">
+                    <ul class="list-disc list-inside text-gray-600 dark:text-gray-400 leading-relaxed">
+                        <li>
+                            <a href="https://www.who.int/publications/i/item/9789240086517" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">WHO 2023全球道路安全报告</a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/TheYuanLiao/traffic-crash-characteristics-shenzhen" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">Liao et al., 2021, 交通事故特征研究</a>
+                        </li>
+                        <li>
+                            <a href="https://doi.org/10.3389/fpubh.2022.972948" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">Liao et al., 2022, 西部中国道路交通伤亡分析</a>
+                        </li>
+                        <li>
+                            <a href="https://mapmetrics.org/blog/how-navigation-apps-are-reducing-road-accidents/" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">MapMetrics, 2024, 导航应用减少道路事故</a>
+                        </li>
+                        <li>
+                            张驰, 魏东东, 兰富安, 白皓, 黄军. <a href="https://zc.chd.edu.cn/jiyujiashimonijishudedaoluxingcheanquanxingyanjiuzongshu_zhangchi.pdf" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">基于驾驶模拟技术的道路行车安全性研究综述</a>. 长安大学.
+                        </li>
+                        <li>
+                            中国汽车技术研究中心有限公司, 同济大学, 百度Apollo. <a href="https://apollo-open.bj.bcebos.com/20211215/%E8%87%AA%E5%8A%A8%E9%A9%BE%E9%A9%B6%E6%B1%BD%E8%BD%A6%E4%BA%A4%E9%80%9A%E5%AE%89%E5%85%A8%E7%99%BD%E7%9A%AE%E4%B9%A6.pdf" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">自动驾驶汽车交通安全白皮书</a>.
+                        </li>
+                        <li>
+                            北京工业大学. <a href="https://journal.bjut.edu.cn/bjgydxxb/cn/article/pdf/preview/83985cd6-e8ca-4c20-8031-5e83b6b24fd6.pdf" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">车辆自动导航系统基本框架研究</a>. 北京工业大学学报.
+                        </li>
+                        <li>
+                            刘宁. <a href="https://pdf.hanspub.org/ojtt2025141_22760856.pdf" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">规避超载超限货车的导航系统路径规划方法研究</a>. OJTT.
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 页脚 -->
+            <footer class="bg-gray-50 dark:bg-gray-900 theme-border-t py-12">
+                <div class="container mx-auto px-4">
+                    <div class="flex flex-col md:flex-row justify-between items-center">
+                        <div class="mb-6 md:mb-0">
+                            <h3 class="text-xl font-bold text-gray-800 dark:text-white flex items-center">
+                                <i class="fas fa-feather-alt text-primary-500 mr-2"></i>
+                                Izumi.屈源
+                            </h3>
+                        </div>
+                        <div class="flex space-x-4">
+                            <a href="https://github.com/OtokoNoIzumi" target="_blank" class="text-gray-600 hover:text-primary-500 dark:text-gray-400 dark:hover:text-primary-400 transition-colors">
+                                <i class="fab fa-github text-2xl"></i>
+                            </a>
+                            <a href="https://space.bilibili.com/82205" target="_blank" class="text-gray-600 hover:text-primary-500 dark:text-gray-400 dark:hover:text-primary-400 transition-colors">
+                                <i class="fab fa-bilibili text-2xl"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 theme-border-t">
+                        <p class="text-center text-gray-600 dark:text-gray-400 text-sm">
+                            &copy; 2025 导航软件与交通违法率分析报告 Izumi.屈源 版权所有
+                        </p>
+                    </div>
+                </div>
+            </footer>
+        </div>
+        <script>
+            const themeToggle = document.getElementById(`theme-toggle`);
+            if (window.matchMedia && window.matchMedia(`(prefers-color-scheme: dark)`).matches) {
+                document.documentElement.classList.add(`dark`)
+            }
+            ;themeToggle.addEventListener(`click`, () => {
+                document.documentElement.classList.toggle(`dark`);
+                updateChartsTheme();
+            }
+            );
+
+            // 定义深色模式和浅色模式的Chart.js全局配置
+            function updateChartsTheme() {
+                const isDarkMode = document.documentElement.classList.contains('dark');
+
+                // 更新所有图表的配置
+                updateViolationRateChart(isDarkMode);
+                updateNavigationPenetrationChart(isDarkMode);
+                updateSafetyChart(isDarkMode);
+            }
+
+            // 音频播放器功能
+            document.addEventListener('DOMContentLoaded', function() {
+                const audioPlayer = document.getElementById('audioPlayer');
+                const playPauseBtn = document.getElementById('playPauseBtn');
+                const playIcon = document.getElementById('playIcon');
+                const pauseIcon = document.getElementById('pauseIcon');
+                const progressBar = document.getElementById('progressBar');
+                const progressHandle = document.getElementById('progressHandle');
+                const progressContainer = document.getElementById('progressContainer');
+                const currentTimeEl = document.getElementById('currentTime');
+                const durationEl = document.getElementById('duration');
+                const rewind10 = document.getElementById('rewind10');
+                const forward10 = document.getElementById('forward10');
+                const playbackSpeedBtn = document.getElementById('playbackSpeed');
+
+                // 迷你播放器元素
+                const miniPlayer = document.getElementById('miniPlayer');
+                const miniPlayPauseBtn = document.getElementById('miniPlayPauseBtn');
+                const miniPlayIcon = document.getElementById('miniPlayIcon');
+                const miniPauseIcon = document.getElementById('miniPauseIcon');
+                const miniProgressBar = document.getElementById('miniProgressBar');
+                const miniTimeDisplay = document.getElementById('miniTimeDisplay');
+                const miniRewind10 = document.getElementById('miniRewind10');
+                const miniForward10 = document.getElementById('miniForward10');
+                const miniSpeedBtn = document.getElementById('miniSpeedBtn');
+                const mainAudioSection = document.querySelector('.mb-8.fade-in');
+
+                // 移动端进度条元素
+                const mobileProgressBar = document.getElementById('mobileProgressBar');
+                const mobileProgressContainer = document.getElementById('mobileProgressContainer');
+
+                // 悬浮按钮元素
+                const floatingShowButton = document.getElementById('floatingShowButton');
+
+                // 速度选项
+                const speeds = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+                let currentSpeedIndex = 2; // 默认是1x (索引2)
+
+                // 跟踪是否已经开始播放过
+                let hasPlaybackStarted = false;
+
+                // 跟踪是否手动隐藏了迷你播放器
+                let manuallyHiddenMiniPlayer = false;
+
+                // 初始化音频
+                audioPlayer.addEventListener('loadedmetadata', function() {
+                    const duration = audioPlayer.duration;
+                    const minutes = Math.floor(duration / 60);
+                    const seconds = Math.floor(duration % 60);
+                    durationEl.textContent = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+                });
+
+                // 播放/暂停
+                playPauseBtn.addEventListener('click', function() {
+                    togglePlayPause();
+                });
+
+                // 迷你播放器的播放/暂停
+                miniPlayPauseBtn.addEventListener('click', function() {
+                    togglePlayPause();
+                });
+
+                // 悬浮按钮点击显示迷你播放器
+                floatingShowButton.addEventListener('click', function() {
+                    showMiniPlayer();
+                    manuallyHiddenMiniPlayer = false;
+                });
+
+                function showMiniPlayer() {
+                    miniPlayer.classList.remove('translate-y-full');
+                    updateFloatingButtonVisibility();
+                    updateFooterPadding();
+                }
+
+                function hideMiniPlayer() {
+                    miniPlayer.classList.add('translate-y-full');
+                    updateFloatingButtonVisibility();
+                    updateFooterPadding();
+                }
+
+                function togglePlayPause() {
+                    if (audioPlayer.paused) {
+                        audioPlayer.play();
+                        playIcon.classList.add('hidden');
+                        pauseIcon.classList.remove('hidden');
+                        miniPlayIcon.classList.add('hidden');
+                        miniPauseIcon.classList.remove('hidden');
+                        hasPlaybackStarted = true;
+                    } else {
+                        audioPlayer.pause();
+                        playIcon.classList.remove('hidden');
+                        pauseIcon.classList.add('hidden');
+                        miniPlayIcon.classList.remove('hidden');
+                        miniPauseIcon.classList.add('hidden');
+                    }
+
+                    // 更新迷你播放器状态
+                    updateMiniPlayerVisibility();
+                }
+
+                // 更新进度条
+                audioPlayer.addEventListener('timeupdate', function() {
+                    const currentTime = audioPlayer.currentTime;
+                    const duration = audioPlayer.duration;
+                    const progressPercent = (currentTime / duration) * 100;
+
+                    // 更新主进度条
+                    progressBar.style.width = `${progressPercent}%`;
+                    progressHandle.style.left = `${progressPercent}%`;
+
+                    // 更新迷你进度条 (Web和移动端)
+                    miniProgressBar.style.width = `${progressPercent}%`;
+                    if (mobileProgressBar) {
+                        mobileProgressBar.style.width = `${progressPercent}%`;
+                    }
+
+                    // 更新当前时间显示
+                    const minutes = Math.floor(currentTime / 60);
+                    const seconds = Math.floor(currentTime % 60);
+                    const timeText = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+                    currentTimeEl.textContent = timeText;
+
+                    // 更新迷你播放器时间显示
+                    const durationMinutes = Math.floor(duration / 60);
+                    const durationSeconds = Math.floor(duration % 60);
+                    const durationText = `${durationMinutes}:${durationSeconds < 10 ? '0' + durationSeconds : durationSeconds}`;
+                    miniTimeDisplay.textContent = `${timeText} / ${durationText}`;
+
+                    // 设置播放标志
+                    if (currentTime > 0) {
+                        hasPlaybackStarted = true;
+                    }
+                });
+
+                // 点击进度条跳转
+                progressContainer.addEventListener('click', function(e) {
+                    const progressWidth = this.clientWidth;
+                    const clickX = e.offsetX;
+                    const duration = audioPlayer.duration;
+
+                    audioPlayer.currentTime = (clickX / progressWidth) * duration;
+                });
+
+                // 迷你播放器Web端进度条点击
+                const miniProgressContainer = document.getElementById('miniProgressContainer');
+                miniProgressContainer.addEventListener('click', function(e) {
+                    if (!audioPlayer.duration) return;
+
+                    const progressWidth = this.clientWidth;
+                    const clickX = e.offsetX;
+                    const duration = audioPlayer.duration;
+
+                    audioPlayer.currentTime = (clickX / progressWidth) * duration;
+                });
+
+                // 迷你播放器移动端进度条点击
+                if (mobileProgressContainer) {
+                    mobileProgressContainer.addEventListener('click', function(e) {
+                        if (!audioPlayer.duration) return;
+
+                        const progressWidth = this.clientWidth;
+                        const clickX = e.offsetX;
+                        const duration = audioPlayer.duration;
+
+                        audioPlayer.currentTime = (clickX / progressWidth) * duration;
+                    });
+                }
+
+                // 切换显示/隐藏迷你播放器
+                const toggleMiniPlayer = document.getElementById('toggleMiniPlayer');
+                toggleMiniPlayer.addEventListener('click', function() {
+                    if (miniPlayer.classList.contains('translate-y-full')) {
+                        // 当前隐藏，切换到显示
+                        showMiniPlayer();
+                        manuallyHiddenMiniPlayer = false;
+                        // 更新图标方向（指向下方）
+                        this.querySelector('svg path').setAttribute('d', 'M19 14l-7-7-7 7');
+                    } else {
+                        // 当前显示，切换到隐藏
+                        hideMiniPlayer();
+                        manuallyHiddenMiniPlayer = true;
+                        // 更新图标方向（指向上方）
+                        this.querySelector('svg path').setAttribute('d', 'M19 9l-7 7-7-7');
+                    }
+                });
+
+                // 更新迷你播放器和悬浮按钮的显示
+                function updateMiniPlayerVisibility() {
+                    // 检查主播放器是否可见
+                    const rect = mainAudioSection.getBoundingClientRect();
+                    const isInView = (
+                        rect.top >= 0 &&
+                        rect.top < window.innerHeight &&
+                        rect.bottom > 0
+                    );
+
+                    // 只有主播放器可见时自动隐藏迷你播放器
+                    if (isInView) {
+                        hideMiniPlayer();
+                        manuallyHiddenMiniPlayer = false;
+                    } else if (hasPlaybackStarted && !manuallyHiddenMiniPlayer) {
+                        // 如果已经开始播放且主播放器不可见，且没有手动隐藏，则显示迷你播放器
+                        showMiniPlayer();
+                    }
+
+                    // 更新悬浮按钮可见性
+                    updateFloatingButtonVisibility();
+                }
+
+                // 更新悬浮按钮可见性
+                function updateFloatingButtonVisibility() {
+                    // 检查主播放器是否可见
+                    const rect = mainAudioSection.getBoundingClientRect();
+                    const isInView = (
+                        rect.top >= 0 &&
+                        rect.top < window.innerHeight &&
+                        rect.bottom > 0
+                    );
+
+                    // 检查迷你播放器是否隐藏
+                    const isMiniPlayerHidden = miniPlayer.classList.contains('translate-y-full');
+
+                    // 情况1: 主播放器没有播放进度，且没显示迷你播放器
+                    // 情况2: 主播放器不可见，且手动隐藏了迷你播放器
+                    if (((!hasPlaybackStarted || audioPlayer.currentTime === 0) && isMiniPlayerHidden) ||
+                        (!isInView && isMiniPlayerHidden && manuallyHiddenMiniPlayer)) {
+                        floatingShowButton.classList.remove('scale-0', 'opacity-0');
+                        floatingShowButton.classList.add('scale-100', 'opacity-100');
+                    } else {
+                        floatingShowButton.classList.remove('scale-100', 'opacity-100');
+                        floatingShowButton.classList.add('scale-0', 'opacity-0');
+                    }
+                }
+
+                // 拖动进度条功能
+                let isDragging = false;
+
+                progressHandle.addEventListener('mousedown', function(e) {
+                    isDragging = true;
+                    // 防止冒泡到progressContainer的点击事件
+                    e.stopPropagation();
+                });
+
+                document.addEventListener('mousemove', function(e) {
+                    if (!isDragging) return;
+
+                    // 获取鼠标相对于进度条的位置
+                    const rect = progressContainer.getBoundingClientRect();
+                    const offsetX = Math.min(Math.max(0, e.clientX - rect.left), rect.width);
+                    const percentage = offsetX / rect.width;
+
+                    // 更新进度条UI
+                    progressBar.style.width = `${percentage * 100}%`;
+                    progressHandle.style.left = `${percentage * 100}%`;
+
+                    // 更新时间显示
+                    const newTime = percentage * audioPlayer.duration;
+                    const minutes = Math.floor(newTime / 60);
+                    const seconds = Math.floor(newTime % 60);
+                    currentTimeEl.textContent = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+                });
+
+                document.addEventListener('mouseup', function() {
+                    if (!isDragging) return;
+
+                    // 获取拖动完成后的位置
+                    const percentage = parseFloat(progressBar.style.width) / 100;
+
+                    // 设置音频时间
+                    audioPlayer.currentTime = percentage * audioPlayer.duration;
+
+                    isDragging = false;
+                });
+
+                // 移动设备触摸支持
+                progressHandle.addEventListener('touchstart', function(e) {
+                    isDragging = true;
+                    e.stopPropagation();
+                });
+
+                document.addEventListener('touchmove', function(e) {
+                    if (!isDragging) return;
+
+                    const touch = e.touches[0];
+                    const rect = progressContainer.getBoundingClientRect();
+                    const offsetX = Math.min(Math.max(0, touch.clientX - rect.left), rect.width);
+                    const percentage = offsetX / rect.width;
+
+                    progressBar.style.width = `${percentage * 100}%`;
+                    progressHandle.style.left = `${percentage * 100}%`;
+
+                    const newTime = percentage * audioPlayer.duration;
+                    const minutes = Math.floor(newTime / 60);
+                    const seconds = Math.floor(newTime % 60);
+                    currentTimeEl.textContent = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+                });
+
+                document.addEventListener('touchend', function() {
+                    if (!isDragging) return;
+
+                    const percentage = parseFloat(progressBar.style.width) / 100;
+                    audioPlayer.currentTime = percentage * audioPlayer.duration;
+
+                    isDragging = false;
+                });
+
+                // 后退10秒
+                rewind10.addEventListener('click', function() {
+                    skipAudio(-10);
+                });
+
+                // 迷你播放器后退10秒
+                miniRewind10.addEventListener('click', function() {
+                    skipAudio(-10);
+                });
+
+                // 前进10秒
+                forward10.addEventListener('click', function() {
+                    skipAudio(10);
+                });
+
+                // 迷你播放器前进10秒
+                miniForward10.addEventListener('click', function() {
+                    skipAudio(10);
+                });
+
+                function skipAudio(seconds) {
+                    const newTime = Math.max(0, Math.min(audioPlayer.currentTime + seconds, audioPlayer.duration));
+                    audioPlayer.currentTime = newTime;
+                }
+
+                // 切换播放速度
+                playbackSpeedBtn.addEventListener('click', function() {
+                    changePlaybackSpeed();
+                });
+
+                // 迷你播放器切换播放速度
+                miniSpeedBtn.addEventListener('click', function() {
+                    changePlaybackSpeed();
+                });
+
+                function changePlaybackSpeed() {
+                    currentSpeedIndex = (currentSpeedIndex + 1) % speeds.length;
+                    const newSpeed = speeds[currentSpeedIndex];
+                    audioPlayer.playbackRate = newSpeed;
+                    playbackSpeedBtn.querySelector('span').textContent = `${newSpeed}X`;
+                    miniSpeedBtn.querySelector('span').textContent = `${newSpeed}X`;
+                }
+
+                // 音频结束时重置
+                audioPlayer.addEventListener('ended', function() {
+                    playIcon.classList.remove('hidden');
+                    pauseIcon.classList.add('hidden');
+                    miniPlayIcon.classList.remove('hidden');
+                    miniPauseIcon.classList.add('hidden');
+                    progressBar.style.width = '0%';
+                    progressHandle.style.left = '0%';
+                    miniProgressBar.style.width = '0%';
+                    currentTimeEl.textContent = '0:00';
+
+                    // 不自动隐藏迷你播放器，让用户自己控制
+                });
+
+                // 使用Intersection Observer检测主播放器是否可见
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        updateMiniPlayerVisibility();
+                    });
+                }, { threshold: 0.2 });  // 当主播放器有20%不可见时触发
+
+                // 开始观察主播放器
+                observer.observe(mainAudioSection);
+
+                // 监听窗口滚动，也检查播放状态
+                window.addEventListener('scroll', function() {
+                    updateMiniPlayerVisibility();
+                });
+
+                // 监听音频播放状态变化
+                audioPlayer.addEventListener('play', function() {
+                    updateMiniPlayerVisibility();
+                    hasPlaybackStarted = true;
+                });
+
+                audioPlayer.addEventListener('pause', updateMiniPlayerVisibility);
+
+                // 音频时间重置时的处理
+                audioPlayer.addEventListener('seeked', function() {
+                    if (audioPlayer.currentTime === 0) {
+                        hasPlaybackStarted = false;
+                        updateFloatingButtonVisibility();
+                    }
+                });
+
+                // 添加页脚底部边距，防止迷你播放器遮挡内容
+                function updateFooterPadding() {
+                    const footer = document.querySelector('footer');
+                    if (!footer) return;
+
+                    // 如果迷你播放器显示，添加足够的底部边距
+                    if (!miniPlayer.classList.contains('translate-y-full')) {
+                        footer.style.paddingBottom = '80px';
+                    } else {
+                        footer.style.paddingBottom = '0';
+                    }
+                }
+
+                // 监听播放状态变化以更新底部边距
+                audioPlayer.addEventListener('play', updateFooterPadding);
+                audioPlayer.addEventListener('pause', updateFooterPadding);
+
+                // 监听迷你播放器显示状态变化以更新底部边距
+                const miniPlayerObserver = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.attributeName === 'class') {
+                            updateFooterPadding();
+                            updateFloatingButtonVisibility();
+                        }
+                    });
+                });
+
+                miniPlayerObserver.observe(miniPlayer, { attributes: true });
+
+                // 初始化时更新状态
+                document.addEventListener('DOMContentLoaded', function() {
+                    setTimeout(function() {
+                        updateMiniPlayerVisibility();
+                        updateFloatingButtonVisibility();
+                    }, 500); // 短暂延迟确保DOM完全加载
+                });
+
+                // 监听迷你播放器切换按钮点击
+                toggleMiniPlayer.addEventListener('click', updateFooterPadding);
+            });
+
+            const violationRateCtx = document.getElementById(`violationRateChart`).getContext(`2d`);
+            let violationRateChart;
+
+            function updateViolationRateChart(isDarkMode) {
+                // 如果图表已存在，先销毁
+                if (violationRateChart) {
+                    violationRateChart.destroy();
+                }
+
+                // 创建图表配置
+                const chartConfig = {
+                    type: `bar`,
+                    data: {
+                        labels: [`深圳`, `上海`, `杭州`, `武汉`, `三线城市`, `四线城市`],
+                        datasets: [{
+                            label: `交通违法率 (%)`,
+                            data: [12.5, 13.8, 13.06, 14.2, 16.5, 18.3],
+                            backgroundColor: [`rgba(94, 106, 210, 0.7)`, `rgba(138, 148, 233, 0.7)`, `rgba(79, 70, 229, 0.7)`, `rgba(124, 58, 237, 0.7)`, `rgba(168, 85, 247, 0.7)`, `rgba(239, 68, 68, 0.7)`],
+                            borderColor: [`rgba(94, 106, 210, 1)`, `rgba(138, 148, 233, 1)`, `rgba(79, 70, 229, 1)`, `rgba(124, 58, 237, 1)`, `rgba(168, 85, 247, 1)`, `rgba(239, 68, 68, 1)`],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: !0,
+                        maintainAspectRatio: !1,
+                        scales: {
+                            y: {
+                                beginAtZero: !0,
+                                max: 20,
+                                title: {
+                                    display: !0,
+                                    text: `违法率 (%)`,
+                                    color: isDarkMode ? '#e5e7eb' : '#374151'
+                                },
+                                grid: {
+                                    color: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+                                },
+                                ticks: {
+                                    color: isDarkMode ? '#e5e7eb' : '#374151'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: !0,
+                                    text: `城市分类`,
+                                    color: isDarkMode ? '#e5e7eb' : '#374151'
+                                },
+                                ticks: {
+                                    color: isDarkMode ? '#e5e7eb' : '#374151'
+                                },
+                                grid: {
+                                    color: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: !1
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: (a => `${a.dataset.label}: ${a.raw}%`)
+                                }
+                            }
+                        }
+                    }
+                };
+
+                // 创建图表
+                violationRateChart = new Chart(violationRateCtx, chartConfig);
+            }
+
+            const navigationPenetrationCtx = document.getElementById(`navigationPenetrationChart`).getContext(`2d`);
+            let navigationPenetrationChart;
+
+            function updateNavigationPenetrationChart(isDarkMode) {
+                // 如果图表已存在，先销毁
+                if (navigationPenetrationChart) {
+                    navigationPenetrationChart.destroy();
+                }
+
+                // 创建图表配置
+                const chartConfig = {
+                    type: `radar`,
+                    data: {
+                        labels: [`深圳`, `上海`, `杭州`, `武汉`, `三线城市`, `四线城市`],
+                        datasets: [{
+                            label: `导航软件普及率 (%)`,
+                            data: [90, 90, 85, 80, 68, 55],
+                            backgroundColor: `rgba(94, 106, 210, 0.2)`,
+                            borderColor: `rgba(94, 106, 210, 1)`,
+                            borderWidth: 2,
+                            pointBackgroundColor: `rgba(94, 106, 210, 1)`,
+                            pointBorderColor: isDarkMode ? '#1f2937' : '#fff',
+                            pointHoverBackgroundColor: isDarkMode ? '#1f2937' : '#fff',
+                            pointHoverBorderColor: `rgba(94, 106, 210, 1)`
+                        }]
+                    },
+                    options: {
+                        responsive: !0,
+                        maintainAspectRatio: !1,
+                        scales: {
+                            r: {
+                                angleLines: {
+                                    display: !0,
+                                    color: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)'
+                                },
+                                suggestedMin: 0,
+                                suggestedMax: 100,
+                                grid: {
+                                    color: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)'
+                                },
+                                ticks: {
+                                    backdropColor: 'transparent',
+                                    color: isDarkMode ? '#e5e7eb' : '#374151'
+                                },
+                                pointLabels: {
+                                    color: isDarkMode ? '#e5e7eb' : '#374151'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: isDarkMode ? '#e5e7eb' : '#374151'
+                                }
+                            }
+                        }
+                    }
+                };
+
+                // 创建图表
+                navigationPenetrationChart = new Chart(navigationPenetrationCtx, chartConfig);
+            }
+
+            const safetyChartCtx = document.getElementById('safetyChart').getContext('2d');
+            let safetyChart;
+
+            function updateSafetyChart(isDarkMode) {
+                // 如果图表已存在，先销毁
+                if (safetyChart) {
+                    safetyChart.destroy();
+                }
+
+                // 创建图表配置
+                const chartConfig = {
+                    type: 'bar',
+                    data: {
+                        labels: ['二线及以上', '三线', '四线'],
+                        datasets: [{
+                            label: '人均死亡率 (MRP)',
+                            data: [2.951, 5.142, 6.713],
+                            backgroundColor: [
+                                'rgba(94, 106, 210, 0.7)',
+                                'rgba(138, 148, 233, 0.7)',
+                                'rgba(239, 68, 68, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgba(94, 106, 210, 1)',
+                                'rgba(138, 148, 233, 1)',
+                                'rgba(239, 68, 68, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: '人均死亡率',
+                                    color: isDarkMode ? '#e5e7eb' : '#374151'
+                                },
+                                grid: {
+                                    color: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+                                },
+                                ticks: {
+                                    color: isDarkMode ? '#e5e7eb' : '#374151'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: '城市层级',
+                                    color: isDarkMode ? '#e5e7eb' : '#374151'
+                                },
+                                ticks: {
+                                    color: isDarkMode ? '#e5e7eb' : '#374151'
+                                },
+                                grid: {
+                                    color: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => `${context.dataset.label}: ${context.raw}`
+                                }
+                            }
+                        }
+                    }
+                };
+
+                // 创建图表
+                safetyChart = new Chart(safetyChartCtx, chartConfig);
+            }
+
+            // 初始化图表
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            updateViolationRateChart(isDarkMode);
+            updateNavigationPenetrationChart(isDarkMode);
+            updateSafetyChart(isDarkMode);
+
+            // 监听系统主题变化
+            if (window.matchMedia) {
+                const colorSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+                colorSchemeQuery.addEventListener('change', (e) => {
+                    const newIsDarkMode = e.matches;
+                    if (newIsDarkMode !== document.documentElement.classList.contains('dark')) {
+                        document.documentElement.classList.toggle('dark');
+                        updateChartsTheme();
+                    }
+                });
+            }
+
+            const observer = new IntersectionObserver(a => {
+                a.forEach(a => {
+                    if (a.isIntersecting) {
+                        a.target.classList.add(`fade-in`)
+                    }
+                }
+                )
+            }
+            ,{
+                threshold: 0.1
+            });
+
+            document.querySelectorAll(`section`).forEach(a => {
+                observer.observe(a)
+            }
+            )
+        </script>
