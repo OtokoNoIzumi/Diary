@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日本动画新番探索指南</title>
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        // 设置 Tailwind 主题
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                    },
+                },
+            },
+        }
+
+        // 深色模式切换
+        function setupTheme() {
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark')
+            } else {
+                document.documentElement.classList.remove('dark')
+            }
+        }
+
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark')
+                localStorage.theme = 'light'
+            } else {
+                document.documentElement.classList.add('dark')
+                localStorage.theme = 'dark'
+            }
+        }
+
+        // 页面加载时设置主题
+        document.addEventListener('DOMContentLoaded', setupTheme);
+    </script>
+    <style>
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgb(241 245 249);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgb(203 213 225);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgb(148 163 184);
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: rgb(30 41 59);
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: rgb(71 85 105);
+        }
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: rgb(100 116 139);
+        }
+
+        /* 淡入动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        /* 延迟加载的动画 */
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        .delay-500 { animation-delay: 0.5s; }
+
+        /* 表格样式 */
+        .custom-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        .custom-table th,
+        .custom-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgb(226 232 240);
+        }
+        .dark .custom-table th,
+        .dark .custom-table td {
+            border-bottom: 1px solid rgb(51 65 85);
+        }
+        .custom-table th {
+            font-weight: 600;
+            background-color: rgb(248 250 252);
+        }
+        .dark .custom-table th {
+            background-color: rgb(30 41 59);
+        }
+        .custom-table tr:hover td {
+            background-color: rgb(241 245 249);
+        }
+        .dark .custom-table tr:hover td {
+            background-color: rgb(51 65 85);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-300">
+    <!-- 导航栏 -->
+    <nav class="sticky top-0 z-50 bg-white dark:bg-slate-800 shadow-md py-4">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-tv text-primary-500 text-xl"></i>
+                <h1 class="text-xl font-bold text-primary-600 dark:text-primary-400">动画新番探索指南</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="themeToggle" onclick="toggleTheme()" class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                    <i class="fas fa-sun text-yellow-500 dark:hidden"></i>
+                    <i class="fas fa-moon text-indigo-300 hidden dark:block"></i>
+                </button>
+                <div class="hidden md:flex space-x-4">
+                    <a href="#core-skills" class="text-slate-600 dark:text-slate-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">核心秘籍</a>
+                    <a href="#milestones" class="text-slate-600 dark:text-slate-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">冒险地图</a>
+                    <a href="#training" class="text-slate-600 dark:text-slate-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">训练营</a>
+                    <a href="#weapons" class="text-slate-600 dark:text-slate-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">秘密武器</a>
+                    <a href="#guidance" class="text-slate-600 dark:text-slate-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">避坑指南</a>
+                </div>
+                <button id="menuToggle" class="md:hidden p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        <!-- 移动端菜单 -->
+        <div id="mobileMenu" class="hidden md:hidden absolute w-full bg-white dark:bg-slate-800 shadow-md">
+            <div class="container mx-auto px-4 py-2 flex flex-col space-y-2">
+                <a href="#core-skills" class="py-2 text-slate-600 dark:text-slate-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">核心秘籍</a>
+                <a href="#milestones" class="py-2 text-slate-600 dark:text-slate-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">冒险地图</a>
+                <a href="#training" class="py-2 text-slate-600 dark:text-slate-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">训练营</a>
+                <a href="#weapons" class="py-2 text-slate-600 dark:text-slate-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">秘密武器</a>
+                <a href="#guidance" class="py-2 text-slate-600 dark:text-slate-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors">避坑指南</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- 英雄区域 -->
+        <section class="mb-12 text-center py-10 px-4 sm:px-6 rounded-xl bg-gradient-to-br from-primary-50 to-indigo-50 dark:from-slate-800 dark:to-indigo-950 animate-fade-in">
+            <h1 class="text-3xl md:text-4xl font-bold mb-4 text-primary-600 dark:text-primary-400">
+                <i class="fas fa-compass mr-2"></i>日本动画新番探索指南
+            </h1>
+            <p class="text-lg md:text-xl text-slate-700 dark:text-slate-300 max-w-2xl mx-auto">
+                追新番的感觉就像每周拆开一个惊喜盲盒，超级刺激！这份指南为你点亮前路，教你成为一名优秀的新番探索者！
+            </p>
+            <div class="mt-8 flex flex-wrap justify-center gap-4">
+                <a href="#core-skills" class="inline-flex items-center px-5 py-3 rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                    <i class="fas fa-star mr-2"></i>
+                    <span>核心秘籍</span>
+                </a>
+                <a href="#milestones" class="inline-flex items-center px-5 py-3 rounded-lg bg-white dark:bg-slate-700 text-primary-500 dark:text-primary-300 hover:bg-slate-100 dark:hover:bg-slate-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                    <i class="fas fa-map-marker-alt mr-2"></i>
+                    <span>冒险地图</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- 引言部分 -->
+        <section class="mb-16 fade-in-section opacity-0">
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 sm:p-8">
+                <div class="flex flex-col md:flex-row gap-6 items-center">
+                    <div class="md:w-1/3 flex justify-center">
+                        <div class="w-48 h-48 bg-primary-100 dark:bg-slate-700 rounded-full flex items-center justify-center">
+                            <i class="fas fa-tv text-primary-500 dark:text-primary-400 text-6xl"></i>
+                        </div>
+                    </div>
+                    <div class="md:w-2/3">
+                        <h2 class="text-2xl font-bold mb-4 text-slate-800 dark:text-slate-200">原来是专注日本新番的"前线战友"！</h2>
+                        <p class="text-slate-600 dark:text-slate-300 mb-4">
+                            追新番的感觉我懂，每周等着更新，和小伙伴（或者自己）激动地讨论剧情，就像每周拆开一个惊喜盲盒一样，超级刺激！
+                        </p>
+                        <p class="text-slate-600 dark:text-slate-300">
+                            既然你已经站在了日本动画潮流的最前沿，那我们的"探险地图"和"攻略"也得跟着升级一下，变得更"新番特供"才行！放心，之前的"大方向"还在，但这次我们会加入更多只属于"追番人"才懂的乐趣和门道。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 核心秘籍部分 -->
+        <section id="core-skills" class="mb-16 scroll-mt-20 fade-in-section opacity-0">
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden">
+                <div class="p-6 sm:p-8">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-star text-primary-500 dark:text-primary-400"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-200">解锁核心秘籍：玩转新番的 80/20 法则</h2>
+                    </div>
+
+                    <p class="text-slate-600 dark:text-slate-300 mb-8">
+                        想在新番大海里快速找到你的菜，或者跟同好聊起来更有深度？抓住这些关键点，你的"追番雷达"会更灵敏！以下是最值得关注的关键技能点，掌握它们，你的追番体验将大大提升！
+                    </p>
+
+                    <div class="overflow-x-auto">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th class="w-1/4">关键秘籍 / 技能点 🔑</th>
+                                    <th class="w-1/3">为啥它这么重要/好玩？😎</th>
+                                    <th class="w-1/12">重要指数 🌟</th>
+                                    <th class="w-1/12">上手难度 🚦</th>
+                                    <th class="w-1/4">过来人小提示 💡</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="font-medium text-primary-600 dark:text-primary-400">动画类型大解析<br/>(热血/奇幻/日常/异世界等)</td>
+                                    <td>新番种类超多！知道常见类型（少年热血、少女恋爱、轻松日常、异世界转生…）就像有了"口味导航"，能更快找到你想看的！</td>
+                                    <td>⭐️⭐️⭐️⭐️⭐️</td>
+                                    <td><span class="inline-block px-2 py-1 rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">🟢 低</span></td>
+                                    <td>你最近追的番属于哪种类型？试着给它贴个标签！</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium text-primary-600 dark:text-primary-400">动画公司有门道<br/>(MAPPA/骨头社/京阿尼等)</td>
+                                    <td>不同公司制作风格不同，有的打斗炫酷，有的画面细腻，有的擅长搞笑。认识几个"金字招牌"，选番时就像有了"品质保证"！</td>
+                                    <td>⭐️⭐️⭐️⭐️⭐️</td>
+                                    <td><span class="inline-block px-2 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200">🟡 中</span></td>
+                                    <td>看看你喜欢的几部番是不是同一个公司做的？风格像吗？</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium text-primary-600 dark:text-primary-400">角色魅力是关键<br/>(人设/声优/萌点)</td>
+                                    <td>新番角色层出不穷，但总有那么几个让你念念不忘！是帅气/可爱的外表？独特的性格？还是那个"开口跪"的声音（声优）？发现角色的"萌点"是追番一大乐趣！</td>
+                                    <td>⭐️⭐️⭐️⭐️⭐️</td>
+                                    <td><span class="inline-block px-2 py-1 rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">🟢 低</span></td>
+                                    <td>这个季度你最喜欢的角色是谁？他/她吸引你的点是什么？</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium text-primary-600 dark:text-primary-400">故事节奏很重要<br/>(周更/季番/年番)</td>
+                                    <td>新番大多一周一集，一季12集左右。了解这个节奏，能帮你合理安排时间。有些"年番"会播一整年，追起来更需要耐心哦！</td>
+                                    <td>⭐️⭐️⭐️⭐️</td>
+                                    <td><span class="inline-block px-2 py-1 rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">🟢 低</span></td>
+                                    <td>追周更番，最让你激动/抓狂的是什么时刻？</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium text-primary-600 dark:text-primary-400">OP/ED 不跳过<br/>(歌曲/画面/剧透?)</td>
+                                    <td>每集开头(OP)和结尾(ED)的歌曲和画面也是动画的一部分！有时藏着剧情线索，有时音乐超好听，循环播放停不下来！</td>
+                                    <td>⭐️⭐️⭐️⭐️</td>
+                                    <td><span class="inline-block px-2 py-1 rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">🟢 低</span></td>
+                                    <td>你会为了好听的OP/ED反复观看吗？有没有从OP/ED里猜到剧情？</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium text-primary-600 dark:text-primary-400">弹幕/评论区文化<br/>(玩梗/讨论/剧透预警!)</td>
+                                    <td>和大家一起看番、发弹幕、看评论是种独特的乐趣。能看到各种"神吐槽"、有趣解读。但也要小心剧透哦！</td>
+                                    <td>⭐️⭐️⭐️⭐️</td>
+                                    <td><span class="inline-block px-2 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200">🟡 中</span></td>
+                                    <td>你在弹幕里学到了哪些有趣的"梗"？(安全第一！)</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium text-primary-600 dark:text-primary-400">"梗"和"套路"<br/>(傲娇/转生/福利回等)</td>
+                                    <td>日本动画里有些常见的"梗"（比如角色害羞时说反话的"傲娇"）和"套路"（比如必备的泳装回/温泉回）。认出它们，会心一笑，感觉自己更"懂行"了！</td>
+                                    <td>⭐️⭐️⭐️</td>
+                                    <td><span class="inline-block px-2 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200">🟡 中</span></td>
+                                    <td>最近看的番里，有没有出现你熟悉的"套路"？</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium text-primary-600 dark:text-primary-400">原作党 vs 动画党<br/>(改编差异)</td>
+                                    <td>很多新番是根据漫画、小说改编的。有时动画会和原作不一样，这会引起很多讨论。了解一下，能让你更全面地理解作品。</td>
+                                    <td>⭐️⭐️⭐️</td>
+                                    <td><span class="inline-block px-2 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200">🟡 中</span></td>
+                                    <td>如果你喜欢的番有原作，会想去看看吗？</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-medium text-primary-600 dark:text-primary-400">制作委员会模式<br/>(投资方影响?)</td>
+                                    <td>了解一部动画是哪些公司一起投资制作的（制作委员会），有时能帮你理解为什么这部番会这样拍。</td>
+                                    <td>⭐️⭐️</td>
+                                    <td><span class="inline-block px-2 py-1 rounded-full bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200">🔴 高</span></td>
+                                    <td>这个了解就好，不用太深入，有点复杂。</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-8 text-center">
+                        <a href="#milestones" class="inline-flex items-center px-4 py-2 rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition-all">
+                            <span>继续探索冒险地图</span>
+                            <i class="fas fa-arrow-down ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 冒险地图部分 -->
+        <section id="milestones" class="mb-16 scroll-mt-20 fade-in-section opacity-0">
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden">
+                <div class="p-6 sm:p-8">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-map-marker-alt text-primary-500 dark:text-primary-400"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-200">你的"史诗级"冒险地图：一步步解锁成就！</h2>
+                    </div>
+
+                    <p class="text-slate-600 dark:text-slate-300 mb-8">
+                        追新番的路上，也有很多值得骄傲的"闪光时刻"！下面这些成就，就像游戏里的成就系统一样，每解锁一个，你都能感受到自己的"追番等级"在提升！
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- 里程碑 1 -->
+                        <div class="bg-slate-50 dark:bg-slate-700 rounded-lg p-5 hover:shadow-md transition-shadow">
+                            <div class="flex items-center mb-3">
+                                <div class="w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mr-3">
+                                    <span class="text-primary-500 dark:text-primary-400 font-bold">1</span>
+                                </div>
+                                <h3 class="text-lg font-semibold text-primary-600 dark:text-primary-400">新番情报小雷达</h3>
+                            </div>
+                            <div class="ml-11">
+                                <p class="text-slate-700 dark:text-slate-300 mb-3">
+                                    <span class="font-medium">过来人的爽点：</span> 能在新番开播前，就知道有哪些值得期待的作品、大致是什么类型和制作公司，就像拥有了"预知能力"，可以提前规划好要追的列表，超有掌控感！
+                                </p>
+                                <div class="bg-primary-50 dark:bg-slate-600 rounded p-3">
+                                    <p class="text-slate-600 dark:text-slate-300 text-sm">
+                                        <span class="font-medium text-primary-500 dark:text-primary-300">解锁小任务：</span>
+                                        找一个可靠的动漫资讯网站或APP（如B站动画区、MyAnimeList，请家长帮助把关），看看下个季度有哪些你可能感兴趣的新番？
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 里程碑 2 -->
+                        <div class="bg-slate-50 dark:bg-slate-700 rounded-lg p-5 hover:shadow-md transition-shadow">
+                            <div class="flex items-center mb-3">
+                                <div class="w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mr-3">
+                                    <span class="text-primary-500 dark:text-primary-400 font-bold">2</span>
+                                </div>
+                                <h3 class="text-lg font-semibold text-primary-600 dark:text-primary-400">类型标签辨识家</h3>
+                            </div>
+                            <div class="ml-11">
+                                <p class="text-slate-700 dark:text-slate-300 mb-3">
+                                    <span class="font-medium">过来人的爽点：</span> 随便点开一部新番，看个几分钟就能准确判断出"啊，这是个热血战斗番！"或者"嗯，是轻松搞笑的日常番"，这种快速定位的眼力，让你选番效率大大提升！
+                                </p>
+                                <div class="bg-primary-50 dark:bg-slate-600 rounded p-3">
+                                    <p class="text-slate-600 dark:text-slate-300 text-sm">
+                                        <span class="font-medium text-primary-500 dark:text-primary-300">解锁小任务：</span>
+                                        这个季度同时追2-3部不同类型的新番，试着说说它们的类型特征有什么不同？
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 里程碑 3 -->
+                        <div class="bg-slate-50 dark:bg-slate-700 rounded-lg p-5 hover:shadow-md transition-shadow">
+                            <div class="flex items-center mb-3">
+                                <div class="w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mr-3">
+                                    <span class="text-primary-500 dark:text-primary-400 font-bold">3</span>
+                                </div>
+                                <h3 class="text-lg font-semibold text-primary-600 dark:text-primary-400">制作公司风格初认</h3>
+                            </div>
+                            <div class="ml-11">
+                                <p class="text-slate-700 dark:text-slate-300 mb-3">
+                                    <span class="font-medium">过来人的爽点：</span> 当你看到某个画面或打斗场景，能脱口而出"这风格，一看就是XX公司做的！"（比如看到飞碟社(Ufotable)的华丽特效，或者京阿尼(Kyoto Animation)的细腻人物），那种"懂行"的感觉不要太爽！
+                                </p>
+                                <div class="bg-primary-50 dark:bg-slate-600 rounded p-3">
+                                    <p class="text-slate-600 dark:text-slate-300 text-sm">
+                                        <span class="font-medium text-primary-500 dark:text-primary-300">解锁小任务：</span>
+                                        找出你最喜欢的两部动画，查查它们的制作公司是哪家？风格上有没有相似之处？
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 里程碑 4 -->
+                        <div class="bg-slate-50 dark:bg-slate-700 rounded-lg p-5 hover:shadow-md transition-shadow">
+                            <div class="flex items-center mb-3">
+                                <div class="w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mr-3">
+                                    <span class="text-primary-500 dark:text-primary-400 font-bold">4</span>
+                                </div>
+                                <h3 class="text-lg font-semibold text-primary-600 dark:text-primary-400">周更节奏掌控者</h3>
+                            </div>
+                            <div class="ml-11">
+                                <p class="text-slate-700 dark:text-slate-300 mb-3">
+                                    <span class="font-medium">过来人的爽点：</span> 习惯了每周在固定时间等待更新，看完最新一集后，和同样在追的小伙伴一起讨论剧情、猜测走向，这种同步追番的参与感和集体感，是追新番独有的乐趣！
+                                </p>
+                                <div class="bg-primary-50 dark:bg-slate-600 rounded p-3">
+                                    <p class="text-slate-600 dark:text-slate-300 text-sm">
+                                        <span class="font-medium text-primary-500 dark:text-primary-300">解锁小任务：</span>
+                                        坚持追完一部12集左右的季番，体验每周等待和观看的完整过程。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 里程碑 5 -->
+                        <div class="bg-slate-50 dark:bg-slate-700 rounded-lg p-5 hover:shadow-md transition-shadow">
+                            <div class="flex items-center mb-3">
+                                <div class="w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mr-3">
+                                    <span class="text-primary-500 dark:text-primary-400 font-bold">5</span>
+                                </div>
+                                <h3 class="text-lg font-semibold text-primary-600 dark:text-primary-400">OP/ED品鉴师</h3>
+                            </div>
+                            <div class="ml-11">
+                                <p class="text-slate-700 dark:text-slate-300 mb-3">
+                                    <span class="font-medium">过来人的爽点：</span> 不再随手跳过OP/ED，而是能从歌曲的旋律、歌词的意境、画面的剪辑中，感受到动画想要传达的情绪，甚至发现隐藏的细节。能哼唱出好几首当季热门OP/ED，感觉自己走在潮流前线！
+                                </p>
+                                <div class="bg-primary-50 dark:bg-slate-600 rounded p-3">
+                                    <p class="text-slate-600 dark:text-slate-300 text-sm">
+                                        <span class="font-medium text-primary-500 dark:text-primary-300">解锁小任务：</span>
+                                        找一首你喜欢的当季新番OP或ED，试着分析一下它的画面和歌曲是如何搭配的？
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 里程碑 6 -->
+                        <div class="bg-slate-50 dark:bg-slate-700 rounded-lg p-5 hover:shadow-md transition-shadow">
+                            <div class="flex items-center mb-3">
+                                <div class="w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mr-3">
+                                    <span class="text-primary-500 dark:text-primary-400 font-bold">6</span>
+                                </div>
+                                <h3 class="text-lg font-semibold text-primary-600 dark:text-primary-400">声优耳力训练（初级）</h3>
+                            </div>
+                            <div class="ml-11">
+                                <p class="text-slate-700 dark:text-slate-300 mb-3">
+                                    <span class="font-medium">过来人的爽点：</span> "欸？这个角色的声音好熟悉，好像是给XX配音的那个谁？"当你开始能听出某些知名声优的声音时，就像在动画世界里交到了更多"声音朋友"，看番的乐趣又多了一层！
+                                </p>
+                                <div class="bg-primary-50 dark:bg-slate-600 rounded p-3">
+                                    <p class="text-slate-600 dark:text-slate-300 text-sm">
+                                        <span class="font-medium text-primary-500 dark:text-primary-300">解锁小任务：</span>
+                                        留意你正在追的几部番里主要角色的声优，看看有没有重复出现的？
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 里程碑 7 -->
+                        <div class="bg-slate-50 dark:bg-slate-700 rounded-lg p-5 hover:shadow-md transition-shadow">
+                            <div class="flex items-center mb-3">
+                                <div class="w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mr-3">
+                                    <span class="text-primary-500 dark:text-primary-400 font-bold">7</span>
+                                </div>
+                                <h3 class="text-lg font-semibold text-primary-600 dark:text-primary-400">玩梗接梗小能手</h3>
+                            </div>
+                            <div class="ml-11">
+                                <p class="text-slate-700 dark:text-slate-300 mb-3">
+                                    <span class="font-medium">过来人的爽点：</span> 看弹幕或者和同好聊天时，能看懂大家在刷的"梗"，甚至自己也能用这些"暗号"进行交流，那种融入圈子、心领神会的快乐，妙不可言！(注意玩梗要适度友好哦！)
+                                </p>
+                                <div class="bg-primary-50 dark:bg-slate-600 rounded p-3">
+                                    <p class="text-slate-600 dark:text-slate-300 text-sm">
+                                        <span class="font-medium text-primary-500 dark:text-primary-300">解锁小任务：</span>
+                                        了解一个你最近在追的番里比较流行的"梗"是什么意思？（可以请教了解的朋友，或者在家长的指导下搜索）
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 里程碑 8 -->
+                        <div class="bg-slate-50 dark:bg-slate-700 rounded-lg p-5 hover:shadow-md transition-shadow">
+                            <div class="flex items-center mb-3">
+                                <div class="w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mr-3">
+                                    <span class="text-primary-500 dark:text-primary-400 font-bold">8</span>
+                                </div>
+                                <h3 class="text-lg font-semibold text-primary-600 dark:text-primary-400">剧情讨论参与者</h3>
+                            </div>
+                            <div class="ml-11">
+                                <p class="text-slate-700 dark:text-slate-300 mb-3">
+                                    <span class="font-medium">过来人的爽点：</span> 看完最新一集，不再只是"看完了"，而是有自己的想法和分析，能和别人（同学、朋友或安全的在线社区）条理清晰地讨论剧情发展、人物动机，甚至预测后续走向。这种思维碰撞超锻炼人！
+                                </p>
+                                <div class="bg-primary-50 dark:bg-slate-600 rounded p-3">
+                                    <p class="text-slate-600 dark:text-slate-300 text-sm">
+                                        <span class="font-medium text-primary-500 dark:text-primary-300">解锁小任务：</span>
+                                        看完最新一集后，试着写下你对接下来剧情的猜测，或者你对某个角色行为的看法。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 里程碑 9 -->
+                        <div class="bg-slate-50 dark:bg-slate-700 rounded-lg p-5 hover:shadow-md transition-shadow">
+                            <div class="flex items-center mb-3">
+                                <div class="w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mr-3">
+                                    <span class="text-primary-500 dark:text-primary-400 font-bold">9</span>
+                                </div>
+                                <h3 class="text-lg font-semibold text-primary-600 dark:text-primary-400">跨类型探索者</h3>
+                            </div>
+                            <div class="ml-11">
+                                <p class="text-slate-700 dark:text-slate-300 mb-3">
+                                    <span class="font-medium">过来人的爽点：</span> 鼓起勇气尝试去看一种你平时不太接触的动画类型（比如平时看热血的去试试恋爱番，看日常的去试试科幻番），结果发现"欸，这个也挺有意思的嘛！" 这种打破舒适区，拓宽视野的感觉，会让你发现动画世界的更广阔！
+                                </p>
+                                <div class="bg-primary-50 dark:bg-slate-600 rounded p-3">
+                                    <p class="text-slate-600 dark:text-slate-300 text-sm">
+                                        <span class="font-medium text-primary-500 dark:text-primary-300">解锁小任务：</span>
+                                        让朋友推荐一部他喜欢但你没看过的类型的新番，试着看几集。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 里程碑 10 -->
+                        <div class="bg-slate-50 dark:bg-slate-700 rounded-lg p-5 hover:shadow-md transition-shadow">
+                            <div class="flex items-center mb-3">
+                                <div class="w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mr-3">
+                                    <span class="text-primary-500 dark:text-primary-400 font-bold">10</span>
+                                </div>
+                                <h3 class="text-lg font-semibold text-primary-600 dark:text-primary-400">年度追番小总结</h3>
+                            </div>
+                            <div class="ml-11">
+                                <p class="text-slate-700 dark:text-slate-300 mb-3">
+                                    <span class="font-medium">过来人的爽点：</span> 一年结束时，回顾自己这一年追了哪些番，哪些印象最深，哪些是神作，哪些有点失望，能整理出一份自己的"年度动画榜单"。这不仅是对自己追番历程的记录，也是一种成长的见证！
+                                </p>
+                                <div class="bg-primary-50 dark:bg-slate-600 rounded p-3">
+                                    <p class="text-slate-600 dark:text-slate-300 text-sm">
+                                        <span class="font-medium text-primary-500 dark:text-primary-300">解锁小任务：</span>
+                                        到年底时，列出你今年最喜欢的3部新番，并简单说说理由。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 text-center">
+                        <a href="#training" class="inline-flex items-center px-4 py-2 rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition-all">
+                            <span>前往实战训练营</span>
+                            <i class="fas fa-arrow-down ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 实战训练营部分 -->
+        <section id="training" class="mb-16 scroll-mt-20 fade-in-section opacity-0">
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden">
+                <div class="p-6 sm:p-8">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-dumbbell text-primary-500 dark:text-primary-400"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-200">实战训练营：日常小练+每周挑战+给力习惯</h2>
+                    </div>
+
+                    <p class="text-slate-600 dark:text-slate-300 mb-8">
+                        想在追新番的路上保持领先，并收获更多？试试这些"日常任务"和"升级秘籍"！高手都是在日常练习中不断进步的，我们可以把追番变成一种更有意义、更有收获的体验！
+                    </p>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- 每日小任务 -->
+                        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-700 dark:to-indigo-900 rounded-lg p-6 shadow-sm">
+                            <div class="flex items-center mb-4">
+                                <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mr-3">
+                                    <i class="fas fa-calendar-day text-blue-500 dark:text-blue-300"></i>
+                                </div>
+                                <h3 class="text-xl font-semibold text-blue-600 dark:text-blue-300">每日"新番观察"小任务</h3>
+                            </div>
+                            <p class="text-slate-600 dark:text-slate-300 mb-4 text-sm">
+                                选择1-2个轻松的小任务，每天花几分钟就能完成，培养你的动画"观察力"！
+                            </p>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <div class="flex-shrink-0 h-5 w-5 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mt-1 mr-2">
+                                        <i class="fas fa-check text-xs text-blue-500 dark:text-blue-300"></i>
+                                    </div>
+                                    <p class="text-slate-700 dark:text-slate-300">今天看的这集新番，留意一下人物的服装或小饰品，有没有什么特别的设计？</p>
+                                </li>
+                                <li class="flex items-start">
+                                    <div class="flex-shrink-0 h-5 w-5 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mt-1 mr-2">
+                                        <i class="fas fa-check text-xs text-blue-500 dark:text-blue-300"></i>
+                                    </div>
+                                    <p class="text-slate-700 dark:text-slate-300">听到OP/ED或者插曲，觉得哪句歌词特别符合现在的心情或剧情？</p>
+                                </li>
+                                <li class="flex items-start">
+                                    <div class="flex-shrink-0 h-5 w-5 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center mt-1 mr-2">
+                                        <i class="fas fa-check text-xs text-blue-500 dark:text-blue-300"></i>
+                                    </div>
+                                    <p class="text-slate-700 dark:text-slate-300">快速画下今天登场的新角色，或者让你印象深刻的某个表情。</p>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- 每周挑战 -->
+                        <div class="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-700 dark:to-purple-900 rounded-lg p-6 shadow-sm">
+                            <div class="flex items-center mb-4">
+                                <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mr-3">
+                                    <i class="fas fa-trophy text-purple-500 dark:text-purple-300"></i>
+                                </div>
+                                <h3 class="text-xl font-semibold text-purple-600 dark:text-purple-300">每周"追番 Plus"挑战</h3>
+                            </div>
+                            <p class="text-slate-600 dark:text-slate-300 mb-4 text-sm">
+                                选择1个稍具挑战性的任务，在周末或有空闲时完成，提升你的追番深度！
+                            </p>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <div class="flex-shrink-0 h-5 w-5 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center mt-1 mr-2">
+                                        <i class="fas fa-check text-xs text-purple-500 dark:text-purple-300"></i>
+                                    </div>
+                                    <p class="text-slate-700 dark:text-slate-300"><span class="font-medium">情报搜集:</span> 主动去可靠的动漫资讯平台看看，了解下周或下个月有什么值得关注的新番动态或大事件。</p>
+                                </li>
+                                <li class="flex items-start">
+                                    <div class="flex-shrink-0 h-5 w-5 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center mt-1 mr-2">
+                                        <i class="fas fa-check text-xs text-purple-500 dark:text-purple-300"></i>
+                                    </div>
+                                    <p class="text-slate-700 dark:text-slate-300"><span class="font-medium">主题讨论:</span> 找一个你正在追的番，和同学或朋友（线上注意安全！）深入讨论一下最新一集的某个情节或人物变化。</p>
+                                </li>
+                                <li class="flex items-start">
+                                    <div class="flex-shrink-0 h-5 w-5 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center mt-1 mr-2">
+                                        <i class="fas fa-check text-xs text-purple-500 dark:text-purple-300"></i>
+                                    </div>
+                                    <p class="text-slate-700 dark:text-slate-300"><span class="font-medium">声优发掘:</span> 查一查你最近喜欢的某个角色的声优还配过哪些其他角色？找来听听，是不是感觉很不一样？</p>
+                                </li>
+                                <li class="flex items-start">
+                                    <div class="flex-shrink-0 h-5 w-5 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center mt-1 mr-2">
+                                        <i class="fas fa-check text-xs text-purple-500 dark:text-purple-300"></i>
+                                    </div>
+                                    <p class="text-slate-700 dark:text-slate-300"><span class="font-medium">音乐延伸:</span> 找到你喜欢的OP/ED的完整版听听，或者看看有没有官方发布的MV。</p>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- 超级充能好习惯 -->
+                        <div class="bg-gradient-to-br from-green-50 to-teal-50 dark:from-slate-700 dark:to-teal-900 rounded-lg p-6 shadow-sm">
+                            <div class="flex items-center mb-4">
+                                <div class="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mr-3">
+                                    <i class="fas fa-seedling text-green-500 dark:text-green-300"></i>
+                                </div>
+                                <h3 class="text-xl font-semibold text-green-600 dark:text-green-300">"超级充能"好习惯</h3>
+                            </div>
+                            <p class="text-slate-600 dark:text-slate-300 mb-4 text-sm">
+                                养成这些习惯，你会感谢自己！就像游戏里的"被动技能"，让你不知不觉变强！
+                            </p>
+                            <ul class="space-y-4">
+                                <li>
+                                    <h4 class="font-medium text-green-600 dark:text-green-300 mb-1">习惯1: 建立你的"追番进度表"</h4>
+                                    <p class="text-slate-700 dark:text-slate-300 text-sm">
+                                        用小本子或APP（如MyAnimeList）记录你正在追的番、看到了第几集、简单的评分和感想。这样就不会看着看着就忘了，还能清晰地看到自己的追番足迹！
+                                    </p>
+                                </li>
+                                <li>
+                                    <h4 class="font-medium text-green-600 dark:text-green-300 mb-1">习惯2: 关注官方信息，远离剧透</h4>
+                                    <p class="text-slate-700 dark:text-slate-300 text-sm">
+                                        尽量通过官方渠道（如B站番剧区、官方微博、正版引进平台）获取信息，追周更番时，在看完之前尽量少刷社交媒体，小心被剧透一脸！
+                                    </p>
+                                </li>
+                                <li>
+                                    <h4 class="font-medium text-green-600 dark:text-green-300 mb-1">习惯3: 学会"安利"与"被安利"</h4>
+                                    <p class="text-slate-700 dark:text-slate-300 text-sm">
+                                        用热情又简洁的语言向朋友推荐你喜欢的番（安利），也要保持开放的心态，接受朋友的推荐（被安利）。互相分享会让追番之路更有趣！(记得要尊重别人的喜好哦！)
+                                    </p>
+                                </li>
+                                <li>
+                                    <h4 class="font-medium text-green-600 dark:text-green-300 mb-1">习惯4: 了解一些常用日语词汇</h4>
+                                    <p class="text-slate-700 dark:text-slate-300 text-sm">
+                                        不需要系统学习，但了解一些动画里经常听到的词（比如：ありがとう/谢谢，すごい/厉害，かわいい/可爱，大丈夫/没关系），能让你看生肉（无字幕版）时更有感觉，或者听懂一些语气词。
+                                    </p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mt-10 p-6 bg-primary-50 dark:bg-slate-700 rounded-lg border border-primary-100 dark:border-slate-600">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-lightbulb text-primary-500 dark:text-primary-400 text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-semibold text-primary-600 dark:text-primary-400 mb-2">追番小技巧</h3>
+                                <p class="text-slate-600 dark:text-slate-300">
+                                    坚持这些小任务和习惯看起来简单，但日积月累的效果会让你惊讶！就像游戏中每天完成日常任务获得经验值一样，时间长了，你就会发现自己从"追番小白"成长为"追番达人"了！
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 text-center">
+                        <a href="#weapons" class="inline-flex items-center px-4 py-2 rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition-all">
+                            <span>探索秘密武器库</span>
+                            <i class="fas fa-arrow-down ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 秘密武器库部分 -->
+        <section id="weapons" class="mb-16 scroll-mt-20 fade-in-section opacity-0">
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden">
+                <div class="p-6 sm:p-8">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-tools text-primary-500 dark:text-primary-400"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-200">秘密武器库：学校知识变身超强助攻！</h2>
+                    </div>
+
+                    <p class="text-slate-600 dark:text-slate-300 mb-8">
+                        你猜怎么着？学校里的知识，也能帮你更好地"食用"日本新番！它们能给你加上"洞察力 Buff"，让你看番比别人更懂更深入！下面这些学科知识，就像是你追番路上的"超级装备"！
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <!-- 语文 -->
+                        <div class="bg-white dark:bg-slate-700 rounded-lg shadow-sm border border-slate-200 dark:border-slate-600 p-5 hover:shadow-md transition-shadow">
+                            <div class="flex items-center mb-4">
+                                <div class="flex-shrink-0 w-12 h-12 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-book text-red-500 dark:text-red-300"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-lg font-semibold text-red-600 dark:text-red-400">语文课</h3>
+                                    <p class="text-slate-500 dark:text-slate-400">→ 剧情分析师 & 人物解读高手</p>
+                                </div>
+                            </div>
+                            <div class="ml-16">
+                                <h4 class="font-medium text-slate-700 dark:text-slate-300 mb-2">超能力连接:</h4>
+                                <p class="text-slate-600 dark:text-slate-300 mb-3">
+                                    分析课文结构、理解中心思想、体会人物情感… 这些能力用在看新番上简直是绝配！你能更快抓住故事主线，理解角色为什么这么做，甚至能分析出导演想通过这个情节表达什么。
+                                </p>
+                                <div class="bg-slate-50 dark:bg-slate-600 rounded p-3">
+                                    <h4 class="font-medium text-slate-700 dark:text-slate-300 mb-1">举个例子:</h4>
+                                    <p class="text-slate-600 dark:text-slate-300 text-sm">
+                                        看那些剧情复杂的番（比如悬疑、智斗类），用上语文课分析文章的方法，抽丝剥茧，是不是感觉自己像个名侦探？分析人物的成长弧光，也用得上写作文分析人物的方法。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 美术 -->
+                        <div class="bg-white dark:bg-slate-700 rounded-lg shadow-sm border border-slate-200 dark:border-slate-600 p-5 hover:shadow-md transition-shadow">
+                            <div class="flex items-center mb-4">
+                                <div class="flex-shrink-0 w-12 h-12 bg-amber-100 dark:bg-amber-900 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-palette text-amber-500 dark:text-amber-300"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-lg font-semibold text-amber-600 dark:text-amber-400">美术课</h3>
+                                    <p class="text-slate-500 dark:text-slate-400">→ 画面鉴赏家 & 风格辨识仪</p>
+                                </div>
+                            </div>
+                            <div class="ml-16">
+                                <h4 class="font-medium text-slate-700 dark:text-slate-300 mb-2">超能力连接:</h4>
+                                <p class="text-slate-600 dark:text-slate-300 mb-3">
+                                    美术课学的构图、色彩、线条、光影，都是评价动画画面好坏的标准。懂一点美术知识，你就能看出为什么有的打斗场景那么有冲击力，为什么有的日常画面那么温馨治愈。还能帮你识别不同动画公司的"作画风格"。
+                                </p>
+                                <div class="bg-slate-50 dark:bg-slate-600 rounded p-3">
+                                    <h4 class="font-medium text-slate-700 dark:text-slate-300 mb-1">举个例子:</h4>
+                                    <p class="text-slate-600 dark:text-slate-300 text-sm">
+                                        留意一下新番里不同场景的色彩运用，是明亮的暖色调（可能表示开心、温暖）还是阴暗的冷色调（可能表示紧张、悲伤）？这和美术课讲的色彩情感是不是一样？
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 外语 -->
+                        <div class="bg-white dark:bg-slate-700 rounded-lg shadow-sm border border-slate-200 dark:border-slate-600 p-5 hover:shadow-md transition-shadow">
+                            <div class="flex items-center mb-4">
+                                <div class="flex-shrink-0 w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-language text-blue-500 dark:text-blue-300"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-lg font-semibold text-blue-600 dark:text-blue-400">外语课</h3>
+                                    <p class="text-slate-500 dark:text-slate-400">→ 字幕阅读加速器 & 跨文化理解之窗</p>
+                                </div>
+                            </div>
+                            <div class="ml-16">
+                                <h4 class="font-medium text-slate-700 dark:text-slate-300 mb-2">超能力连接:</h4>
+                                <p class="text-slate-600 dark:text-slate-300 mb-3">
+                                    看带字幕的新番，其实是很好的阅读速度训练！时间长了，你的阅读能力会不知不觉提高。同时，动画是了解日本文化的一个窗口，你会接触到他们的生活习惯、节日、思维方式，这本身就是一种跨文化学习。
+                                </p>
+                                <div class="bg-slate-50 dark:bg-slate-600 rounded p-3">
+                                    <h4 class="font-medium text-slate-700 dark:text-slate-300 mb-1">举个例子:</h4>
+                                    <p class="text-slate-600 dark:text-slate-300 text-sm">
+                                        经常看到动画里角色说"いただきます"（我开动了），或者新年去神社参拜的场景，这些都是了解日本文化的小细节。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 历史/地理 -->
+                        <div class="bg-white dark:bg-slate-700 rounded-lg shadow-sm border border-slate-200 dark:border-slate-600 p-5 hover:shadow-md transition-shadow">
+                            <div class="flex items-center mb-4">
+                                <div class="flex-shrink-0 w-12 h-12 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-globe-asia text-green-500 dark:text-green-300"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-lg font-semibold text-green-600 dark:text-green-400">历史/地理课</h3>
+                                    <p class="text-slate-500 dark:text-slate-400">→ 背景设定理解器</p>
+                                </div>
+                            </div>
+                            <div class="ml-16">
+                                <h4 class="font-medium text-slate-700 dark:text-slate-300 mb-2">超能力连接:</h4>
+                                <p class="text-slate-600 dark:text-slate-300 mb-3">
+                                    有些新番会有历史背景（比如战国、幕末）或者设定在真实的日本地点。如果你学过相关的历史或地理知识，看番时就会有"啊！这个我知道！"的惊喜感，对剧情和设定的理解也会更深。
+                                </p>
+                                <div class="bg-slate-50 dark:bg-slate-600 rounded p-3">
+                                    <h4 class="font-medium text-slate-700 dark:text-slate-300 mb-1">举个例子:</h4>
+                                    <p class="text-slate-600 dark:text-slate-300 text-sm">
+                                        如果你看的番故事发生在京都，而你刚好知道京都有哪些名胜古迹，当动画里出现清水寺或者伏见稻荷大社时，是不是感觉特别亲切？
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-yellow-50 dark:bg-yellow-900/30 rounded-lg p-5 border border-yellow-100 dark:border-yellow-800 mb-8">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-lightbulb text-yellow-500 dark:text-yellow-400 text-2xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-medium text-yellow-700 dark:text-yellow-400 mb-2">追番小提示</h3>
+                                <p class="text-slate-600 dark:text-slate-300">
+                                    下次当你在学校听一些感觉"没用"的知识时，不妨想想："这个知识能不能帮我更好地理解动画？"你会惊讶地发现，很多学科知识都能成为你的"追番武器"！学以致用，岂不妙哉？
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 text-center">
+                        <a href="#guidance" class="inline-flex items-center px-4 py-2 rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition-all">
+                            <span>查看避坑指南针</span>
+                            <i class="fas fa-arrow-down ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 避坑指南针部分 -->
+        <section id="guidance" class="mb-16 scroll-mt-20 fade-in-section opacity-0">
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden">
+                <div class="p-6 sm:p-8">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-compass text-primary-500 dark:text-primary-400"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-200">避坑指南针：过来人帮你绕开弯路！</h2>
+                    </div>
+
+                    <p class="text-slate-600 dark:text-slate-300 mb-8">
+                        追新番的路上很嗨，但也有些"坑"和"雷区"要注意避开，才能保持快乐和安全！这份来自"过来人"的指南，会帮你少走弯路，让你的追番之旅更加顺畅！
+                    </p>
+
+                    <!-- 最容易掉进去的"坑" -->
+                    <div class="mb-10">
+                        <div class="flex items-center mb-4">
+                            <div class="w-8 h-8 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-exclamation-triangle text-red-500 dark:text-red-400"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-red-600 dark:text-red-400">最容易掉进去的"坑" (常见错误)</h3>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- 坑1 -->
+                            <div class="bg-white dark:bg-slate-700 rounded-lg p-4 border border-slate-200 dark:border-slate-600">
+                                <h4 class="font-medium text-red-600 dark:text-red-400 mb-2">"一集弃"或"云追番"</h4>
+                                <p class="text-slate-600 dark:text-slate-300 mb-3 text-sm">
+                                    看个开头觉得不合口味就立刻放弃，或者只看别人的解说、切片，不自己完整看。<span class="font-medium">这样很容易错过一些慢热的好作品，或者被别人的看法左右。</span>
+                                </p>
+                                <div class="bg-red-50 dark:bg-red-900/30 rounded p-2">
+                                    <p class="text-slate-700 dark:text-slate-300 text-sm">
+                                        <span class="font-medium text-red-600 dark:text-red-400">纠错小贴士:</span>
+                                        耐心点，有些好番需要几集才能进入状态。尽量自己完整观看，形成自己的判断。
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- 坑2 -->
+                            <div class="bg-white dark:bg-slate-700 rounded-lg p-4 border border-slate-200 dark:border-slate-600">
+                                <h4 class="font-medium text-red-600 dark:text-red-400 mb-2">陷入"鄙视链"</h4>
+                                <p class="text-slate-600 dark:text-slate-300 mb-3 text-sm">
+                                    觉得看某个类型的番就比看其他类型高级，或者嘲笑别人的喜好。<span class="font-medium">这非常不友好，也会限制自己的眼界。</span>
+                                </p>
+                                <div class="bg-red-50 dark:bg-red-900/30 rounded p-2">
+                                    <p class="text-slate-700 dark:text-slate-300 text-sm">
+                                        <span class="font-medium text-red-600 dark:text-red-400">纠错小贴士:</span>
+                                        尊重多元，萝卜青菜各有所爱。动画没有高低贵贱之分。
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- 坑3 -->
+                            <div class="bg-white dark:bg-slate-700 rounded-lg p-4 border border-slate-200 dark:border-slate-600">
+                                <h4 class="font-medium text-red-600 dark:text-red-400 mb-2">过度沉迷"纸片人"</h4>
+                                <p class="text-slate-600 dark:text-slate-300 mb-3 text-sm">
+                                    过分投入到虚拟角色中，影响了现实生活和学习。<span class="font-medium">要分清虚拟和现实，保持平衡。</span>
+                                </p>
+                                <div class="bg-red-50 dark:bg-red-900/30 rounded p-2">
+                                    <p class="text-slate-700 dark:text-slate-300">
+                                        <span class="font-medium text-red-600 dark:text-red-400">纠错小贴士:</span>
+                                        喜欢角色是好事，但要理智。多和现实中的家人朋友交流。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 容易搞混的"岔路口" -->
+                    <div class="mb-10">
+                        <div class="flex items-center mb-4">
+                            <div class="w-8 h-8 bg-amber-100 dark:bg-amber-900 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-question text-amber-500 dark:text-amber-400"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-amber-600 dark:text-amber-400">容易搞混的"岔路口" (易混淆概念)</h3>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- 概念区分1 -->
+                            <div class="bg-white dark:bg-slate-700 rounded-lg p-5 border border-slate-200 dark:border-slate-600">
+                                <h4 class="font-medium text-amber-600 dark:text-amber-400 mb-3">玩梗 vs 恶意刷屏/剧透</h4>
+                                <p class="text-slate-600 dark:text-slate-300 mb-4">
+                                    在弹幕和评论区用恰当的梗活跃气氛是好事，但无意义地刷屏或者恶意剧透别人还没看的内容，就很讨人厌了。<span class="font-medium">会破坏别人的观看体验。</span>
+                                </p>
+                                <div class="bg-amber-50 dark:bg-amber-900/30 rounded p-3">
+                                    <p class="text-slate-700 dark:text-slate-300">
+                                        <span class="font-medium text-amber-600 dark:text-amber-400">清晰界限:</span>
+                                        玩梗要适度、友好，涉及剧透内容要提前预警。
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- 概念区分2 -->
+                            <div class="bg-white dark:bg-slate-700 rounded-lg p-5 border border-slate-200 dark:border-slate-600">
+                                <h4 class="font-medium text-amber-600 dark:text-amber-400 mb-3">个人喜好 vs 客观评价</h4>
+                                <p class="text-slate-600 dark:text-slate-300 mb-4">
+                                    "我不喜欢这部番"和"这部番制作很差"是两回事。<span class="font-medium">能区分主观感受和相对客观的分析，是成熟的表现。</span>
+                                </p>
+                                <div class="bg-amber-50 dark:bg-amber-900/30 rounded p-3">
+                                    <p class="text-slate-700 dark:text-slate-300">
+                                        <span class="font-medium text-amber-600 dark:text-amber-400">学会区分:</span>
+                                        可以表达自己的喜好，但评价作品时尽量基于事实（如作画、剧情逻辑等）。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 需要警惕的"绊脚石" -->
+                    <div>
+                        <div class="flex items-center mb-4">
+                            <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-ban text-blue-500 dark:text-blue-400"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-blue-600 dark:text-blue-400">需要警惕的"绊脚石" (坏习惯)</h3>
+                        </div>
+
+                        <div class="space-y-4">
+                            <!-- 坏习惯1 -->
+                            <div class="bg-white dark:bg-slate-700 rounded-lg p-5 border border-slate-200 dark:border-slate-600">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mt-1 mr-3">
+                                        <span class="text-blue-500 dark:text-blue-400 font-bold text-sm">1</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-blue-600 dark:text-blue-400 mb-2">熬夜追番，影响健康和学习</h4>
+                                        <p class="text-slate-600 dark:text-slate-300 mb-3">
+                                            为了追更新或者补番，看到深夜甚至通宵。<span class="font-medium">伤身体，第二天没精神，学习效率低，还会被爸妈骂！</span>
+                                        </p>
+                                        <div class="bg-blue-50 dark:bg-blue-900/30 rounded p-3">
+                                            <p class="text-slate-700 dark:text-slate-300">
+                                                <span class="font-medium text-blue-600 dark:text-blue-400">破解方法:</span>
+                                                合理规划时间，保证充足睡眠。周末可以适当多看一点，但工作日要克制。
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 坏习惯2 -->
+                            <div class="bg-white dark:bg-slate-700 rounded-lg p-5 border border-slate-200 dark:border-slate-600">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mt-1 mr-3">
+                                        <span class="text-blue-500 dark:text-blue-400 font-bold text-sm">2</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-blue-600 dark:text-blue-400 mb-2">轻易相信网上的"内部消息"或"舅舅党"</h4>
+                                        <p class="text-slate-600 dark:text-slate-300 mb-3">
+                                            看到一些所谓"剧透"或者"制作内幕"就信以为真。<span class="font-medium">很多都是假的，或者会影响观看时的惊喜感。</span>
+                                        </p>
+                                        <div class="bg-blue-50 dark:bg-blue-900/30 rounded p-3">
+                                            <p class="text-slate-700 dark:text-slate-300">
+                                                <span class="font-medium text-blue-600 dark:text-blue-400">破解方法:</span>
+                                                对非官方消息保持怀疑，以官方发布为准。享受未知剧情的乐趣。
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 坏习惯3 -->
+                            <div class="bg-white dark:bg-slate-700 rounded-lg p-5 border border-slate-200 dark:border-slate-600">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mt-1 mr-3">
+                                        <span class="text-blue-500 dark:text-blue-400 font-bold text-sm">3</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-blue-600 dark:text-blue-400 mb-2">在非正版平台观看，风险多多</h4>
+                                        <p class="text-slate-600 dark:text-slate-300 mb-3">
+                                            观看盗版动画，可能遇到病毒、木马、诈骗广告，画质音质也没保障。<span class="font-medium">是对动画创作者的不尊重，也有安全隐患！</span>
+                                        </p>
+                                        <div class="bg-blue-50 dark:bg-blue-900/30 rounded p-3">
+                                            <p class="text-slate-700 dark:text-slate-300">
+                                                <span class="font-medium text-blue-600 dark:text-blue-400">破解方法:</span>
+                                                优先选择B站、爱奇艺等正版引进平台观看，支持正版，安全放心。
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 坏习惯4 -->
+                            <div class="bg-white dark:bg-slate-700 rounded-lg p-5 border border-slate-200 dark:border-slate-600">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mt-1 mr-3">
+                                        <span class="text-blue-500 dark:text-blue-400 font-bold text-sm">4</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium text-blue-600 dark:text-blue-400 mb-2">在网络社区与人争吵或泄露过多信息</h4>
+                                        <p class="text-slate-600 dark:text-slate-300 mb-3">
+                                            因为观点不同就和人吵架，或者在不安全的论坛/群聊里说太多关于自己的事。<span class="font-medium">网络环境复杂，容易引发冲突或被坏人盯上。</span>
+                                        </p>
+                                        <div class="bg-blue-50 dark:bg-blue-900/30 rounded p-3">
+                                            <p class="text-slate-700 dark:text-slate-300">
+                                                <span class="font-medium text-blue-600 dark:text-blue-400">破解方法:</span>
+                                                理性讨论，文明交流。保护好个人隐私，不轻易透露现实信息。遇到不友善言论选择无视或举报。
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-10 p-6 bg-primary-50 dark:bg-slate-700 rounded-lg border border-primary-100 dark:border-slate-600">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-shield-alt text-primary-500 dark:text-primary-400 text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-semibold text-primary-600 dark:text-primary-400 mb-2">安全第一</h3>
+                                <p class="text-slate-600 dark:text-slate-300">
+                                    记住，追番很开心，但快乐的前提是安全！在网上活动时要保护好自己的隐私，不轻信陌生人；合理安排时间，不熬夜伤身；选择正规平台，远离盗版风险。任何时候感到不舒服或有疑问，一定要及时告诉爸爸妈妈或老师！
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 text-center">
+                        <a href="#support" class="inline-flex items-center px-4 py-2 rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition-all">
+                            <span>组建你的梦想后援团</span>
+                            <i class="fas fa-arrow-down ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 梦想后援团部分 -->
+        <section id="support" class="mb-16 scroll-mt-20 fade-in-section opacity-0">
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden">
+                <div class="p-6 sm:p-8">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-users text-primary-500 dark:text-primary-400"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-200">组建你的"梦想后援团"：和爸妈一起 high 起来！</h2>
+                    </div>
+
+                    <p class="text-slate-600 dark:text-slate-300 mb-8">
+                        想让爸爸妈妈理解你为什么这么爱看日本新番？与其藏着掖着，不如试试用他们能理解的方式，邀请他们了解你的世界！这里有一些与家长沟通的小策略，帮你获得他们的支持和理解。
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <!-- 策略1 -->
+                        <div class="relative bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-slate-700 dark:to-indigo-900 rounded-lg p-6 shadow-sm">
+                            <div class="absolute top-0 right-0 mt-3 mr-3">
+                                <div class="w-8 h-8 bg-indigo-100 dark:bg-indigo-900 rounded-full flex items-center justify-center">
+                                    <span class="text-indigo-500 dark:text-indigo-300 font-bold">1</span>
+                                </div>
+                            </div>
+                            <h3 class="text-lg font-semibold text-indigo-600 dark:text-indigo-400 mb-3">分享你的"文化发现"</h3>
+                            <p class="text-slate-600 dark:text-slate-300">
+                                告诉他们，"妈妈，你看这个动画里的便当都做得好漂亮！"或者"爸爸，日本高中生放学后会参加社团活动，跟我们不太一样欸！"分享这些有趣的文化细节，让他们觉得看动画也能"长见识"。
+                            </p>
+                            <div class="mt-4 bg-white dark:bg-slate-600 rounded-lg p-3 border border-indigo-100 dark:border-indigo-800">
+                                <p class="text-slate-500 dark:text-slate-300 text-sm italic">
+                                    "妈妈，你知道吗？日本动画里很多美食场景特别精致，看完都让人想尝尝！"
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- 策略2 -->
+                        <div class="relative bg-gradient-to-br from-rose-50 to-pink-50 dark:from-slate-700 dark:to-rose-900 rounded-lg p-6 shadow-sm">
+                            <div class="absolute top-0 right-0 mt-3 mr-3">
+                                <div class="w-8 h-8 bg-rose-100 dark:bg-rose-900 rounded-full flex items-center justify-center">
+                                    <span class="text-rose-500 dark:text-rose-300 font-bold">2</span>
+                                </div>
+                            </div>
+                            <h3 class="text-lg font-semibold text-rose-600 dark:text-rose-400 mb-3">展示"正能量"时刻</h3>
+                            <p class="text-slate-600 dark:text-slate-300">
+                                如果你追的番里有关于友情、努力、成长的感人情节，或者主角克服困难实现梦想的故事，可以分享给他们听。"这个主角为了目标超努力的，我很受鼓舞！"让他们看到动画积极的一面。
+                            </p>
+                            <div class="mt-4 bg-white dark:bg-slate-600 rounded-lg p-3 border border-rose-100 dark:border-rose-800">
+                                <p class="text-slate-500 dark:text-slate-300 text-sm italic">
+                                    "爸爸，这部番讲的是一群人通过不断努力实现梦想的故事，看了之后我也觉得要更认真对待我的学习和兴趣！"
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- 策略3 -->
+                        <div class="relative bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-slate-700 dark:to-amber-900 rounded-lg p-6 shadow-sm">
+                            <div class="absolute top-0 right-0 mt-3 mr-3">
+                                <div class="w-8 h-8 bg-amber-100 dark:bg-amber-900 rounded-full flex items-center justify-center">
+                                    <span class="text-amber-500 dark:text-amber-300 font-bold">3</span>
+                                </div>
+                            </div>
+                            <h3 class="text-lg font-semibold text-amber-600 dark:text-amber-400 mb-3">一起看一部"合家欢"作品</h3>
+                            <p class="text-slate-600 dark:text-slate-300">
+                                找一部画风优美、故事温馨、老少咸宜的日本动画电影或剧集（比如吉卜力的作品，或者一些优秀的治愈系日常番），邀请他们一起看。让他们亲身感受高质量动画的魅力。
+                            </p>
+                            <div class="mt-4 bg-white dark:bg-slate-600 rounded-lg p-3 border border-amber-100 dark:border-amber-800">
+                                <p class="text-slate-500 dark:text-slate-300 text-sm italic">
+                                    "妈妈，周末我们一起看《千与千寻》吧！这是一部很经典的动画电影，画面超美，故事也很有意思！"
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- 策略4 -->
+                        <div class="relative bg-gradient-to-br from-emerald-50 to-green-50 dark:from-slate-700 dark:to-emerald-900 rounded-lg p-6 shadow-sm">
+                            <div class="absolute top-0 right-0 mt-3 mr-3">
+                                <div class="w-8 h-8 bg-emerald-100 dark:bg-emerald-900 rounded-full flex items-center justify-center">
+                                    <span class="text-emerald-500 dark:text-emerald-300 font-bold">4</span>
+                                </div>
+                            </div>
+                            <h3 class="text-lg font-semibold text-emerald-600 dark:text-emerald-400 mb-3">科普"产业价值"</h3>
+                            <p class="text-slate-600 dark:text-slate-300">
+                                可以简单告诉他们，日本动漫产业很发达，有很多优秀的人才在里面工作，创造了很多受欢迎的作品，甚至能带动旅游和周边产品。让他们知道这不仅仅是"小孩子看的东西"。
+                            </p>
+                            <div class="mt-4 bg-white dark:bg-slate-600 rounded-lg p-3 border border-emerald-100 dark:border-emerald-800">
+                                <p class="text-slate-500 dark:text-slate-300 text-sm italic">
+                                    "爸爸，你知道吗？很多日本动画都是有专业团队制作的，有导演、脚本、美术设计、配音演员等不同岗位，就像拍电影一样专业！"
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 重申时间管理 -->
+                    <div class="bg-primary-50 dark:bg-slate-700 rounded-lg p-6 border border-primary-100 dark:border-slate-600 mb-8">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-clock text-primary-500 dark:text-primary-400"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-semibold text-primary-600 dark:text-primary-400 mb-2">重申你的"时间管理"承诺</h3>
+                                <p class="text-slate-600 dark:text-slate-300">
+                                    再次向他们保证你会合理安排时间，不会因为追番耽误学习和休息，并用实际行动证明给他们看。信任是争取支持的基础。试着和父母一起制定一个合理的"追番时间表"，比如完成作业后可以看一集，或者周末有固定的观看时间。说到做到，他们会慢慢信任你的自律能力！
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-indigo-50 dark:bg-indigo-900/30 rounded-lg p-5 border border-indigo-100 dark:border-indigo-800">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-heart text-indigo-500 dark:text-indigo-400 text-2xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-medium text-indigo-700 dark:text-indigo-400 mb-2">亲子关系小提示</h3>
+                                <p class="text-slate-600 dark:text-slate-300">
+                                    记住，父母的担心通常来自于关心。他们可能担心你花太多时间看动画，影响学习；或者担心内容不适合你的年龄；又或者单纯不了解这个领域。通过耐心沟通和实际行动，慢慢消除他们的疑虑，他们很可能会从"反对者"变成你的"支持者"！
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 text-center">
+                        <a href="#resources" class="inline-flex items-center px-4 py-2 rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition-all">
+                            <span>查看藏宝图资源推荐</span>
+                            <i class="fas fa-arrow-down ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 资源推荐部分 -->
+        <section id="resources" class="mb-16 scroll-mt-20 fade-in-section opacity-0">
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden">
+                <div class="p-6 sm:p-8">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-map-marked-alt text-primary-500 dark:text-primary-400"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-200">藏宝图在此：安全又好用的资源推荐！</h2>
+                    </div>
+
+                    <p class="text-slate-600 dark:text-slate-300 mb-8">
+                        追新番需要灵通的情报和靠谱的"据点"！这些资源能帮你更快、更安全地畅游新番世界！务必在爸爸妈妈的指导和监督下使用这些资源，安全第一！
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <!-- 资源分类1 -->
+                        <div class="bg-white dark:bg-slate-700 rounded-lg shadow-sm border border-slate-200 dark:border-slate-600 overflow-hidden">
+                            <div class="bg-blue-50 dark:bg-blue-900/30 p-4 border-b border-blue-100 dark:border-blue-800">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-database text-blue-500 dark:text-blue-300"></i>
+                                    </div>
+                                    <h3 class="text-lg font-semibold text-blue-600 dark:text-blue-400">新番资讯 & 数据库</h3>
+                                </div>
+                                <p class="text-slate-500 dark:text-slate-400 text-sm mt-1 ml-11">
+                                    查信息、看评分、追进度的好地方
+                                </p>
+                            </div>
+                            <div class="p-4">
+                                <ul class="space-y-4">
+                                    <li>
+                                        <h4 class="font-medium text-slate-800 dark:text-slate-200 mb-1">
+                                            <i class="fas fa-tv text-blue-500 dark:text-blue-400 mr-2"></i>Bilibili (B站) 番剧区
+                                        </h4>
+                                        <p class="text-slate-600 dark:text-slate-300 text-sm">
+                                            国内最全的正版新番引进平台之一，有放送时间表、番剧介绍、用户评分评论。
+                                        </p>
+                                        <p class="text-red-500 dark:text-red-400 text-xs mt-1">
+                                            <i class="fas fa-exclamation-circle mr-1"></i>安全提示：评论区和弹幕注意辨别信息，理性发言，设置青少年模式！
+                                        </p>
+                                    </li>
+                                    <li>
+                                        <h4 class="font-medium text-slate-800 dark:text-slate-200 mb-1">
+                                            <i class="fas fa-list text-blue-500 dark:text-blue-400 mr-2"></i>MyAnimeList (MAL) / AniList
+                                        </h4>
+                                        <p class="text-slate-600 dark:text-slate-300 text-sm">
+                                            国际上很常用的动画数据库，信息全，有评分、评论、用户列表功能（英文为主）。
+                                        </p>
+                                        <p class="text-red-500 dark:text-red-400 text-xs mt-1">
+                                            <i class="fas fa-exclamation-circle mr-1"></i>安全提示：纯英文网站，内容需家长协助理解，注意社区规则。
+                                        </p>
+                                    </li>
+                                    <li>
+                                        <h4 class="font-medium text-slate-800 dark:text-slate-200 mb-1">
+                                            <i class="fas fa-book text-blue-500 dark:text-blue-400 mr-2"></i>萌娘百科 / Bangumi 番组计划
+                                        </h4>
+                                        <p class="text-slate-600 dark:text-slate-300 text-sm">
+                                            国内动漫爱好者常用的资料库和社区，可以查作品信息、声优、制作人员等。
+                                        </p>
+                                        <p class="text-red-500 dark:text-red-400 text-xs mt-1">
+                                            <i class="fas fa-exclamation-circle mr-1"></i>安全提示：信息量大，注意辨别和筛选，社区交流注意安全。
+                                        </p>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 资源分类2 -->
+                        <div class="bg-white dark:bg-slate-700 rounded-lg shadow-sm border border-slate-200 dark:border-slate-600 overflow-hidden">
+                            <div class="bg-green-50 dark:bg-green-900/30 p-4 border-b border-green-100 dark:border-green-800">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-green-100 dark:bg-green-800 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-play text-green-500 dark:text-green-300"></i>
+                                    </div>
+                                    <h3 class="text-lg font-semibold text-green-600 dark:text-green-400">正版观看平台</h3>
+                                </div>
+                                <p class="text-slate-500 dark:text-slate-400 text-sm mt-1 ml-11">
+                                    支持创作，安全放心
+                                </p>
+                            </div>
+                            <div class="p-4">
+                                <ul class="space-y-4">
+                                    <li>
+                                        <h4 class="font-medium text-slate-800 dark:text-slate-200 mb-1">
+                                            <i class="fas fa-tv text-green-500 dark:text-green-400 mr-2"></i>Bilibili (B站)
+                                        </h4>
+                                        <p class="text-slate-600 dark:text-slate-300 text-sm">
+                                            主要的正版新番观看渠道，有大量引进版权的动画，可以在线观看，部分需要大会员。
+                                        </p>
+                                    </li>
+                                    <li>
+                                        <h4 class="font-medium text-slate-800 dark:text-slate-200 mb-1">
+                                            <i class="fas fa-play-circle text-green-500 dark:text-green-400 mr-2"></i>爱奇艺动漫 / 腾讯视频动漫
+                                        </h4>
+                                        <p class="text-slate-600 dark:text-slate-300 text-sm">
+                                            也引进部分新番，有自己的动漫专区，正版资源安全可靠。
+                                        </p>
+                                    </li>
+                                    <li class="p-3 bg-green-50 dark:bg-green-900/30 rounded-lg">
+                                        <p class="text-green-700 dark:text-green-300 text-sm font-medium">
+                                            <i class="fas fa-shield-alt mr-2"></i>强烈建议：坚决抵制盗版网站！它们不仅侵权，还可能携带病毒或不良广告！支持正版是对你喜欢的作品最好的支持！
+                                        </p>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 资源分类3 -->
+                        <div class="bg-white dark:bg-slate-700 rounded-lg shadow-sm border border-slate-200 dark:border-slate-600 overflow-hidden">
+                            <div class="bg-purple-50 dark:bg-purple-900/30 p-4 border-b border-purple-100 dark:border-purple-800">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-purple-100 dark:bg-purple-800 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-music text-purple-500 dark:text-purple-300"></i>
+                                    </div>
+                                    <h3 class="text-lg font-semibold text-purple-600 dark:text-purple-400">动漫音乐</h3>
+                                </div>
+                                <p class="text-slate-500 dark:text-slate-400 text-sm mt-1 ml-11">
+                                    OP/ED 循环听
+                                </p>
+                            </div>
+                            <div class="p-4">
+                                <ul class="space-y-4">
+                                    <li>
+                                        <h4 class="font-medium text-slate-800 dark:text-slate-200 mb-1">
+                                            <i class="fas fa-headphones text-purple-500 dark:text-purple-400 mr-2"></i>网易云音乐 / QQ 音乐 / Spotify
+                                        </h4>
+                                        <p class="text-slate-600 dark:text-slate-300 text-sm">
+                                            很多新番的OP/ED都会在这些音乐平台上架，可以完整收听，甚至创建自己的动漫音乐歌单。
+                                        </p>
+                                    </li>
+                                    <li>
+                                        <h4 class="font-medium text-slate-800 dark:text-slate-200 mb-1">
+                                            <i class="fas fa-video text-purple-500 dark:text-purple-400 mr-2"></i>B站音乐区 / YouTube
+                                        </h4>
+                                        <p class="text-slate-600 dark:text-slate-300 text-sm">
+                                            可以找到很多官方发布的MV或音乐资源，包括动画歌曲的现场演出、完整MV等。
+                                        </p>
+                                        <p class="text-red-500 dark:text-red-400 text-xs mt-1">
+                                            <i class="fas fa-exclamation-circle mr-1"></i>安全提示：YouTube 内容需筛选，注意广告。
+                                        </p>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- 资源分类4 -->
+                        <div class="bg-white dark:bg-slate-700 rounded-lg shadow-sm border border-slate-200 dark:border-slate-600 overflow-hidden">
+                            <div class="bg-amber-50 dark:bg-amber-900/30 p-4 border-b border-amber-100 dark:border-amber-800">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-amber-100 dark:bg-amber-800 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-globe text-amber-500 dark:text-amber-300"></i>
+                                    </div>
+                                    <h3 class="text-lg font-semibold text-amber-600 dark:text-amber-400">官方网站 & 社交媒体</h3>
+                                </div>
+                                <p class="text-slate-500 dark:text-slate-400 text-sm mt-1 ml-11">
+                                    获取一手信息
+                                </p>
+                            </div>
+                            <div class="p-4">
+                                <ul class="space-y-4">
+                                    <li>
+                                        <h4 class="font-medium text-slate-800 dark:text-slate-200 mb-1">
+                                            <i class="fas fa-desktop text-amber-500 dark:text-amber-400 mr-2"></i>动画作品的官方网站
+                                        </h4>
+                                        <p class="text-slate-600 dark:text-slate-300 text-sm">
+                                            通常会发布最新的宣传图、预告片、声优信息等。（需要一定的日语或英语能力，或借助翻译工具）
+                                        </p>
+                                        <p class="text-red-500 dark:text-red-400 text-xs mt-1">
+                                            <i class="fas fa-exclamation-circle mr-1"></i>安全提示：注意辨别假冒网站，不乱点链接。
+                                        </p>
+                                    </li>
+                                    <li>
+                                        <h4 class="font-medium text-slate-800 dark:text-slate-200 mb-1">
+                                            <i class="fab fa-twitter text-amber-500 dark:text-amber-400 mr-2"></i>官方 Twitter 账号
+                                        </h4>
+                                        <p class="text-slate-600 dark:text-slate-300 text-sm">
+                                            很多动画都有官方Twitter，会第一时间发布最新消息，包括播出信息、活动预告等。
+                                        </p>
+                                        <p class="text-red-500 dark:text-red-400 text-xs mt-1">
+                                            <i class="fas fa-exclamation-circle mr-1"></i>安全提示：注意辨别假冒账号，不乱点链接。
+                                        </p>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 安全提示 -->
+                    <div class="bg-red-50 dark:bg-red-900/30 rounded-lg p-6 border border-red-100 dark:border-red-800">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <div class="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-shield-alt text-red-500 dark:text-red-400 text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="text-lg font-semibold text-red-600 dark:text-red-400 mb-2">最重要的安全守则</h3>
+                                <ul class="space-y-2">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check text-red-500 dark:text-red-400 mt-1 mr-2"></i>
+                                        <p class="text-slate-700 dark:text-slate-300">
+                                            <span class="font-medium">务必在爸爸妈妈知情和指导下</span> 访问任何网站、APP或社区。
+                                        </p>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check text-red-500 dark:text-red-400 mt-1 mr-2"></i>
+                                        <p class="text-slate-700 dark:text-slate-300">
+                                            <span class="font-medium">学会辨别信息真伪</span>，不轻信网络传言。
+                                        </p>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check text-red-500 dark:text-red-400 mt-1 mr-2"></i>
+                                        <p class="text-slate-700 dark:text-slate-300">
+                                            <span class="font-medium">保护好个人隐私</span>，绝对不要透露真实姓名、学校、住址、联系方式等。
+                                        </p>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check text-red-500 dark:text-red-400 mt-1 mr-2"></i>
+                                        <p class="text-slate-700 dark:text-slate-300">
+                                            <span class="font-medium">控制好上网和看番时间</span>，学习、休息、锻炼都不能少。
+                                        </p>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check text-red-500 dark:text-red-400 mt-1 mr-2"></i>
+                                        <p class="text-slate-700 dark:text-slate-300">
+                                            <span class="font-medium text-red-600 dark:text-red-400">遇到任何让你不舒服或害怕的内容，立刻告诉爸爸妈妈！</span>
+                                        </p>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 结语部分 -->
+        <section class="mb-20 fade-in-section opacity-0">
+            <div class="bg-gradient-to-br from-primary-50 via-indigo-50 to-purple-50 dark:from-slate-800 dark:via-indigo-950 dark:to-purple-950 rounded-xl shadow-lg p-8 text-center">
+                <h2 class="text-2xl md:text-3xl font-bold mb-6 text-primary-600 dark:text-primary-400">
+                    <i class="fas fa-rocket mr-2"></i>向着新番的星辰大海出发吧！
+                </h2>
+                <p class="text-slate-700 dark:text-slate-300 max-w-3xl mx-auto mb-6">
+                    知道你对日本新番这么有热情，真是太酷了！追番的旅程就像每周都在开启新的冒险，充满了未知和期待。记住，最重要的永远是<span class="font-medium">享受动画带给你的乐趣</span>！
+                </p>
+                <p class="text-slate-700 dark:text-slate-300 max-w-3xl mx-auto mb-8">
+                    大胆地去探索吧，不管是热血的战斗、温馨的日常，还是奇幻的异世界，总有一款适合你！遇到"神作"别忘了和同好分享喜悦，看到"劝退"情节也不用太较真，毕竟每个人的口味都不同嘛！
+                </p>
+                <p class="text-lg font-medium text-primary-600 dark:text-primary-400">
+                    保持你的好奇心和判断力，在动画的世界里不断发现，不断成长！未来的<span class="font-bold">资深动画迷 / 潮流新番领航员</span>，新一季的精彩等着你呢！✨
+                </p>
+                <div class="mt-8 flex justify-center">
+                    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="inline-flex items-center px-4 py-2 rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition-all">
+                        <i class="fas fa-arrow-up mr-2"></i>
+                        <span>返回顶部</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-slate-100 dark:bg-slate-800 py-8 border-t border-slate-200 dark:border-slate-700">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <h3 class="text-lg font-semibold text-primary-600 dark:text-primary-400 mb-2">作者信息</h3>
+                    <p class="text-slate-600 dark:text-slate-400">作者姓名: Izumi.屈源</p>
+                    <div class="flex space-x-4 mt-3">
+                        <a href="https://github.com/OtokoNoIzumi" target="_blank" class="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                        <a href="https://space.bilibili.com/82205" target="_blank" class="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+                            <i class="fab fa-bilibili text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="text-center md:text-right">
+                    <p class="text-slate-500 dark:text-slate-400">© 2025 版权所有</p>
+                    <p class="text-sm text-slate-400 dark:text-slate-500 mt-1">用 ❤️ 创作</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 移动端菜单切换
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            if (mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.remove('hidden');
+            } else {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+
+        // 导航链接点击后关闭移动菜单
+        document.querySelectorAll('#mobileMenu a').forEach(link => {
+            link.addEventListener('click', function() {
+                document.getElementById('mobileMenu').classList.add('hidden');
+            });
+        });
+
+        // 滚动时添加渐入效果
+        document.addEventListener('DOMContentLoaded', function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-fade-in');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-in-section').forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
