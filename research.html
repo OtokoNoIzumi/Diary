@@ -78,8 +78,143 @@
         </div>
     </header>
 
+    <!-- 悬浮按钮，用于呼出迷你播放器 -->
+    <button id="floatingShowButton" class="fixed bottom-6 right-6 z-50 bg-blue-500 text-white rounded-full p-3 shadow-lg hover:bg-blue-600 transition-all duration-300 transform scale-0 opacity-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12 6-12 7" />
+        </svg>
+    </button>
+
+    <!-- 固定在底部的迷你播放控制器 -->
+    <div id="miniPlayer" class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-md transform translate-y-full transition-transform duration-300 z-50 border-t border-gray-200 dark:border-gray-700 pb-safe">
+        <div class="container mx-auto max-w-6xl px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <button id="miniPlayPauseBtn" class="mr-3 bg-gray-200 dark:bg-gray-700 p-2 rounded-full flex-shrink-0">
+                        <svg id="miniPlayIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <svg id="miniPauseIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </button>
+                    <div class="text-sm">
+                        <div class="font-medium truncate max-w-[150px] sm:max-w-xs">中美关税战对南山区外贸企业影响</div>
+                        <div id="miniTimeDisplay" class="text-xs text-gray-500 dark:text-gray-400">0:00 / 0:00</div>
+                    </div>
+                </div>
+
+                <div class="flex-grow mx-4 hidden sm:block">
+                    <div id="miniProgressContainer" class="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full overflow-hidden cursor-pointer">
+                        <div id="miniProgressBar" class="bg-blue-500 h-2 rounded-full" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-3 flex-shrink-0">
+                    <button id="miniRewind10" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.333 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z" />
+                    </svg>
+                    </button>
+                    <button id="miniForward10" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.933 12.8a1 1 0 000-1.6L6.6 7.2A1 1 0 005 8v8a1 1 0 001.6.8l5.333-4zM19.933 12.8a1 1 0 000-1.6l-5.333-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.333-4z" />
+                    </svg>
+                    </button>
+                    <button id="miniSpeedBtn" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 px-2 bg-gray-200 dark:bg-gray-700 rounded">
+                        <span class="text-xs font-medium">1X</span>
+                    </button>
+                    <button id="toggleMiniPlayer" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 移动端专用进度条，只在移动端显示 -->
+            <div class="mt-2 sm:hidden">
+                <div id="mobileProgressContainer" class="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full overflow-hidden cursor-pointer">
+                    <div id="mobileProgressBar" class="bg-blue-500 h-2 rounded-full" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 主要内容 -->
     <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
+        <!-- 在内容之前添加音频播放器部分 -->
+        <section class="mb-8 fade-in" style="animation-delay: 0.05s;">
+            <div class="card p-4 bg-gray-50 dark:bg-gray-800 rounded-lg shadow">
+                <div class="p-2">
+                    <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-1">收听报告解读</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">中美关税战对南山区外贸企业影响及应对策略</p>
+
+                    <!-- 隐藏原生音频控件但保留功能 -->
+                    <audio id="audioPlayer" class="hidden" preload="metadata">
+                        <source src="media/南山区外贸企业中美关税战调研报告.ogg" type="audio/ogg">
+                        您的浏览器不支持音频播放器
+                    </audio>
+
+                    <!-- 播放进度条 -->
+                    <div class="mb-2 mt-4">
+                        <div id="progressContainer" class="relative h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden cursor-pointer">
+                            <!-- 进度条 -->
+                            <div id="progressBar" class="absolute h-full bg-blue-500 w-0 rounded-full"></div>
+                            <!-- 拖动手柄 -->
+                            <div id="progressHandle" class="absolute h-4 w-4 bg-blue-500 rounded-full border-2 border-white dark:border-gray-800 top-1/2 transform -translate-y-1/2 -translate-x-1/2" style="left: 0%"></div>
+                        </div>
+                        <!-- 时间标记 -->
+                        <div class="flex justify-between mt-1">
+                            <span id="currentTime" class="text-xs text-gray-500 dark:text-gray-400">0:00</span>
+                            <span id="duration" class="text-xs text-gray-500 dark:text-gray-400">0:00</span>
+                        </div>
+                    </div>
+
+                    <!-- 控制按钮 -->
+                    <div class="flex justify-between items-center mt-4">
+                        <!-- 播放速度控制 -->
+                        <button id="playbackSpeed" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">
+                            <span class="text-sm font-medium">1X</span>
+                        </button>
+
+                        <div class="flex space-x-4 sm:space-x-6 md:space-x-8 items-center">
+                            <!-- 后退10秒 -->
+                            <button id="rewind10" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 relative">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.333 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z" />
+                                </svg>
+                                <span class="absolute text-xs font-bold bottom-0 right-0 bg-gray-200 dark:bg-gray-700 rounded-full w-4 h-4 flex items-center justify-center">10</span>
+                            </button>
+
+                            <!-- 播放/暂停按钮 -->
+                            <button id="playPauseBtn" class="text-gray-800 dark:text-gray-200 bg-gray-200 dark:bg-gray-700 p-2 rounded-full">
+                                <svg id="playIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <svg id="pauseIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </button>
+
+                            <!-- 前进10秒 -->
+                            <button id="forward10" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 relative">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.933 12.8a1 1 0 000-1.6L6.6 7.2A1 1 0 005 8v8a1 1 0 001.6.8l5.333-4zM19.933 12.8a1 1 0 000-1.6l-5.333-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.333-4z" />
+                                </svg>
+                                <span class="absolute text-xs font-bold bottom-0 right-0 bg-gray-200 dark:bg-gray-700 rounded-full w-4 h-4 flex items-center justify-center">10</span>
+                            </button>
+                        </div>
+
+                        <!-- 空白区域保持布局平衡 -->
+                        <div class="w-8"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <article class="max-w-4xl mx-auto prose prose-indigo dark:prose-invert lg:prose-lg">
             <h1 class="text-3xl sm:text-4xl font-bold mb-6 text-center text-balance">
                 中美关税战对南山区外贸企业影响及应对策略调研报告
@@ -641,32 +776,7 @@
                                         <h4 class="font-bold text-center mb-4">省油灯科技市场结构变化</h4>
                                         <div class="relative w-full aspect-square">
                                             <div class="absolute inset-0 flex items-center justify-center">
-                                                <div class="w-full h-full max-w-[200px] max-h-[200px]">
-                                                    <!-- 简化饼图 -->
-                                                    <svg viewBox="0 0 100 100" class="w-full h-full">
-                                                        <!-- 2023年数据 -->
-                                                        <circle cx="50" cy="50" r="25" fill="transparent" stroke="#ddd" stroke-width="50" stroke-dasharray="50 50" stroke-dashoffset="0" transform="rotate(90 50 50)">
-                                                            <title>美国市场 (50%)</title>
-                                                        </circle>
-                                                        <circle cx="50" cy="50" r="25" fill="transparent" stroke="#6366f1" stroke-width="50" stroke-dasharray="30 70" stroke-dashoffset="-50" transform="rotate(90 50 50)">
-                                                            <title>欧洲市场 (30%)</title>
-                                                        </circle>
-                                                        <circle cx="50" cy="50" r="25" fill="transparent" stroke="#10b981" stroke-width="50" stroke-dasharray="20 80" stroke-dashoffset="-80" transform="rotate(90 50 50)">
-                                                            <title>亚洲市场 (20%)</title>
-                                                        </circle>
-
-                                                        <!-- 2025年数据（内圈） -->
-                                                        <circle cx="50" cy="50" r="12.5" fill="transparent" stroke="#ddd" stroke-width="25" stroke-dasharray="10 90" stroke-dashoffset="0" transform="rotate(90 50 50)">
-                                                            <title>美国市场 (10%)</title>
-                                                        </circle>
-                                                        <circle cx="50" cy="50" r="12.5" fill="transparent" stroke="#6366f1" stroke-width="25" stroke-dasharray="50 50" stroke-dashoffset="-10" transform="rotate(90 50 50)">
-                                                            <title>欧洲市场 (50%)</title>
-                                                        </circle>
-                                                        <circle cx="50" cy="50" r="12.5" fill="transparent" stroke="#10b981" stroke-width="25" stroke-dasharray="40 60" stroke-dashoffset="-60" transform="rotate(90 50 50)">
-                                                            <title>亚洲市场 (40%)</title>
-                                                        </circle>
-                                                    </svg>
-                                                </div>
+                                                <div id="market-pie-chart" class="w-full h-full max-w-[220px] max-h-[220px]"></div>
                                             </div>
                                         </div>
                                         <div class="flex justify-center space-x-4 mt-2">
@@ -694,6 +804,75 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+                                    <script>
+                                        // 嵌套环形图数据
+                                        document.addEventListener('DOMContentLoaded', function () {
+                                            var chartDom = document.getElementById('market-pie-chart');
+                                            if (!chartDom) return;
+                                            var myChart = echarts.init(chartDom);
+
+                                            var option = {
+                                                tooltip: {
+                                                    trigger: 'item',
+                                                    formatter: '{b} ({c}%)'
+                                                },
+                                                legend: {
+                                                    orient: 'horizontal',
+                                                    bottom: 0,
+                                                    data: ['美国', '欧洲', '亚洲'],
+                                                    textStyle: {
+                                                        fontSize: 12
+                                                    }
+                                                },
+                                                series: [
+                                                    {
+                                                        name: '2023年',
+                                                        type: 'pie',
+                                                        radius: ['60%', '80%'],
+                                                        avoidLabelOverlap: false,
+                                                        label: {
+                                                            show: false
+                                                        },
+                                                        labelLine: {
+                                                            show: false
+                                                        },
+                                                        itemStyle: {
+                                                            borderColor: '#fff',
+                                                            borderWidth: 2
+                                                        },
+                                                        data: [
+                                                            { value: 50, name: '美国', itemStyle: { color: '#d1d5db' } }, // 灰色
+                                                            { value: 30, name: '欧洲', itemStyle: { color: '#6366f1' } }, // 主色
+                                                            { value: 20, name: '亚洲', itemStyle: { color: '#10b981' } }  // 绿色
+                                                        ]
+                                                    },
+                                                    {
+                                                        name: '2025年',
+                                                        type: 'pie',
+                                                        radius: ['35%', '55%'],
+                                                        avoidLabelOverlap: false,
+                                                        label: {
+                                                            show: false
+                                                        },
+                                                        labelLine: {
+                                                            show: false
+                                                        },
+                                                        itemStyle: {
+                                                            borderColor: '#fff',
+                                                            borderWidth: 2
+                                                        },
+                                                        data: [
+                                                            { value: 10, name: '美国', itemStyle: { color: '#d1d5db' } },
+                                                            { value: 50, name: '欧洲', itemStyle: { color: '#6366f1' } },
+                                                            { value: 40, name: '亚洲', itemStyle: { color: '#10b981' } }
+                                                        ]
+                                                    }
+                                                ]
+                                            };
+                                            myChart.setOption(option);
+                                        });
+                                    </script>
 
                                     <!-- 右侧内容：案例描述 -->
                                     <div class="w-full md:w-3/5">
@@ -924,27 +1103,23 @@
                     </h2>
 
                     <!-- 政策建议选项卡 -->
-                    <div x-data="{ activeTab: 'enterprise' }" class="space-y-6">
+                    <div class="space-y-6">
                         <!-- 选项卡按钮 -->
                         <div class="flex flex-wrap mb-4">
-                            <button
-                                @click="activeTab = 'enterprise'"
-                                :class="{ 'bg-primary-light dark:bg-primary-dark text-white': activeTab === 'enterprise', 'bg-gray-100 dark:bg-gray-800': activeTab !== 'enterprise' }"
-                                class="px-6 py-2 font-medium text-sm rounded-tl-lg rounded-bl-lg hover:bg-opacity-90 transition duration-150 ease-in-out"
+                            <button id="tab-enterprise" onclick="changeTab('enterprise')"
+                                class="px-6 py-2 font-medium text-sm rounded-tl-lg rounded-bl-lg bg-primary-light dark:bg-primary-dark text-white hover:bg-opacity-90 transition duration-150 ease-in-out"
                             >
                                 企业层面
                             </button>
-                            <button
-                                @click="activeTab = 'government'"
-                                :class="{ 'bg-primary-light dark:bg-primary-dark text-white': activeTab === 'government', 'bg-gray-100 dark:bg-gray-800': activeTab !== 'government' }"
-                                class="px-6 py-2 font-medium text-sm rounded-tr-lg rounded-br-lg hover:bg-opacity-90 transition duration-150 ease-in-out"
+                            <button id="tab-government" onclick="changeTab('government')"
+                                class="px-6 py-2 font-medium text-sm rounded-tr-lg rounded-br-lg bg-gray-100 dark:bg-gray-800 hover:bg-opacity-90 transition duration-150 ease-in-out"
                             >
                                 政府层面
                             </button>
                         </div>
 
                         <!-- 企业层面内容 -->
-                        <div x-show="activeTab === 'enterprise'" class="animate-fade-in space-y-6">
+                        <div id="content-enterprise" class="space-y-6">
                             <div class="rounded-lg bg-card-light dark:bg-card-dark p-6 shadow-sm transition-all duration-300">
                                 <h3 class="text-xl font-semibold mb-4 flex items-center">
                                     <div class="w-10 h-10 rounded-full bg-primary-light/10 dark:bg-primary-dark/20 flex items-center justify-center mr-3">
@@ -953,78 +1128,60 @@
                                     构建"三维度供应链韧性体系"
                                 </h3>
 
-                                <div x-data="{ expanded: false }" class="relative">
-                                    <!-- 折叠内容 -->
-                                    <div :class="expanded ? '' : 'h-24 overflow-hidden'" class="prose prose-sm dark:prose-invert max-w-none">
-                                        <div class="space-y-4">
-                                            <div class="flex gap-4 flex-col md:flex-row">
-                                                <div class="md:w-1/3 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
-                                                    <h4 class="font-bold text-primary-light dark:text-primary-dark">地理维度</h4>
-                                                    <p class="text-sm mt-2">
-                                                        建立"中国+1+X"供应链布局（核心产能在中国，1个主力海外基地如越南/墨西哥，X个备用区域如印度、中东）。
-                                                    </p>
-                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                                        例如，希立仪器在越南建立电力设备组装基地后，同步在印度洽谈第二工厂，预计2026年非美市场产能占比提升至70%。
-                                                    </p>
-                                                </div>
-
-                                                <div class="md:w-1/3 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
-                                                    <h4 class="font-bold text-primary-light dark:text-primary-dark">层级维度</h4>
-                                                    <p class="text-sm mt-2">
-                                                        对关键零部件（如半导体芯片、医疗传感器）开发3家以上替代供应商，建立"主供-备份-应急"三级供应体系。
-                                                    </p>
-                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                                        如万魔声学将耳机芯片供应商从美国楼氏电子拓展至中国瑞昱、韩国三星，国产化率提升至97%，交货周期缩短40%。
-                                                    </p>
-                                                </div>
-
-                                                <div class="md:w-1/3 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
-                                                    <h4 class="font-bold text-primary-light dark:text-primary-dark">技术维度</h4>
-                                                    <p class="text-sm mt-2">
-                                                        投资智能仓储管理系统（WMS），实现全球库存动态调配，关税波动时可72小时内切换供货区域。
-                                                    </p>
-                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                                        华为墨西哥工厂与深圳总部库存系统联网，2024年美国市场订单履约成本下降25%。
-                                                    </p>
-                                                </div>
+                                <div class="prose prose-sm dark:prose-invert max-w-none">
+                                    <div class="space-y-4">
+                                        <div class="flex gap-4 flex-col md:flex-row">
+                                            <div class="md:w-1/3 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">地理维度</h4>
+                                                <p class="text-sm mt-2">
+                                                    建立"中国+1+X"供应链布局（核心产能在中国，1个主力海外基地如越南/墨西哥，X个备用区域如印度、中东）。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    例如，希立仪器在越南建立电力设备组装基地后，同步在印度洽谈第二工厂，预计2026年非美市场产能占比提升至70%。
+                                                </p>
                                             </div>
 
-                                            <div class="bg-yellow-50 dark:bg-yellow-900/10 p-4 rounded-lg">
-                                                <h5 class="font-bold flex items-center text-yellow-800 dark:text-yellow-300">
-                                                    <i class="fas fa-lightbulb mr-2"></i>建议行动
-                                                </h5>
-                                                <ul class="mt-2 space-y-2 text-sm">
-                                                    <li class="flex items-start">
-                                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                                        <span>制定18个月供应链调整规划，同时启动海外基地评估与国内高端产能提升</span>
-                                                    </li>
-                                                    <li class="flex items-start">
-                                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                                        <span>针对关键零部件开展替代方案评估，优先解决"卡脖子"技术</span>
-                                                    </li>
-                                                    <li class="flex items-start">
-                                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                                        <span>投资全球供应链可视化平台，实现跨区域库存统一管理</span>
-                                                    </li>
-                                                </ul>
+                                            <div class="md:w-1/3 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">层级维度</h4>
+                                                <p class="text-sm mt-2">
+                                                    对关键零部件（如半导体芯片、医疗传感器）开发3家以上替代供应商，建立"主供-备份-应急"三级供应体系。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    如万魔声学将耳机芯片供应商从美国楼氏电子拓展至中国瑞昱、韩国三星，国产化率提升至97%，交货周期缩短40%。
+                                                </p>
+                                            </div>
+
+                                            <div class="md:w-1/3 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">技术维度</h4>
+                                                <p class="text-sm mt-2">
+                                                    投资智能仓储管理系统（WMS），实现全球库存动态调配，关税波动时可72小时内切换供货区域。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    华为墨西哥工厂与深圳总部库存系统联网，2024年美国市场订单履约成本下降25%。
+                                                </p>
                                             </div>
                                         </div>
+
+                                        <div class="bg-yellow-50 dark:bg-yellow-900/10 p-4 rounded-lg">
+                                            <h5 class="font-bold flex items-center text-yellow-800 dark:text-yellow-300">
+                                                <i class="fas fa-lightbulb mr-2"></i>建议行动
+                                            </h5>
+                                            <ul class="mt-2 space-y-2 text-sm">
+                                                <li class="flex items-start">
+                                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                                    <span>制定18个月供应链调整规划，同时启动海外基地评估与国内高端产能提升</span>
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                                    <span>针对关键零部件开展替代方案评估，优先解决"卡脖子"技术</span>
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                                    <span>投资全球供应链可视化平台，实现跨区域库存统一管理</span>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
-
-                                    <!-- 渐变遮罩 -->
-                                    <div
-                                        x-show="!expanded"
-                                        class="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-card-light dark:from-card-dark to-transparent"
-                                    ></div>
-
-                                    <!-- 展开/收起按钮 -->
-                                    <button
-                                        @click="expanded = !expanded"
-                                        class="mt-2 text-sm text-primary-light dark:text-primary-dark flex items-center hover:underline"
-                                    >
-                                        <span x-text="expanded ? '收起' : '展开'"></span>
-                                        <i :class="expanded ? 'fa-chevron-up' : 'fa-chevron-down'" class="fas ml-1"></i>
-                                    </button>
                                 </div>
                             </div>
 
@@ -1036,75 +1193,57 @@
                                     实施"技术研发双轨制"
                                 </h3>
 
-                                <div x-data="{ expanded: false }" class="relative">
-                                    <!-- 折叠内容 -->
-                                    <div :class="expanded ? '' : 'h-24 overflow-hidden'" class="prose prose-sm dark:prose-invert max-w-none">
-                                        <div class="space-y-4">
-                                            <div class="flex gap-4 flex-col md:flex-row">
-                                                <div class="md:w-1/3 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
-                                                    <h4 class="font-bold text-primary-light dark:text-primary-dark">短期攻坚</h4>
-                                                    <p class="text-sm mt-2">
-                                                        设立"关税倒逼技术攻关专项"，聚焦进口替代率超60%的领域（如高端轴承、光刻胶）。
-                                                    </p>
-                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                                        南山区企业可申请最高300万元研发补贴，联合清华大学深圳国际研究生院等机构共建实验室，2024年已有57家企业通过该专项实现关键部件国产化。
-                                                    </p>
-                                                </div>
-
-                                                <div class="md:w-1/3 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
-                                                    <h4 class="font-bold text-primary-light dark:text-primary-dark">长期布局</h4>
-                                                    <p class="text-sm mt-2">
-                                                        参与国际标准制定（如IEEE、ISO），在无人机通信协议（大疆主导3项IEEE标准）、医疗器械数据安全等领域掌握话语权。
-                                                    </p>
-                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                                        迈瑞医疗通过主导东盟医疗器械标准修订，2024年东南亚市场认证周期缩短60%，注册成本下降40%。
-                                                    </p>
-                                                </div>
-
-                                                <div class="md:w-1/3 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
-                                                    <h4 class="font-bold text-primary-light dark:text-primary-dark">研发工具创新</h4>
-                                                    <p class="text-sm mt-2">
-                                                        利用深圳"算力资源池"（鹏城实验室算力免费开放），开展基于数字孪生的关税影响模拟，优化产品成本结构。
-                                                    </p>
-                                                </div>
+                                <div class="prose prose-sm dark:prose-invert max-w-none">
+                                    <div class="space-y-4">
+                                        <div class="flex gap-4 flex-col md:flex-row">
+                                            <div class="md:w-1/3 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">短期攻坚</h4>
+                                                <p class="text-sm mt-2">
+                                                    设立"关税倒逼技术攻关专项"，聚焦进口替代率超60%的领域（如高端轴承、光刻胶）。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    南山区企业可申请最高300万元研发补贴，联合清华大学深圳国际研究生院等机构共建实验室，2024年已有57家企业通过该专项实现关键部件国产化。
+                                                </p>
                                             </div>
 
-                                            <div class="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-lg">
-                                                <h5 class="font-bold flex items-center text-blue-800 dark:text-blue-300">
-                                                    <i class="fas fa-flask mr-2"></i>建议行动
-                                                </h5>
-                                                <ul class="mt-2 space-y-2 text-sm">
-                                                    <li class="flex items-start">
-                                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                                        <span>分析产品BOM中关税敏感零部件，制定替代研发时间表</span>
-                                                    </li>
-                                                    <li class="flex items-start">
-                                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                                        <span>组建国际标准团队，选择1-2个优势领域重点突破</span>
-                                                    </li>
-                                                    <li class="flex items-start">
-                                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                                        <span>投入研发预算5%-10%用于长期前沿技术探索</span>
-                                                    </li>
-                                                </ul>
+                                            <div class="md:w-1/3 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">长期布局</h4>
+                                                <p class="text-sm mt-2">
+                                                    参与国际标准制定（如IEEE、ISO），在无人机通信协议（大疆主导3项IEEE标准）、医疗器械数据安全等领域掌握话语权。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    迈瑞医疗通过主导东盟医疗器械标准修订，2024年东南亚市场认证周期缩短60%，注册成本下降40%。
+                                                </p>
+                                            </div>
+
+                                            <div class="md:w-1/3 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">研发工具创新</h4>
+                                                <p class="text-sm mt-2">
+                                                    利用深圳"算力资源池"（鹏城实验室算力免费开放），开展基于数字孪生的关税影响模拟，优化产品成本结构。
+                                                </p>
                                             </div>
                                         </div>
+
+                                        <div class="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-lg">
+                                            <h5 class="font-bold flex items-center text-blue-800 dark:text-blue-300">
+                                                <i class="fas fa-flask mr-2"></i>建议行动
+                                            </h5>
+                                            <ul class="mt-2 space-y-2 text-sm">
+                                                <li class="flex items-start">
+                                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                                    <span>分析产品BOM中关税敏感零部件，制定替代研发时间表</span>
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                                    <span>组建国际标准团队，选择1-2个优势领域重点突破</span>
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                                    <span>投入研发预算5%-10%用于长期前沿技术探索</span>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
-
-                                    <!-- 渐变遮罩 -->
-                                    <div
-                                        x-show="!expanded"
-                                        class="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-card-light dark:from-card-dark to-transparent"
-                                    ></div>
-
-                                    <!-- 展开/收起按钮 -->
-                                    <button
-                                        @click="expanded = !expanded"
-                                        class="mt-2 text-sm text-primary-light dark:text-primary-dark flex items-center hover:underline"
-                                    >
-                                        <span x-text="expanded ? '收起' : '展开'"></span>
-                                        <i :class="expanded ? 'fa-chevron-up' : 'fa-chevron-down'" class="fas ml-1"></i>
-                                    </button>
                                 </div>
                             </div>
 
@@ -1116,74 +1255,56 @@
                                     打造"全渠道市场渗透矩阵"
                                 </h3>
 
-                                <div x-data="{ expanded: false }" class="relative">
-                                    <!-- 折叠内容 -->
-                                    <div :class="expanded ? '' : 'h-24 overflow-hidden'" class="prose prose-sm dark:prose-invert max-w-none">
-                                        <div class="space-y-4">
-                                            <div class="flex gap-4 flex-col md:flex-row">
-                                                <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
-                                                    <h4 class="font-bold text-primary-light dark:text-primary-dark">新兴市场精耕</h4>
-                                                    <p class="text-sm mt-2">
-                                                        针对东盟、中东市场推出"本土化产品包"（如适应东南亚高温的锂电池散热方案、中东定制化医疗设备电压适配模块）。
-                                                    </p>
-                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                                        省油灯科技为东南亚市场开发的防水型移动储能设备，2024年订单增长70%，单价较欧美市场高15%。
-                                                    </p>
-                                                    <p class="text-sm mt-2">
-                                                        建立"市场准入快速响应小组"，专项处理新兴市场认证（如沙特SASO、印尼SNI），配备本地律师团队解决贸易壁垒。
-                                                    </p>
-                                                </div>
-
-                                                <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
-                                                    <h4 class="font-bold text-primary-light dark:text-primary-dark">线上渠道突破</h4>
-                                                    <p class="text-sm mt-2">
-                                                        搭建独立站（Shopify+Shoplazza双平台布局），通过TikTok Shop、Instagram Shopping开展社交电商，降低对亚马逊等传统平台依赖。
-                                                    </p>
-                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                                        大疆2024年独立站销售额占比达35%，避开平台佣金及关税分摊争议，利润率提升8个百分点。
-                                                    </p>
-                                                    <p class="text-sm mt-2">
-                                                        参与深圳"跨境电商品牌出海计划"，获得最高50万元独立站建设补贴+30万元海外社交媒体推广费用。
-                                                    </p>
-                                                </div>
+                                <div class="prose prose-sm dark:prose-invert max-w-none">
+                                    <div class="space-y-4">
+                                        <div class="flex gap-4 flex-col md:flex-row">
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">新兴市场精耕</h4>
+                                                <p class="text-sm mt-2">
+                                                    针对东盟、中东市场推出"本土化产品包"（如适应东南亚高温的锂电池散热方案、中东定制化医疗设备电压适配模块）。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    省油灯科技为东南亚市场开发的防水型移动储能设备，2024年订单增长70%，单价较欧美市场高15%。
+                                                </p>
+                                                <p class="text-sm mt-2">
+                                                    建立"市场准入快速响应小组"，专项处理新兴市场认证（如沙特SASO、印尼SNI），配备本地律师团队解决贸易壁垒。
+                                                </p>
                                             </div>
 
-                                            <div class="bg-purple-50 dark:bg-purple-900/10 p-4 rounded-lg">
-                                                <h5 class="font-bold flex items-center text-purple-800 dark:text-purple-300">
-                                                    <i class="fas fa-globe mr-2"></i>建议行动
-                                                </h5>
-                                                <ul class="mt-2 space-y-2 text-sm">
-                                                    <li class="flex items-start">
-                                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                                        <span>设立专门的新兴市场团队，配备熟悉当地语言和文化的人才</span>
-                                                    </li>
-                                                    <li class="flex items-start">
-                                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                                        <span>将独立站视为主战场，分散平台风险，打造自主数字营销能力</span>
-                                                    </li>
-                                                    <li class="flex items-start">
-                                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                                        <span>投入营销预算10%-15%用于海外社交媒体内容创作</span>
-                                                    </li>
-                                                </ul>
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">线上渠道突破</h4>
+                                                <p class="text-sm mt-2">
+                                                    搭建独立站（Shopify+Shoplazza双平台布局），通过TikTok Shop、Instagram Shopping开展社交电商，降低对亚马逊等传统平台依赖。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    大疆2024年独立站销售额占比达35%，避开平台佣金及关税分摊争议，利润率提升8个百分点。
+                                                </p>
+                                                <p class="text-sm mt-2">
+                                                    参与深圳"跨境电商品牌出海计划"，获得最高50万元独立站建设补贴+30万元海外社交媒体推广费用。
+                                                </p>
                                             </div>
                                         </div>
+
+                                        <div class="bg-purple-50 dark:bg-purple-900/10 p-4 rounded-lg">
+                                            <h5 class="font-bold flex items-center text-purple-800 dark:text-purple-300">
+                                                <i class="fas fa-globe mr-2"></i>建议行动
+                                            </h5>
+                                            <ul class="mt-2 space-y-2 text-sm">
+                                                <li class="flex items-start">
+                                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                                    <span>设立专门的新兴市场团队，配备熟悉当地语言和文化的人才</span>
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                                    <span>将独立站视为主战场，分散平台风险，打造自主数字营销能力</span>
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                                    <span>投入营销预算10%-15%用于海外社交媒体内容创作</span>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
-
-                                    <!-- 渐变遮罩 -->
-                                    <div
-                                        x-show="!expanded"
-                                        class="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-card-light dark:from-card-dark to-transparent"
-                                    ></div>
-
-                                    <!-- 展开/收起按钮 -->
-                                    <button
-                                        @click="expanded = !expanded"
-                                        class="mt-2 text-sm text-primary-light dark:text-primary-dark flex items-center hover:underline"
-                                    >
-                                        <span x-text="expanded ? '收起' : '展开'"></span>
-                                        <i :class="expanded ? 'fa-chevron-up' : 'fa-chevron-down'" class="fas ml-1"></i>
-                                    </button>
                                 </div>
                             </div>
 
@@ -1195,75 +1316,57 @@
                                     创新"关税成本动态管理模型"
                                 </h3>
 
-                                <div x-data="{ expanded: false }" class="relative">
-                                    <!-- 折叠内容 -->
-                                    <div :class="expanded ? '' : 'h-24 overflow-hidden'" class="prose prose-sm dark:prose-invert max-w-none">
-                                        <div class="space-y-4">
-                                            <div class="flex gap-4 flex-col md:flex-row">
-                                                <div class="md:w-1/3 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
-                                                    <h4 class="font-bold text-primary-light dark:text-primary-dark">价格传导机制</h4>
-                                                    <p class="text-sm mt-2">
-                                                        与美国客户签订"关税联动定价协议"，约定当关税税率超过100%时，双方按7:3比例分摊新增成本（需在合同中嵌入汇率、税率波动条款）。
-                                                    </p>
-                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                                        华为2024年与美国零售商Best Buy签订此类协议，对美出口利润率维持在12%以上，较行业平均水平高5个百分点。
-                                                    </p>
-                                                </div>
-
-                                                <div class="md:w-1/3 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
-                                                    <h4 class="font-bold text-primary-light dark:text-primary-dark">金融工具运用</h4>
-                                                    <p class="text-sm mt-2">
-                                                        利用人民币跨境结算+外汇期权组合，锁定3-6个月汇率波动区间，降低关税兑换损失。
-                                                    </p>
-                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                                        建议中小企业通过深圳外汇交易中心获取定制化对冲方案，申请"供应链金融关税专项贷款"，凭出口订单及美国客户付款承诺，可获得最高2000万元低息贷款（利率较基准下浮20%）。
-                                                    </p>
-                                                </div>
-
-                                                <div class="md:w-1/3 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
-                                                    <h4 class="font-bold text-primary-light dark:text-primary-dark">成本核算优化</h4>
-                                                    <p class="text-sm mt-2">
-                                                        引入ABC作业成本法，精准测算关税对各产品线的影响（如电子类产品关税成本占比22%，建议优先压缩非核心功能成本）。
-                                                    </p>
-                                                </div>
+                                <div class="prose prose-sm dark:prose-invert max-w-none">
+                                    <div class="space-y-4">
+                                        <div class="flex gap-4 flex-col md:flex-row">
+                                            <div class="md:w-1/3 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">价格传导机制</h4>
+                                                <p class="text-sm mt-2">
+                                                    与美国客户签订"关税联动定价协议"，约定当关税税率超过100%时，双方按7:3比例分摊新增成本（需在合同中嵌入汇率、税率波动条款）。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    华为2024年与美国零售商Best Buy签订此类协议，对美出口利润率维持在12%以上，较行业平均水平高5个百分点。
+                                                </p>
                                             </div>
 
-                                            <div class="bg-green-50 dark:bg-green-900/10 p-4 rounded-lg">
-                                                <h5 class="font-bold flex items-center text-green-800 dark:text-green-300">
-                                                    <i class="fas fa-coins mr-2"></i>建议行动
-                                                </h5>
-                                                <ul class="mt-2 space-y-2 text-sm">
-                                                    <li class="flex items-start">
-                                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                                        <span>重新审视核心客户合同，嵌入关税成本分摊条款</span>
-                                                    </li>
-                                                    <li class="flex items-start">
-                                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                                        <span>设计产品定价模型，赋予关税系数权重</span>
-                                                    </li>
-                                                    <li class="flex items-start">
-                                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                                        <span>培训财务团队掌握国际汇率和关税政策管理技能</span>
-                                                    </li>
-                                                </ul>
+                                            <div class="md:w-1/3 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">金融工具运用</h4>
+                                                <p class="text-sm mt-2">
+                                                    利用人民币跨境结算+外汇期权组合，锁定3-6个月汇率波动区间，降低关税兑换损失。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    建议中小企业通过深圳外汇交易中心获取定制化对冲方案，申请"供应链金融关税专项贷款"，凭出口订单及美国客户付款承诺，可获得最高2000万元低息贷款（利率较基准下浮20%）。
+                                                </p>
+                                            </div>
+
+                                            <div class="md:w-1/3 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">成本核算优化</h4>
+                                                <p class="text-sm mt-2">
+                                                    引入ABC作业成本法，精准测算关税对各产品线的影响（如电子类产品关税成本占比22%，建议优先压缩非核心功能成本）。
+                                                </p>
                                             </div>
                                         </div>
+
+                                        <div class="bg-green-50 dark:bg-green-900/10 p-4 rounded-lg">
+                                            <h5 class="font-bold flex items-center text-green-800 dark:text-green-300">
+                                                <i class="fas fa-coins mr-2"></i>建议行动
+                                            </h5>
+                                            <ul class="mt-2 space-y-2 text-sm">
+                                                <li class="flex items-start">
+                                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                                    <span>重新审视核心客户合同，嵌入关税成本分摊条款</span>
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                                    <span>设计产品定价模型，赋予关税系数权重</span>
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                                    <span>培训财务团队掌握国际汇率和关税政策管理技能</span>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
-
-                                    <!-- 渐变遮罩 -->
-                                    <div
-                                        x-show="!expanded"
-                                        class="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-card-light dark:from-card-dark to-transparent"
-                                    ></div>
-
-                                    <!-- 展开/收起按钮 -->
-                                    <button
-                                        @click="expanded = !expanded"
-                                        class="mt-2 text-sm text-primary-light dark:text-primary-dark flex items-center hover:underline"
-                                    >
-                                        <span x-text="expanded ? '收起' : '展开'"></span>
-                                        <i :class="expanded ? 'fa-chevron-up' : 'fa-chevron-down'" class="fas ml-1"></i>
-                                    </button>
                                 </div>
                             </div>
 
@@ -1275,71 +1378,53 @@
                                     建立"合规管理防火墙"
                                 </h3>
 
-                                <div x-data="{ expanded: false }" class="relative">
-                                    <!-- 折叠内容 -->
-                                    <div :class="expanded ? '' : 'h-24 overflow-hidden'" class="prose prose-sm dark:prose-invert max-w-none">
-                                        <div class="space-y-4">
-                                            <div class="flex gap-4 flex-col md:flex-row">
-                                                <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
-                                                    <h4 class="font-bold text-primary-light dark:text-primary-dark">双轨合规体系</h4>
-                                                    <p class="text-sm mt-2">
-                                                        设立专职"贸易合规官"（建议年营收5亿元以上企业标配），实时跟踪美国BIS出口管制清单、337调查动态，建立产品HS编码智能审核系统（准确率超98%）。
-                                                    </p>
-                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                                        2024年某医疗器械企业因未及时更新HS编码导致关税多缴300万元，此后引入AI审核系统实现零差错。
-                                                    </p>
-                                                    <p class="text-sm mt-2">
-                                                        加入"南山区贸易合规联盟"，共享美国海关查验案例库、合规整改模板，降低单个企业合规成本40%以上。
-                                                    </p>
-                                                </div>
-
-                                                <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
-                                                    <h4 class="font-bold text-primary-light dark:text-primary-dark">知识产权布局</h4>
-                                                    <p class="text-sm mt-2">
-                                                        在目标市场提前注册核心专利（大疆在欧美累计布局超5000项无人机专利），通过PCT国际专利申请快速进入多国保护期。
-                                                    </p>
-                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                                        针对美国337调查，建立"专利预警-交叉许可-诉讼应对"三级机制，联合行业协会聘请美国本地律师团（政府提供最高50%诉讼费用补贴）。
-                                                    </p>
-                                                </div>
+                                <div class="prose prose-sm dark:prose-invert max-w-none">
+                                    <div class="space-y-4">
+                                        <div class="flex gap-4 flex-col md:flex-row">
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">双轨合规体系</h4>
+                                                <p class="text-sm mt-2">
+                                                    设立专职"贸易合规官"（建议年营收5亿元以上企业标配），实时跟踪美国BIS出口管制清单、337调查动态，建立产品HS编码智能审核系统（准确率超98%）。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    2024年某医疗器械企业因未及时更新HS编码导致关税多缴300万元，此后引入AI审核系统实现零差错。
+                                                </p>
+                                                <p class="text-sm mt-2">
+                                                    加入"南山区贸易合规联盟"，共享美国海关查验案例库、合规整改模板，降低单个企业合规成本40%以上。
+                                                </p>
                                             </div>
 
-                                            <div class="bg-red-50 dark:bg-red-900/10 p-4 rounded-lg">
-                                                <h5 class="font-bold flex items-center text-red-800 dark:text-red-300">
-                                                    <i class="fas fa-shield-alt mr-2"></i>建议行动
-                                                </h5>
-                                                <ul class="mt-2 space-y-2 text-sm">
-                                                    <li class="flex items-start">
-                                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                                        <span>全面梳理企业产品知识产权保护状况，建立专利地图</span>
-                                                    </li>
-                                                    <li class="flex items-start">
-                                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                                        <span>组建贸易合规团队或指定专人负责，定期进行合规培训</span>
-                                                    </li>
-                                                    <li class="flex items-start">
-                                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                                        <span>建立关税规避预案，优先采用原产地规则最有利的供应链路径</span>
-                                                    </li>
-                                                </ul>
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">知识产权布局</h4>
+                                                <p class="text-sm mt-2">
+                                                    在目标市场提前注册核心专利（大疆在欧美累计布局超5000项无人机专利），通过PCT国际专利申请快速进入多国保护期。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    针对美国337调查，建立"专利预警-交叉许可-诉讼应对"三级机制，联合行业协会聘请美国本地律师团（政府提供最高50%诉讼费用补贴）。
+                                                </p>
                                             </div>
                                         </div>
+
+                                        <div class="bg-red-50 dark:bg-red-900/10 p-4 rounded-lg">
+                                            <h5 class="font-bold flex items-center text-red-800 dark:text-red-300">
+                                                <i class="fas fa-shield-alt mr-2"></i>建议行动
+                                            </h5>
+                                            <ul class="mt-2 space-y-2 text-sm">
+                                                <li class="flex items-start">
+                                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                                    <span>全面梳理企业产品知识产权保护状况，建立专利地图</span>
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                                    <span>组建贸易合规团队或指定专人负责，定期进行合规培训</span>
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                                    <span>建立关税规避预案，优先采用原产地规则最有利的供应链路径</span>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
-
-                                    <!-- 渐变遮罩 -->
-                                    <div
-                                        x-show="!expanded"
-                                        class="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-card-light dark:from-card-dark to-transparent"
-                                    ></div>
-
-                                    <!-- 展开/收起按钮 -->
-                                    <button
-                                        @click="expanded = !expanded"
-                                        class="mt-2 text-sm text-primary-light dark:text-primary-dark flex items-center hover:underline"
-                                    >
-                                        <span x-text="expanded ? '收起' : '展开'"></span>
-                                        <i :class="expanded ? 'fa-chevron-up' : 'fa-chevron-down'" class="fas ml-1"></i>
-                                    </button>
                                 </div>
                             </div>
 
@@ -1351,127 +1436,97 @@
                                     实施"国际化人才倍增计划"
                                 </h3>
 
-                                <div x-data="{ expanded: false }" class="relative">
-                                    <!-- 折叠内容 -->
-                                    <div :class="expanded ? '' : 'h-24 overflow-hidden'" class="prose prose-sm dark:prose-invert max-w-none">
-                                        <div class="space-y-4">
-                                            <div class="flex gap-4 flex-col md:flex-row">
-                                                <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
-                                                    <h4 class="font-bold text-primary-light dark:text-primary-dark">定向培养体系</h4>
-                                                    <p class="text-sm mt-2">
-                                                        与深圳职业技术大学共建"跨境贸易专班"，开设关税政策分析、海外供应链管理等定向课程，企业员工参训可获80%学费补贴（每人每年最高2万元）。
-                                                    </p>
-                                                    <p class="text-sm mt-2">
-                                                        设立"海外市场人才池"，储备精通西班牙语、阿拉伯语的商务、法律人才，派驻墨西哥、中东等新兴市场（给予每人每年30万元海外津贴）。
-                                                    </p>
-                                                </div>
-
-                                                <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
-                                                    <h4 class="font-bold text-primary-light dark:text-primary-dark">本地化团队建设</h4>
-                                                    <p class="text-sm mt-2">
-                                                        在海外基地雇佣70%以上本地员工，组建"中外联合运营团队"（如华为墨西哥工厂本地员工占比85%），提升政策解读及市场响应速度。
-                                                    </p>
-                                                    <p class="text-sm mt-2">
-                                                        建立"国际化人才晋升通道"，海外市场业绩占高管KPI权重不低于40%，优先提拔有新兴市场开拓经验的干部。
-                                                    </p>
-                                                </div>
+                                <div class="prose prose-sm dark:prose-invert max-w-none">
+                                    <div class="space-y-4">
+                                        <div class="flex gap-4 flex-col md:flex-row">
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">定向培养体系</h4>
+                                                <p class="text-sm mt-2">
+                                                    与深圳职业技术大学共建"跨境贸易专班"，开设关税政策分析、海外供应链管理等定向课程，企业员工参训可获80%学费补贴（每人每年最高2万元）。
+                                                </p>
+                                                <p class="text-sm mt-2">
+                                                    设立"海外市场人才池"，储备精通西班牙语、阿拉伯语的商务、法律人才，派驻墨西哥、中东等新兴市场（给予每人每年30万元海外津贴）。
+                                                </p>
                                             </div>
 
-                                            <div class="bg-indigo-50 dark:bg-indigo-900/10 p-4 rounded-lg">
-                                                <h5 class="font-bold flex items-center text-indigo-800 dark:text-indigo-300">
-                                                    <i class="fas fa-users mr-2"></i>建议行动
-                                                </h5>
-                                                <ul class="mt-2 space-y-2 text-sm">
-                                                    <li class="flex items-start">
-                                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                                        <span>重点培养3-5个新兴市场的本地化人才团队</span>
-                                                    </li>
-                                                    <li class="flex items-start">
-                                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                                        <span>与高校共建国际贸易课程，提前锁定优质人才</span>
-                                                    </li>
-                                                    <li class="flex items-start">
-                                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                                        <span>调整绩效考核体系，提高海外市场业绩权重</span>
-                                                    </li>
-                                                </ul>
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">本地化团队建设</h4>
+                                                <p class="text-sm mt-2">
+                                                    在海外基地雇佣70%以上本地员工，组建"中外联合运营团队"（如华为墨西哥工厂本地员工占比85%），提升政策解读及市场响应速度。
+                                                </p>
+                                                <p class="text-sm mt-2">
+                                                    建立"国际化人才晋升通道"，海外市场业绩占高管KPI权重不低于40%，优先提拔有新兴市场开拓经验的干部。
+                                                </p>
                                             </div>
                                         </div>
+
+                                        <div class="bg-indigo-50 dark:bg-indigo-900/10 p-4 rounded-lg">
+                                            <h5 class="font-bold flex items-center text-indigo-800 dark:text-indigo-300">
+                                                <i class="fas fa-users mr-2"></i>建议行动
+                                            </h5>
+                                            <ul class="mt-2 space-y-2 text-sm">
+                                                <li class="flex items-start">
+                                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                                    <span>重点培养3-5个新兴市场的本地化人才团队</span>
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                                    <span>与高校共建国际贸易课程，提前锁定优质人才</span>
+                                                </li>
+                                                <li class="flex items-start">
+                                                    <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+                                                    <span>调整绩效考核体系，提高海外市场业绩权重</span>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
-
-                                    <!-- 渐变遮罩 -->
-                                    <div
-                                        x-show="!expanded"
-                                        class="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-card-light dark:from-card-dark to-transparent"
-                                    ></div>
-
-                                    <!-- 展开/收起按钮 -->
-                                    <button
-                                        @click="expanded = !expanded"
-                                        class="mt-2 text-sm text-primary-light dark:text-primary-dark flex items-center hover:underline"
-                                    >
-                                        <span x-text="expanded ? '收起' : '展开'"></span>
-                                        <i :class="expanded ? 'fa-chevron-up' : 'fa-chevron-down'" class="fas ml-1"></i>
-                                    </button>
                                 </div>
                             </div>
                         </div>
 
                         <!-- 政府层面内容 -->
-                        <div x-show="activeTab === 'government'" class="animate-fade-in space-y-6">
+                        <div id="content-government" class="space-y-6 hidden">
                             <div class="rounded-lg bg-card-light dark:bg-card-dark p-6 shadow-sm transition-all duration-300">
                                 <h3 class="text-xl font-semibold mb-4 flex items-center">
                                     <div class="w-10 h-10 rounded-full bg-primary-light/10 dark:bg-primary-dark/20 flex items-center justify-center mr-3">
                                         <span class="text-primary-light dark:text-primary-dark font-bold">1</span>
                                     </div>
-                                    设立「关税应对专项纾困基金」，分层精准扶持中小企业
+                                    打造"区域风险预警与应对体系"
                                 </h3>
 
-                                <div x-data="{ expanded: false }" class="relative">
-                                    <!-- 折叠内容 -->
-                                    <div :class="expanded ? '' : 'h-24 overflow-hidden'" class="prose prose-sm dark:prose-invert max-w-none">
-                                        <div class="space-y-4">
-                                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
-                                                <p class="text-sm text-balance">
-                                                    <span class="font-bold text-primary-light dark:text-primary-dark">资金规模：</span>
-                                                    首期规模5亿元，由市区财政按6:4比例出资，重点支持年营收2亿元以下的中小外贸企业。
+                                <div class="prose prose-sm dark:prose-invert max-w-none">
+                                    <div class="space-y-4">
+                                        <div class="flex gap-4 flex-col md:flex-row">
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">建立政策监测站</h4>
+                                                <p class="text-sm mt-2">
+                                                    设立南山区贸易政策监测中心，与中国贸促会合作，实时监控美国USTR动态，每周发布关税政策解读。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    2024年5月美国对华关税政策调整后，监测中心第一时间举办线上解读会，覆盖南山区94%外贸企业，协助企业降低损失2.6亿元。
                                                 </p>
                                             </div>
 
-                                            <div class="text-sm">
-                                                <h4 class="font-bold mb-2">扶持方向：</h4>
-                                                <ul class="space-y-3 pl-0">
-                                                    <li class="bg-white dark:bg-gray-800 p-3 rounded-lg border-l-4 border-yellow-500">
-                                                        <span class="font-semibold">短期成本缓冲：</span>
-                                                        对单票美国进口关税超过50万元的企业，给予20%-30%的关税预缴补贴（最高不超过200万元），缓解现金流压力。
-                                                    </li>
-                                                    <li class="bg-white dark:bg-gray-800 p-3 rounded-lg border-l-4 border-green-500">
-                                                        <span class="font-semibold">市场开拓补贴：</span>
-                                                        企业参加「一带一路」沿线国家展会（如迪拜医疗器械展、墨西哥电子展），给予展位费80%补贴+人员差旅费50%补贴（单企业年最高100万元）。
-                                                    </li>
-                                                    <li class="bg-white dark:bg-gray-800 p-3 rounded-lg border-l-4 border-blue-500">
-                                                        <span class="font-semibold">供应链重构支持：</span>
-                                                        对在东南亚、拉美新建或扩建海外仓的企业，按实际投资额的30%给予一次性补贴（单个项目最高500万元）。
-                                                    </li>
-                                                </ul>
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">产业链风险地图</h4>
+                                                <p class="text-sm mt-2">
+                                                    开发"南山区产业链风险地图"，精准识别对美依存度超过30%的细分领域（如医疗影像设备、高端光学部件），针对性扶持国产替代。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    区商务局每季度发布《产业链脆弱性分析报告》，流通医疗器械行业信息资源，助力迈瑞医疗等5家企业完成核心零部件国产化，80%产业链节点实现双供应商备份。
+                                                </p>
                                             </div>
                                         </div>
+
+                                        <div class="bg-amber-50 dark:bg-amber-900/10 p-4 rounded-lg">
+                                            <h5 class="font-bold flex items-center text-amber-800 dark:text-amber-300">
+                                                <i class="fas fa-lightbulb mr-2"></i>典型案例
+                                            </h5>
+                                            <p class="mt-2 text-sm">
+                                                南山区贸易预警平台于2024年2月准确预判美国将提高医疗器械关税，提前3个月组织行业座谈会，指导迈瑞医疗等重点企业调整出口策略，帮助企业避免损失超5亿元。
+                                            </p>
+                                        </div>
                                     </div>
-
-                                    <!-- 渐变遮罩 -->
-                                    <div
-                                        x-show="!expanded"
-                                        class="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-card-light dark:from-card-dark to-transparent"
-                                    ></div>
-
-                                    <!-- 展开/收起按钮 -->
-                                    <button
-                                        @click="expanded = !expanded"
-                                        class="mt-2 text-sm text-primary-light dark:text-primary-dark flex items-center hover:underline"
-                                    >
-                                        <span x-text="expanded ? '收起' : '展开'"></span>
-                                        <i :class="expanded ? 'fa-chevron-up' : 'fa-chevron-down'" class="fas ml-1"></i>
-                                    </button>
                                 </div>
                             </div>
 
@@ -1480,77 +1535,42 @@
                                     <div class="w-10 h-10 rounded-full bg-primary-light/10 dark:bg-primary-dark/20 flex items-center justify-center mr-3">
                                         <span class="text-primary-light dark:text-primary-dark font-bold">2</span>
                                     </div>
-                                    创新「技术+标准」双轮驱动政策，破解欧美认证壁垒
+                                    构建"全球双向投资格局"
                                 </h3>
 
-                                <div x-data="{ expanded: false }" class="relative">
-                                    <!-- 折叠内容 -->
-                                    <div :class="expanded ? '' : 'h-24 overflow-hidden'" class="prose prose-sm dark:prose-invert max-w-none">
-                                        <div class="space-y-4">
-                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
-                                                    <h4 class="font-bold text-primary-light dark:text-primary-dark mb-2">认证成本分摊机制</h4>
-                                                    <p class="text-sm text-balance">
-                                                        企业申请UL（美国）、CE（欧盟）等国际认证，按认证费用的40%-60%给予补贴（中小企业60%、规上企业40%，单企业年最高200万元）。
-                                                    </p>
-                                                    <p class="text-sm text-balance mt-2">
-                                                        联合深圳标准研究院、SGS等机构，建立「一站式认证服务平台」，提供从检测到认证的全流程代理服务，压缩认证周期30%以上。
-                                                    </p>
-                                                </div>
-
-                                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
-                                                    <h4 class="font-bold text-primary-light dark:text-primary-dark mb-2">标准互认合作</h4>
-                                                    <p class="text-sm text-balance">
-                                                        推动南山区电子信息、医疗器械企业参与「中欧标准互认试点」，重点突破电磁兼容（EMC）、生物相容性等检测项目互认，降低重复认证成本。
-                                                    </p>
-
-                                                    <div class="flex items-center bg-blue-50 dark:bg-blue-900/20 p-2 rounded mt-2">
-                                                        <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-800 flex items-center justify-center mr-2">
-                                                            <i class="fas fa-percent text-blue-500 dark:text-blue-300 text-xs"></i>
-                                                        </div>
-                                                        <p class="text-xs text-balance">
-                                                            预计降低认证成本<span class="font-bold">40%-60%</span>，缩短认证周期<span class="font-bold">3-5个月</span>
-                                                        </p>
-                                                    </div>
-                                                </div>
+                                <div class="prose prose-sm dark:prose-invert max-w-none">
+                                    <div class="space-y-4">
+                                        <div class="flex gap-4 flex-col md:flex-row">
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">产业链整体转移</h4>
+                                                <p class="text-sm mt-2">
+                                                    主导建设"南山企业海外产业园"，在越南海防、墨西哥蒙特雷等地，通过"区域合作基金"（首期规模10亿元）购置土地、建设标准厂房，打造企业集群式转移平台。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    2024年越南海防园区已入驻南山企业38家，电子信息、精密制造企业抱团出海，实现供应链本地配套率68%。
+                                                </p>
                                             </div>
 
-                                            <div class="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-lg">
-                                                <h5 class="font-bold flex items-center text-blue-800 dark:text-blue-300">
-                                                    <i class="fas fa-certificate mr-2"></i>政策亮点
-                                                </h5>
-                                                <ul class="mt-2 space-y-2 text-sm">
-                                                    <li class="flex items-start">
-                                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                                        <span>降低中小企业开拓国际市场的首道准入门槛</span>
-                                                    </li>
-                                                    <li class="flex items-start">
-                                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                                        <span>推动南山区企业产品标准与国际接轨</span>
-                                                    </li>
-                                                    <li class="flex items-start">
-                                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                                        <span>将认证支持与技术升级双向结合，提高产品国际竞争力</span>
-                                                    </li>
-                                                </ul>
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">引进全球先进技术</h4>
+                                                <p class="text-sm mt-2">
+                                                    设立"南山区关键技术引进专项资金"（每年3亿元），重点支持企业并购欧美高科技公司，补贴交易额的10%（单笔最高5000万元）。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    迈瑞医疗2024年收购德国医疗影像公司，获得2000万元并购补贴，实现超声成像核心技术突破，销售收入增长22%。
+                                                </p>
                                             </div>
                                         </div>
+
+                                        <div class="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-lg">
+                                            <h5 class="font-bold flex items-center text-blue-800 dark:text-blue-300">
+                                                <i class="fas fa-lightbulb mr-2"></i>典型案例
+                                            </h5>
+                                            <p class="mt-2 text-sm">
+                                                南山区与越南海防市签署战略合作协议，建设"中越电子信息产业园"，首期入驻大疆、万魔声学等28家企业，共享基础设施、人才培养体系，2024年实现产值32亿元。
+                                            </p>
+                                        </div>
                                     </div>
-
-                                    <!-- 渐变遮罩 -->
-                                    <div
-                                        x-show="!expanded"
-                                        class="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-card-light dark:from-card-dark to-transparent"
-                                    ></div>
-
-                                    <!-- 展开/收起按钮 -->
-                                    <button
-                                        @click="expanded = !expanded"
-                                        class="mt-2 text-sm text-primary-light dark:text-primary-dark flex items-center hover:underline"
-                                    >
-                                        <span x-text="expanded ? '收起' : '展开'"></span>
-                                        <i :class="expanded ? 'fa-chevron-up' : 'fa-chevron-down'" class="fas ml-1"></i>
-                                    </button>
                                 </div>
                             </div>
 
@@ -1559,89 +1579,42 @@
                                     <div class="w-10 h-10 rounded-full bg-primary-light/10 dark:bg-primary-dark/20 flex items-center justify-center mr-3">
                                         <span class="text-primary-light dark:text-primary-dark font-bold">3</span>
                                     </div>
-                                    构建「供应链安全保险+金融」创新工具包
+                                    培育"产业自主创新生态圈"
                                 </h3>
 
-                                <div x-data="{ expanded: false }" class="relative">
-                                    <!-- 折叠内容 -->
-                                    <div :class="expanded ? '' : 'h-24 overflow-hidden'" class="prose prose-sm dark:prose-invert max-w-none">
-                                        <div class="space-y-4">
-                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
-                                                    <h4 class="font-bold text-primary-light dark:text-primary-dark mb-2">供应链中断保险</h4>
-                                                    <ul class="space-y-2 text-sm pl-0">
-                                                        <li class="flex gap-2">
-                                                            <div class="shrink-0 w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-                                                                <i class="fas fa-tag text-purple-500 text-xs"></i>
-                                                            </div>
-                                                            <p class="text-balance">
-                                                                针对依赖美国关键零部件的企业（如半导体设备、医疗芯片），推出「关税波动险」，当美国关税税率波动超过10%时，按实际增加关税的50%进行赔付（单企业年最高500万元）。
-                                                            </p>
-                                                        </li>
-                                                        <li class="flex gap-2">
-                                                            <div class="shrink-0 w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-                                                                <i class="fas fa-industry text-purple-500 text-xs"></i>
-                                                            </div>
-                                                            <p class="text-balance">
-                                                                联合平安保险、人保财险开发「海外产能险」，覆盖越南、墨西哥等海外工厂因地缘政治、自然灾害导致的停产损失（最高赔付投资额的80%）。
-                                                            </p>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-
-                                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
-                                                    <h4 class="font-bold text-primary-light dark:text-primary-dark mb-2">跨境金融便利化</h4>
-                                                    <p class="text-sm text-balance">
-                                                        允许符合条件的企业开展「关税保证保险」，凭保险单即可办理通关手续，缓解保证金占用压力（预计释放企业资金超20亿元）。
-                                                    </p>
-
-                                                    <div class="flex items-center bg-green-50 dark:bg-green-900/20 p-2 rounded mt-3">
-                                                        <div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-800 flex items-center justify-center mr-2">
-                                                            <i class="fas fa-hand-holding-usd text-green-500 dark:text-green-300 text-xs"></i>
-                                                        </div>
-                                                        <p class="text-xs text-balance">
-                                                            为企业提供<span class="font-bold">500亿元</span>专项授信额度，支持关税融资和应收账款融资
-                                                        </p>
-                                                    </div>
-                                                </div>
+                                <div class="prose prose-sm dark:prose-invert max-w-none">
+                                    <div class="space-y-4">
+                                        <div class="flex gap-4 flex-col md:flex-row">
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">关键技术攻关</h4>
+                                                <p class="text-sm mt-2">
+                                                    设立"卡脖子技术突破专项基金"（规模50亿元），重点支持芯片、医疗器械等领域关键技术研发，单个项目最高支持5000万元。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    2024年资助18个重点技术攻关项目，带动120家企业成功研发450项专利技术，实现产值增长35.6%。
+                                                </p>
                                             </div>
 
-                                            <div class="bg-purple-50 dark:bg-purple-900/10 p-4 rounded-lg">
-                                                <h5 class="font-bold flex items-center text-purple-800 dark:text-purple-300">
-                                                    <i class="fas fa-shield-alt mr-2"></i>预期效果
-                                                </h5>
-                                                <ul class="mt-2 space-y-2 text-sm">
-                                                    <li class="flex items-start">
-                                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                                        <span>降低外贸企业30%以上的风险管理成本</span>
-                                                    </li>
-                                                    <li class="flex items-start">
-                                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                                        <span>提高企业应对关税波动的韧性和灵活性</span>
-                                                    </li>
-                                                    <li class="flex items-start">
-                                                        <i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
-                                                        <span>促进金融资源向外贸优质企业集中</span>
-                                                    </li>
-                                                </ul>
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">产学研深度融合</h4>
+                                                <p class="text-sm mt-2">
+                                                    打造"南山区高校协同创新平台"，引入清华、北大深圳校区联合开展应用研发，政府为企业科研投入提供1:1配套资金。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    万魔声学与哈工大深圳研究生院共建"新一代声学技术研究中心"，获区配套资金2000万元，研发新一代可穿戴设备，进入全球市场份额前三。
+                                                </p>
                                             </div>
                                         </div>
+
+                                        <div class="bg-green-50 dark:bg-green-900/10 p-4 rounded-lg">
+                                            <h5 class="font-bold flex items-center text-green-800 dark:text-green-300">
+                                                <i class="fas fa-lightbulb mr-2"></i>典型案例
+                                            </h5>
+                                            <p class="mt-2 text-sm">
+                                                南山区"芯火双创平台"通过政府引导、社会资本参与，专注半导体材料研发，联合6家龙头企业和4所高校，共同攻克高端光刻胶国产化难题，打破美国禁运壁垒，成为关税战中的技术"护城河"。
+                                            </p>
+                                        </div>
                                     </div>
-
-                                    <!-- 渐变遮罩 -->
-                                    <div
-                                        x-show="!expanded"
-                                        class="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-card-light dark:from-card-dark to-transparent"
-                                    ></div>
-
-                                    <!-- 展开/收起按钮 -->
-                                    <button
-                                        @click="expanded = !expanded"
-                                        class="mt-2 text-sm text-primary-light dark:text-primary-dark flex items-center hover:underline"
-                                    >
-                                        <span x-text="expanded ? '收起' : '展开'"></span>
-                                        <i :class="expanded ? 'fa-chevron-up' : 'fa-chevron-down'" class="fas ml-1"></i>
-                                    </button>
                                 </div>
                             </div>
 
@@ -1650,56 +1623,125 @@
                                     <div class="w-10 h-10 rounded-full bg-primary-light/10 dark:bg-primary-dark/20 flex items-center justify-center mr-3">
                                         <span class="text-primary-light dark:text-primary-dark font-bold">4</span>
                                     </div>
-                                    实施「研发飞地+产业联盟」计划，突破关键技术瓶颈
+                                    完善"外贸企业融资服务体系"
                                 </h3>
 
-                                <div class="p-6 flex justify-center">
-                                    <span class="text-gray-500 dark:text-gray-400 text-sm">更多政策即将推出...</span>
+                                <div class="prose prose-sm dark:prose-invert max-w-none">
+                                    <div class="space-y-4">
+                                        <div class="flex gap-4 flex-col md:flex-row">
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">信保融资支持</h4>
+                                                <p class="text-sm mt-2">
+                                                    与中国出口信用保险公司深圳分公司联合设立"风险共担池"，为中小外贸企业提供90%的出口信用保险覆盖，降低赔付门槛。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    2024年为238家中小外贸企业提供35亿元出口信用保险支持，因美国买家拖欠货款成功理赔6.8亿元。
+                                                </p>
+                                            </div>
+
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">汇率避险服务</h4>
+                                                <p class="text-sm mt-2">
+                                                    设立"汇率风险补偿基金"（5亿元规模），为外贸企业提供外汇套保服务，最高补贴企业汇率避险成本的50%。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    2024年针对美元汇率大幅波动，为325家企业提供汇率避险补贴1.2亿元，有效降低企业财务风险。
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="bg-purple-50 dark:bg-purple-900/10 p-4 rounded-lg">
+                                            <h5 class="font-bold flex items-center text-purple-800 dark:text-purple-300">
+                                                <i class="fas fa-lightbulb mr-2"></i>典型案例
+                                            </h5>
+                                            <p class="mt-2 text-sm">
+                                                南山区"外贸企业专项贷款计划"与5家银行合作，针对受关税战影响的企业提供最高2000万元低息贷款（利率较基准下浮30%），服务125家中小企业，累计发放贷款15.6亿元，帮助企业扩大产能、开拓新兴市场。
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </section>
+
+                <!-- 结论部分 -->
+                <section class="relative bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-6 md:p-10 rounded-xl shadow-sm mt-12">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-light to-secondary-light dark:from-primary-dark dark:to-secondary-dark rounded-t-xl"></div>
+
+                    <h2 class="text-2xl md:text-3xl font-bold mb-6 text-slate-800 dark:text-slate-100">结论</h2>
+
+                    <div class="prose prose-slate dark:prose-invert max-w-none">
+                        <p>
+                            中美关税战已经在短期内对南山区外贸企业产生了显著冲击，尤其是对电子信息、先进制造等领域的出口型企业。行业结构调整和经营方式创新势在必行，企业需要加快构建多元化市场布局、产业链韧性体系和技术研发壁垒。
+                        </p>
+                        <p>
+                            从政府层面看，应当完善区域产业风险预警机制，优化外贸企业融资服务体系，推动双向投资便利化，支持企业科技创新与关键技术突破。南山区作为深圳高新技术产业聚集区，应发挥示范引领作用，助力企业在中美经贸摩擦中找准定位，转"危"为"机"。
+                        </p>
+                        <p class="font-semibold">
+                            总体而言，南山区外贸企业虽面临挑战，但通过政企联动、内外兼修，有望实现高质量可持续发展，在全球贸易格局重塑中赢得战略主动权。
+                        </p>
+                    </div>
+                </section>
+
             </div>
         </article>
     </main>
 
-    <!-- 页脚 -->
-    <footer class="bg-gray-100 dark:bg-gray-800 py-6 mt-8">
-        <div class="container mx-auto px-4 text-center text-sm text-gray-600 dark:text-gray-400">
-            <p>© 2025 南山区商务局 版权所有</p>
+    <footer class="mt-20 py-8 border-t border-slate-200 dark:border-slate-700">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <p class="text-sm text-slate-500 dark:text-slate-400">
+                        © 2025 深圳市工商联. 版权所有
+                    </p>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-sm text-slate-500 hover:text-primary-light dark:text-slate-400 dark:hover:text-primary-dark">联系我们</a>
+                    <a href="#" class="text-sm text-slate-500 hover:text-primary-light dark:text-slate-400 dark:hover:text-primary-dark">隐私政策</a>
+                    <a href="#" class="text-sm text-slate-500 hover:text-primary-light dark:text-slate-400 dark:hover:text-primary-dark">使用条款</a>
+                </div>
+            </div>
         </div>
     </footer>
 
-    <!-- JavaScript -->
+    <!-- AlpineJS -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+
+    <!-- FontAwesome -->
+    <script src="https://kit.fontawesome.com/3a75d6e108.js" crossorigin="anonymous"></script>
+
+    <!-- Theme Switcher -->
+    <script src="theme-switcher.js"></script>
+
+    <!-- 添加JavaScript代码在</body>前 -->
     <script>
-        // 深色/浅色模式切换功能
-        document.addEventListener('DOMContentLoaded', () => {
-            const themeToggle = document.getElementById('theme-toggle');
-            const html = document.documentElement;
+        // 政策建议标签切换函数
+        function changeTab(tab) {
+            // 隐藏所有内容
+            document.getElementById('content-enterprise').classList.add('hidden');
+            document.getElementById('content-government').classList.add('hidden');
 
-            // 检查系统偏好和本地存储
-            const userPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const savedTheme = localStorage.getItem('theme');
+            // 显示选中的标签内容
+            document.getElementById('content-' + tab).classList.remove('hidden');
 
-            // 根据偏好设置初始主题
-            if (savedTheme === 'dark' || (!savedTheme && userPrefersDark)) {
-                html.classList.add('dark');
+            // 更新按钮样式
+            if (tab === 'enterprise') {
+                document.getElementById('tab-enterprise').className = "px-6 py-2 font-medium text-sm rounded-tl-lg rounded-bl-lg bg-primary-light dark:bg-primary-dark text-white hover:bg-opacity-90 transition duration-150 ease-in-out";
+                document.getElementById('tab-government').className = "px-6 py-2 font-medium text-sm rounded-tr-lg rounded-br-lg bg-gray-100 dark:bg-gray-800 hover:bg-opacity-90 transition duration-150 ease-in-out";
             } else {
-                html.classList.remove('dark');
+                document.getElementById('tab-government').className = "px-6 py-2 font-medium text-sm rounded-tr-lg rounded-br-lg bg-primary-light dark:bg-primary-dark text-white hover:bg-opacity-90 transition duration-150 ease-in-out";
+                document.getElementById('tab-enterprise').className = "px-6 py-2 font-medium text-sm rounded-tl-lg rounded-bl-lg bg-gray-100 dark:bg-gray-800 hover:bg-opacity-90 transition duration-150 ease-in-out";
             }
 
-            // 切换主题
-            themeToggle.addEventListener('click', () => {
-                if (html.classList.contains('dark')) {
-                    html.classList.remove('dark');
-                    localStorage.setItem('theme', 'light');
-                } else {
-                    html.classList.add('dark');
-                    localStorage.setItem('theme', 'dark');
-                }
+            // 滚动到标签位置，确保用户能看到内容切换
+            document.getElementById('tab-enterprise').scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
             });
-        });
+        }
     </script>
+
 </body>
+
 </html>
