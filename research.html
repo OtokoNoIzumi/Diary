@@ -146,70 +146,72 @@
     <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
         <!-- 在内容之前添加音频播放器部分 -->
         <section class="mb-8 fade-in" style="animation-delay: 0.05s;">
-            <div class="card p-4 bg-gray-50 dark:bg-gray-800 rounded-lg shadow">
-                <div class="p-2">
-                    <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-1">收听报告解读</h3>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">中美关税战对南山区外贸企业影响及应对策略</p>
+            <div class="max-w-4xl mx-auto">
+                <div class="card p-4 bg-gray-50 dark:bg-gray-800 rounded-lg shadow">
+                    <div class="p-2">
+                        <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-1">收听报告解读</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">中美关税战对南山区外贸企业影响及应对策略</p>
 
-                    <!-- 隐藏原生音频控件但保留功能 -->
-                    <audio id="audioPlayer" class="hidden" preload="metadata">
-                        <source src="media/南山区外贸企业中美关税战调研报告.ogg" type="audio/ogg">
-                        您的浏览器不支持音频播放器
-                    </audio>
+                        <!-- 隐藏原生音频控件但保留功能 -->
+                        <audio id="audioPlayer" class="hidden" preload="metadata">
+                            <source src="media/南山区外贸企业中美关税战调研报告.ogg" type="audio/ogg">
+                            您的浏览器不支持音频播放器
+                        </audio>
 
-                    <!-- 播放进度条 -->
-                    <div class="mb-2 mt-4">
-                        <div id="progressContainer" class="relative h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden cursor-pointer">
-                            <!-- 进度条 -->
-                            <div id="progressBar" class="absolute h-full bg-blue-500 w-0 rounded-full"></div>
-                            <!-- 拖动手柄 -->
-                            <div id="progressHandle" class="absolute h-4 w-4 bg-blue-500 rounded-full border-2 border-white dark:border-gray-800 top-1/2 transform -translate-y-1/2 -translate-x-1/2" style="left: 0%"></div>
-                        </div>
-                        <!-- 时间标记 -->
-                        <div class="flex justify-between mt-1">
-                            <span id="currentTime" class="text-xs text-gray-500 dark:text-gray-400">0:00</span>
-                            <span id="duration" class="text-xs text-gray-500 dark:text-gray-400">0:00</span>
-                        </div>
-                    </div>
-
-                    <!-- 控制按钮 -->
-                    <div class="flex justify-between items-center mt-4">
-                        <!-- 播放速度控制 -->
-                        <button id="playbackSpeed" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">
-                            <span class="text-sm font-medium">1X</span>
-                        </button>
-
-                        <div class="flex space-x-4 sm:space-x-6 md:space-x-8 items-center">
-                            <!-- 后退10秒 -->
-                            <button id="rewind10" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 relative">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.333 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z" />
-                                </svg>
-                                <span class="absolute text-xs font-bold bottom-0 right-0 bg-gray-200 dark:bg-gray-700 rounded-full w-4 h-4 flex items-center justify-center">10</span>
-                            </button>
-
-                            <!-- 播放/暂停按钮 -->
-                            <button id="playPauseBtn" class="text-gray-800 dark:text-gray-200 bg-gray-200 dark:bg-gray-700 p-2 rounded-full">
-                                <svg id="playIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <svg id="pauseIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </button>
-
-                            <!-- 前进10秒 -->
-                            <button id="forward10" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 relative">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.933 12.8a1 1 0 000-1.6L6.6 7.2A1 1 0 005 8v8a1 1 0 001.6.8l5.333-4zM19.933 12.8a1 1 0 000-1.6l-5.333-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.333-4z" />
-                                </svg>
-                                <span class="absolute text-xs font-bold bottom-0 right-0 bg-gray-200 dark:bg-gray-700 rounded-full w-4 h-4 flex items-center justify-center">10</span>
-                            </button>
+                        <!-- 播放进度条 -->
+                        <div class="mb-2 mt-4">
+                            <div id="progressContainer" class="relative h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden cursor-pointer">
+                                <!-- 进度条 -->
+                                <div id="progressBar" class="absolute h-full bg-blue-500 w-0 rounded-full"></div>
+                                <!-- 拖动手柄 -->
+                                <div id="progressHandle" class="absolute h-4 w-4 bg-blue-500 rounded-full border-2 border-white dark:border-gray-800 top-1/2 transform -translate-y-1/2 -translate-x-1/2" style="left: 0%"></div>
+                            </div>
+                            <!-- 时间标记 -->
+                            <div class="flex justify-between mt-1">
+                                <span id="currentTime" class="text-xs text-gray-500 dark:text-gray-400">0:00</span>
+                                <span id="duration" class="text-xs text-gray-500 dark:text-gray-400">0:00</span>
+                            </div>
                         </div>
 
-                        <!-- 空白区域保持布局平衡 -->
-                        <div class="w-8"></div>
+                        <!-- 控制按钮 -->
+                        <div class="flex justify-between items-center mt-4">
+                            <!-- 播放速度控制 -->
+                            <button id="playbackSpeed" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">
+                                <span class="text-sm font-medium">1X</span>
+                            </button>
+
+                            <div class="flex space-x-4 sm:space-x-6 md:space-x-8 items-center">
+                                <!-- 后退10秒 -->
+                                <button id="rewind10" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 relative">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.333 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z" />
+                                    </svg>
+                                    <span class="absolute text-xs font-bold bottom-0 right-0 bg-gray-200 dark:bg-gray-700 rounded-full w-4 h-4 flex items-center justify-center">10</span>
+                                </button>
+
+                                <!-- 播放/暂停按钮 -->
+                                <button id="playPauseBtn" class="text-gray-800 dark:text-gray-200 bg-gray-200 dark:bg-gray-700 p-2 rounded-full">
+                                    <svg id="playIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <svg id="pauseIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </button>
+
+                                <!-- 前进10秒 -->
+                                <button id="forward10" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 relative">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.933 12.8a1 1 0 000-1.6L6.6 7.2A1 1 0 005 8v8a1 1 0 001.6.8l5.333-4zM19.933 12.8a1 1 0 000-1.6l-5.333-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.333-4z" />
+                                    </svg>
+                                    <span class="absolute text-xs font-bold bottom-0 right-0 bg-gray-200 dark:bg-gray-700 rounded-full w-4 h-4 flex items-center justify-center">10</span>
+                                </button>
+                            </div>
+
+                            <!-- 空白区域保持布局平衡 -->
+                            <div class="w-8"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1478,6 +1480,185 @@
                                                     <span>调整绩效考核体系，提高海外市场业绩权重</span>
                                                 </li>
                                             </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 政府层面内容 -->
+                        <div id="content-government" class="space-y-6 hidden">
+                            <div class="rounded-lg bg-card-light dark:bg-card-dark p-6 shadow-sm transition-all duration-300">
+                                <h3 class="text-xl font-semibold mb-4 flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-primary-light/10 dark:bg-primary-dark/20 flex items-center justify-center mr-3">
+                                        <span class="text-primary-light dark:text-primary-dark font-bold">1</span>
+                                    </div>
+                                    打造"区域风险预警与应对体系"
+                                </h3>
+
+                                <div class="prose prose-sm dark:prose-invert max-w-none">
+                                    <div class="space-y-4">
+                                        <div class="flex gap-4 flex-col md:flex-row">
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">建立政策监测站</h4>
+                                                <p class="text-sm mt-2">
+                                                    设立南山区贸易政策监测中心，与中国贸促会合作，实时监控美国USTR动态，每周发布关税政策解读。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    2024年5月美国对华关税政策调整后，监测中心第一时间举办线上解读会，覆盖南山区94%外贸企业，协助企业降低损失2.6亿元。
+                                                </p>
+                                            </div>
+
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">产业链风险地图</h4>
+                                                <p class="text-sm mt-2">
+                                                    开发"南山区产业链风险地图"，精准识别对美依存度超过30%的细分领域（如医疗影像设备、高端光学部件），针对性扶持国产替代。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    区商务局每季度发布《产业链脆弱性分析报告》，流通医疗器械行业信息资源，助力迈瑞医疗等5家企业完成核心零部件国产化，80%产业链节点实现双供应商备份。
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="bg-amber-50 dark:bg-amber-900/10 p-4 rounded-lg">
+                                            <h5 class="font-bold flex items-center text-amber-800 dark:text-amber-300">
+                                                <i class="fas fa-lightbulb mr-2"></i>典型案例
+                                            </h5>
+                                            <p class="mt-2 text-sm">
+                                                南山区贸易预警平台于2024年2月准确预判美国将提高医疗器械关税，提前3个月组织行业座谈会，指导迈瑞医疗等重点企业调整出口策略，帮助企业避免损失超5亿元。
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="rounded-lg bg-card-light dark:bg-card-dark p-6 shadow-sm transition-all duration-300">
+                                <h3 class="text-xl font-semibold mb-4 flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-primary-light/10 dark:bg-primary-dark/20 flex items-center justify-center mr-3">
+                                        <span class="text-primary-light dark:text-primary-dark font-bold">2</span>
+                                    </div>
+                                    构建"全球双向投资格局"
+                                </h3>
+
+                                <div class="prose prose-sm dark:prose-invert max-w-none">
+                                    <div class="space-y-4">
+                                        <div class="flex gap-4 flex-col md:flex-row">
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">产业链整体转移</h4>
+                                                <p class="text-sm mt-2">
+                                                    主导建设"南山企业海外产业园"，在越南海防、墨西哥蒙特雷等地，通过"区域合作基金"（首期规模10亿元）购置土地、建设标准厂房，打造企业集群式转移平台。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    2024年越南海防园区已入驻南山企业38家，电子信息、精密制造企业抱团出海，实现供应链本地配套率68%。
+                                                </p>
+                                            </div>
+
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">引进全球先进技术</h4>
+                                                <p class="text-sm mt-2">
+                                                    设立"南山区关键技术引进专项资金"（每年3亿元），重点支持企业并购欧美高科技公司，补贴交易额的10%（单笔最高5000万元）。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    迈瑞医疗2024年收购德国医疗影像公司，获得2000万元并购补贴，实现超声成像核心技术突破，销售收入增长22%。
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-lg">
+                                            <h5 class="font-bold flex items-center text-blue-800 dark:text-blue-300">
+                                                <i class="fas fa-lightbulb mr-2"></i>典型案例
+                                            </h5>
+                                            <p class="mt-2 text-sm">
+                                                南山区与越南海防市签署战略合作协议，建设"中越电子信息产业园"，首期入驻大疆、万魔声学等28家企业，共享基础设施、人才培养体系，2024年实现产值32亿元。
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="rounded-lg bg-card-light dark:bg-card-dark p-6 shadow-sm transition-all duration-300">
+                                <h3 class="text-xl font-semibold mb-4 flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-primary-light/10 dark:bg-primary-dark/20 flex items-center justify-center mr-3">
+                                        <span class="text-primary-light dark:text-primary-dark font-bold">3</span>
+                                    </div>
+                                    培育"产业自主创新生态圈"
+                                </h3>
+
+                                <div class="prose prose-sm dark:prose-invert max-w-none">
+                                    <div class="space-y-4">
+                                        <div class="flex gap-4 flex-col md:flex-row">
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">关键技术攻关</h4>
+                                                <p class="text-sm mt-2">
+                                                    设立"卡脖子技术突破专项基金"（规模50亿元），重点支持芯片、医疗器械等领域关键技术研发，单个项目最高支持5000万元。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    2024年资助18个重点技术攻关项目，带动120家企业成功研发450项专利技术，实现产值增长35.6%。
+                                                </p>
+                                            </div>
+
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">产学研深度融合</h4>
+                                                <p class="text-sm mt-2">
+                                                    打造"南山区高校协同创新平台"，引入清华、北大深圳校区联合开展应用研发，政府为企业科研投入提供1:1配套资金。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    万魔声学与哈工大深圳研究生院共建"新一代声学技术研究中心"，获区配套资金2000万元，研发新一代可穿戴设备，进入全球市场份额前三。
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="bg-green-50 dark:bg-green-900/10 p-4 rounded-lg">
+                                            <h5 class="font-bold flex items-center text-green-800 dark:text-green-300">
+                                                <i class="fas fa-lightbulb mr-2"></i>典型案例
+                                            </h5>
+                                            <p class="mt-2 text-sm">
+                                                南山区"芯火双创平台"通过政府引导、社会资本参与，专注半导体材料研发，联合6家龙头企业和4所高校，共同攻克高端光刻胶国产化难题，打破美国禁运壁垒，成为关税战中的技术"护城河"。
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="rounded-lg bg-card-light dark:bg-card-dark p-6 shadow-sm transition-all duration-300">
+                                <h3 class="text-xl font-semibold mb-4 flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-primary-light/10 dark:bg-primary-dark/20 flex items-center justify-center mr-3">
+                                        <span class="text-primary-light dark:text-primary-dark font-bold">4</span>
+                                    </div>
+                                    完善"外贸企业融资服务体系"
+                                </h3>
+
+                                <div class="prose prose-sm dark:prose-invert max-w-none">
+                                    <div class="space-y-4">
+                                        <div class="flex gap-4 flex-col md:flex-row">
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">信保融资支持</h4>
+                                                <p class="text-sm mt-2">
+                                                    与中国出口信用保险公司深圳分公司联合设立"风险共担池"，为中小外贸企业提供90%的出口信用保险覆盖，降低赔付门槛。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    2024年为238家中小外贸企业提供35亿元出口信用保险支持，因美国买家拖欠货款成功理赔6.8亿元。
+                                                </p>
+                                            </div>
+
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">汇率避险服务</h4>
+                                                <p class="text-sm mt-2">
+                                                    设立"汇率风险补偿基金"（5亿元规模），为外贸企业提供外汇套保服务，最高补贴企业汇率避险成本的50%。
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                                    2024年针对美元汇率大幅波动，为325家企业提供汇率避险补贴1.2亿元，有效降低企业财务风险。
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="bg-purple-50 dark:bg-purple-900/10 p-4 rounded-lg">
+                                            <h5 class="font-bold flex items-center text-purple-800 dark:text-purple-300">
+                                                <i class="fas fa-lightbulb mr-2"></i>典型案例
+                                            </h5>
+                                            <p class="mt-2 text-sm">
+                                                南山区"外贸企业专项贷款计划"与5家银行合作，针对受关税战影响的企业提供最高2000万元低息贷款（利率较基准下浮30%），服务125家中小企业，累计发放贷款15.6亿元，帮助企业扩大产能、开拓新兴市场。
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
