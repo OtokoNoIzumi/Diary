@@ -463,7 +463,7 @@
 
                                 <div class="space-y-3 text-sm">
                                     <div class="flex">
-                                        <span class="font-semibold w-24 shrink-0">关税影响</span>
+                                        <span class="font-semibold w-24 shrink-0">关税直接影响</span>
                                         <p class="text-balance">
                                             美国对消费级无人机加征75%关税（2025年拟提升至125%），2024年美国市场销售额降至35亿美元（同比下降22%），市场份额从70%缩水至50%。被迫将部分组装线转移至墨西哥，运输成本增加15%。
                                         </p>
@@ -605,6 +605,30 @@
                             </p>
                         </div>
                     </div>
+                </section>
+
+                <!-- 全球影响部分作为独立小节 -->
+                <section class="rounded-lg bg-card-light dark:bg-card-dark p-6 shadow-sm hover:shadow-md transition-all duration-300 mt-6">
+                    <h3 class="text-xl font-semibold mb-4">
+                        （四）全球影响：南山企业的 "蝴蝶效应" 与生态重塑
+                    </h3>
+                    <p class="text-balance mb-2">
+                        这些龙头企业的困境正引发产业集群连锁反应：
+                    </p>
+                    <ul class="list-disc pl-5 space-y-2 text-sm">
+                        <li>
+                            <span class="font-semibold">配套中小企业：</span>大疆在深圳的300余家零部件供应商中，20%因美国订单下降导致产能闲置，被迫开拓新能源汽车电子等新领域。
+                        </li>
+                        <li>
+                            <span class="font-semibold">就业市场：</span>迈瑞医疗越南工厂招聘本地员工6000人，深圳总部研发岗扩招1500人，呈现 "产能外迁-高端留驻" 的结构性调整。
+                        </li>
+                        <li>
+                            <span class="font-semibold">技术外溢：</span>腾讯在东南亚投资的游戏工作室反向输出国产化引擎技术，带动区域数字经济生态升级。
+                        </li>
+                    </ul>
+                    <p class="mt-4 text-balance font-semibold">
+                        关税战不仅是贸易成本的比拼，更是全球产业生态主导权的争夺。南山区企业正从 "被动应对" 转向 "主动重构"，在技术自主、市场多元、规则参与三个维度展开突围。
+                    </p>
                 </section>
 
                 <!-- 第四部分：对南山区外贸企业的影响分析 -->
@@ -1107,7 +1131,7 @@
                     <!-- 政策建议选项卡 -->
                     <div class="space-y-6">
                         <!-- 选项卡按钮 -->
-                        <div class="flex flex-wrap mb-4">
+                        <div class="sticky top-20 z-10 flex flex-wrap mb-4 bg-white dark:bg-gray-900 py-2 shadow-sm rounded-lg">
                             <button id="tab-enterprise" onclick="changeTab('enterprise')"
                                 class="px-6 py-2 font-medium text-sm rounded-tl-lg rounded-bl-lg bg-primary-light dark:bg-primary-dark text-white hover:bg-opacity-90 transition duration-150 ease-in-out"
                             >
@@ -1118,6 +1142,9 @@
                             >
                                 政府层面
                             </button>
+                            <div class="w-full ml-2 mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                <span id="tabs-indicator" class="italic">当前显示：企业层面的建议</span>
+                            </div>
                         </div>
 
                         <!-- 企业层面内容 -->
@@ -1663,6 +1690,102 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- 新增的政府层面政策建议 -->
+                            <div class="rounded-lg bg-card-light dark:bg-card-dark p-6 shadow-sm transition-all duration-300">
+                                <h3 class="text-xl font-semibold mb-4 flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-primary-light/10 dark:bg-primary-dark/20 flex items-center justify-center mr-3">
+                                        <span class="text-primary-light dark:text-primary-dark font-bold">5</span>
+                                    </div>
+                                    设立"关税应对专项纾困基金"
+                                </h3>
+
+                                <div class="prose prose-sm dark:prose-invert max-w-none">
+                                    <div class="space-y-4">
+                                        <div class="flex gap-4 flex-col md:flex-row">
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">资金规模</h4>
+                                                <p class="text-sm mt-2">
+                                                    首期规模5亿元，由市区财政按6:4比例出资，重点支持年营收2亿元以下的中小外贸企业。
+                                                </p>
+                                            </div>
+
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">扶持方向</h4>
+                                                <ul class="text-sm mt-2 space-y-2">
+                                                    <li>短期成本缓冲：对单票美国进口关税超过50万元的企业，给予20%-30%的关税预缴补贴（最高不超过200万元）</li>
+                                                    <li>市场开拓补贴：企业参加"一带一路"沿线国家展会，给予展位费80%补贴+人员差旅费50%补贴（单企业年最高100万元）</li>
+                                                    <li>供应链重构支持：对在东南亚、拉美新建或扩建海外仓的企业，按实际投资额的30%给予一次性补贴（单个项目最高500万元）</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="rounded-lg bg-card-light dark:bg-card-dark p-6 shadow-sm transition-all duration-300">
+                                <h3 class="text-xl font-semibold mb-4 flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-primary-light/10 dark:bg-primary-dark/20 flex items-center justify-center mr-3">
+                                        <span class="text-primary-light dark:text-primary-dark font-bold">6</span>
+                                    </div>
+                                    创新"技术+标准"双轮驱动政策
+                                </h3>
+
+                                <div class="prose prose-sm dark:prose-invert max-w-none">
+                                    <div class="space-y-4">
+                                        <div class="flex gap-4 flex-col md:flex-row">
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">认证成本分摊机制</h4>
+                                                <p class="text-sm mt-2">
+                                                    企业申请UL（美国）、CE（欧盟）等国际认证，按认证费用的40%-60%给予补贴（中小企业60%、规上企业40%，单企业年最高200万元）。
+                                                </p>
+                                                <p class="text-sm mt-2">
+                                                    联合深圳标准研究院、SGS等机构，建立"一站式认证服务平台"，提供从检测到认证的全流程代理服务，压缩认证周期30%以上。
+                                                </p>
+                                            </div>
+
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">标准互认合作</h4>
+                                                <p class="text-sm mt-2">
+                                                    推动南山区电子信息、医疗器械企业参与"中欧标准互认试点"，重点突破电磁兼容（EMC）、生物相容性等检测项目互认，降低重复认证成本。
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="rounded-lg bg-card-light dark:bg-card-dark p-6 shadow-sm transition-all duration-300">
+                                <h3 class="text-xl font-semibold mb-4 flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-primary-light/10 dark:bg-primary-dark/20 flex items-center justify-center mr-3">
+                                        <span class="text-primary-light dark:text-primary-dark font-bold">7</span>
+                                    </div>
+                                    建立"贸易摩擦动态预警机制"
+                                </h3>
+
+                                <div class="prose prose-sm dark:prose-invert max-w-none">
+                                    <div class="space-y-4">
+                                        <div class="flex gap-4 flex-col md:flex-row">
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">实时监测平台</h4>
+                                                <p class="text-sm mt-2">
+                                                    整合深圳海关、商务部驻深特办、行业协会数据，搭建"中美关税政策智能监测平台"，实时追踪美国关税清单调整、技术管制新规等，实现"一键推送"预警信息（覆盖全区5000+外贸企业）。
+                                                </p>
+                                                <p class="text-sm mt-2">
+                                                    针对重点产业（如锂电池、光伏设备）建立"关税影响压力测试模型"，提前3个月预判成本波动区间，为企业备货、定价提供数据支持。
+                                                </p>
+                                            </div>
+
+                                            <div class="md:w-1/2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm hover:shadow-md transition-all">
+                                                <h4 class="font-bold text-primary-light dark:text-primary-dark">快速响应通道</h4>
+                                                <p class="text-sm mt-2">
+                                                    设立"外贸企业应急服务专线"（24小时在线），企业遭遇美国海关查验、337调查等突发情况，48小时内协调律师、行业专家介入处理。
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -1699,10 +1822,35 @@
 
     <!-- JavaScript -->
     <script>
+        // 选项卡切换功能
+        function changeTab(tabName) {
+            // 隐藏所有内容
+            document.getElementById('content-enterprise').classList.add('hidden');
+            document.getElementById('content-government').classList.add('hidden');
+
+            // 重置所有选项卡样式
+            document.getElementById('tab-enterprise').classList.remove('bg-primary-light', 'dark:bg-primary-dark', 'text-white');
+            document.getElementById('tab-enterprise').classList.add('bg-gray-100', 'dark:bg-gray-800');
+            document.getElementById('tab-government').classList.remove('bg-primary-light', 'dark:bg-primary-dark', 'text-white');
+            document.getElementById('tab-government').classList.add('bg-gray-100', 'dark:bg-gray-800');
+
+            // 显示选中的内容并设置选中选项卡样式
+            document.getElementById('content-' + tabName).classList.remove('hidden');
+            document.getElementById('tab-' + tabName).classList.remove('bg-gray-100', 'dark:bg-gray-800');
+            document.getElementById('tab-' + tabName).classList.add('bg-primary-light', 'dark:bg-primary-dark', 'text-white');
+
+            // 更新指示器文本
+            const indicatorText = tabName === 'enterprise' ? '企业层面的建议' : '政府层面的建议';
+            document.getElementById('tabs-indicator').textContent = '当前显示：' + indicatorText;
+        }
+
         // 深色/浅色模式切换功能
         document.addEventListener('DOMContentLoaded', () => {
             const themeToggle = document.getElementById('theme-toggle');
             const html = document.documentElement;
+
+            // 设置默认选项卡
+            changeTab('enterprise');
 
             // 检查系统偏好和本地存储
             const userPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
