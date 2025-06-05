@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>整合提示词工程的Coze智能体入门实操课程</title>
+    <meta name="description" content="从概念理解到实操应用，全面掌握Coze智能体开发技术">
+
+    <!-- TailwindCSS 3.0+ CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- 自定义样式 -->
+    <style>
+        /* 主题变量 */
+        :root {
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+        }
+
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+
+        /* 动画类 */
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 卡片悬停效果 */
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .dark .card-hover:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 按钮悬停效果 */
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        /* 导航样式 */
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* 章节标题样式 */
+        .section-title {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* 进度指示器 */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            z-index: 100;
+            transition: width 0.1s ease;
+        }
+    </style>
+
+    <script>
+        // 主题切换配置
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eef2ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans leading-relaxed transition-colors duration-300">
+    <!-- 进度条 -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <i class="fas fa-robot text-2xl text-primary-500 mr-3"></i>
+                    <h1 class="text-xl font-bold text-gray-900 dark:text-white">Coze智能体课程</h1>
+                </div>
+
+                <!-- 导航菜单 -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#overview" class="nav-link text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-500">课程概览</a>
+                    <a href="#workflow" class="nav-link text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-500">工作流实操</a>
+                    <a href="#concepts" class="nav-link text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-500">核心概念</a>
+                    <a href="#practice" class="nav-link text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-500">实操指南</a>
+                    <a href="#advanced" class="nav-link text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-500">深度解析</a>
+                    <a href="#resources" class="nav-link text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-500">学习资源</a>
+                </div>
+
+                <!-- 主题切换按钮 -->
+                <div class="flex items-center space-x-4">
+                    <button id="themeToggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                        <i class="fas fa-sun text-gray-600 dark:text-gray-400 dark:hidden"></i>
+                        <i class="fas fa-moon text-gray-400 hidden dark:block"></i>
+                    </button>
+
+                    <!-- 移动端菜单按钮 -->
+                    <button id="mobileMenuToggle" class="md:hidden p-2 rounded-lg bg-gray-100 dark:bg-gray-800">
+                        <i class="fas fa-bars text-gray-600 dark:text-gray-400"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 移动端菜单 -->
+            <div id="mobileMenu" class="hidden md:hidden pb-4">
+                <div class="flex flex-col space-y-2">
+                    <a href="#overview" class="nav-link block py-2 text-sm font-medium text-gray-700 dark:text-gray-300">课程概览</a>
+                    <a href="#workflow" class="nav-link block py-2 text-sm font-medium text-gray-700 dark:text-gray-300">工作流实操</a>
+                    <a href="#concepts" class="nav-link block py-2 text-sm font-medium text-gray-700 dark:text-gray-300">核心概念</a>
+                    <a href="#practice" class="nav-link block py-2 text-sm font-medium text-gray-700 dark:text-gray-300">实操指南</a>
+                    <a href="#advanced" class="nav-link block py-2 text-sm font-medium text-gray-700 dark:text-gray-300">深度解析</a>
+                    <a href="#resources" class="nav-link block py-2 text-sm font-medium text-gray-700 dark:text-gray-300">学习资源</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main class="pt-16">
+        <!-- 英雄区域 -->
+        <section class="relative bg-gradient-to-br from-primary-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 py-20 overflow-hidden">
+            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <div class="fade-in">
+                    <h1 class="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+                        整合提示词工程的
+                        <span class="section-title">Coze智能体</span>
+                        入门实操课程
+                    </h1>
+                    <p class="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
+                        从Agent概念理解到实操应用，掌握提示词工程，构建智能工作流，实现组织内的Meta工作优化
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <a href="#overview" class="btn-primary px-8 py-3 rounded-lg text-white font-medium inline-flex items-center">
+                            <i class="fas fa-play mr-2"></i>
+                            开始学习
+                        </a>
+                        <a href="#concepts" class="px-8 py-3 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors inline-flex items-center">
+                            <i class="fas fa-lightbulb mr-2"></i>
+                            核心概念
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 课程特色 -->
+        <section class="py-16 bg-white dark:bg-gray-900">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12 fade-in">
+                    <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">课程特色</h2>
+                    <p class="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">理论与实操并重，从概念理解到实际应用的完整学习路径</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="card-hover bg-gray-50 dark:bg-gray-800 p-6 rounded-xl">
+                        <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-brain text-primary-500 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">深度概念解析</h3>
+                        <p class="text-gray-600 dark:text-gray-300">从能量与信息处理角度重新理解Agent，澄清概念混乱，建立正确认知框架</p>
+                    </div>
+
+                    <div class="card-hover bg-gray-50 dark:bg-gray-800 p-6 rounded-xl">
+                        <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-cogs text-green-500 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">实操驱动学习</h3>
+                        <p class="text-gray-600 dark:text-gray-300">通过三个动手环节，从平台搭建到工作流设计，掌握完整开发流程</p>
+                    </div>
+
+                    <div class="card-hover bg-gray-50 dark:bg-gray-800 p-6 rounded-xl">
+                        <div class="w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-rocket text-orange-500 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Meta工作思维</h3>
+                        <p class="text-gray-600 dark:text-gray-300">用Agent视角重新审视工作本身，实现组织内协作的系统性优化</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 课程内容概览 -->
+        <section id="overview" class="py-16 bg-gray-50 dark:bg-gray-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12 fade-in">
+                    <h2 class="text-3xl font-bold section-title mb-4">课程内容概览</h2>
+                    <p class="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">六大模块，从理论到实践的完整学习路径</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="card-hover bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mr-4 mt-1">
+                                <span class="text-blue-600 dark:text-blue-400 font-bold text-sm">01</span>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">AI工具进展回顾与设计思维</h3>
+                                <p class="text-gray-600 dark:text-gray-300 mb-4">腾讯混元Avatar、Veo3等最新视频生成技术演示，Cursor SVG编辑的设计协作展示</p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm rounded-full">视频生成</span>
+                                    <span class="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm rounded-full">设计协作</span>
+                                </div>
+                                <!-- 演示链接 -->
+                                <div class="space-y-2">
+                                    <a href="https://hunyuan.tencent.com/modelSquare/home/play?modelId=126" target="_blank" rel="noopener noreferrer"
+                                       class="inline-flex items-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                                        <i class="fas fa-external-link-alt mr-2"></i>
+                                        腾讯混元Avatar实时体验
+                                    </a>
+                                    <br>
+                                    <a href="https://x.com/TheAIColony/status/1927272278158442904" target="_blank" rel="noopener noreferrer"
+                                       class="inline-flex items-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                                        <i class="fas fa-external-link-alt mr-2"></i>
+                                        Veo3成果预览
+                                    </a>
+                                    <br>
+                                    <a href="https://onlinestool.com/svg-code-to-image" target="_blank" rel="noopener noreferrer"
+                                       class="inline-flex items-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                                        <i class="fas fa-external-link-alt mr-2"></i>
+                                        SVG转换图片工具（Cursor演示用）
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-hover bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mr-4 mt-1">
+                                <span class="text-purple-600 dark:text-purple-400 font-bold text-sm">02</span>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">智能体核心概念解析</h3>
+                                <p class="text-gray-600 dark:text-gray-300 mb-4">从能量与信息处理角度重新理解Agent，对比n8n、Dify、Coze等主流平台</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-3 py-1 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 text-sm rounded-full">概念澄清</span>
+                                    <span class="px-3 py-1 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 text-sm rounded-full">平台对比</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-hover bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mr-4 mt-1">
+                                <span class="text-green-600 dark:text-green-400 font-bold text-sm">03</span>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">第一个智能体实操</h3>
+                                <p class="text-gray-600 dark:text-gray-300 mb-4">从COSTAR框架到复杂提示词，平台搭建、角色设定、知识库配置的完整流程</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-3 py-1 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-sm rounded-full">实操指导</span>
+                                    <span class="px-3 py-1 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-sm rounded-full">提示词工程</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-hover bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center mr-4 mt-1">
+                                <span class="text-orange-600 dark:text-orange-400 font-bold text-sm">04</span>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">工作流展示与实操</h3>
+                                <p class="text-gray-600 dark:text-gray-300 mb-4">多维表格集成、数据流设计，构建智能客服的完整业务流程</p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="px-3 py-1 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-sm rounded-full">工作流</span>
+                                    <span class="px-3 py-1 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-sm rounded-full">数据集成</span>
+                                </div>
+                                <!-- 演示链接 -->
+                                <div class="space-y-2">
+                                    <a href="https://e4twfvn5yj.feishu.cn/base/HtROb1XRnaKNa8snrX4cXqN4nad?table=tblHedwLkvynzUQp&view=vewPJjazxL" target="_blank" rel="noopener noreferrer"
+                                       class="inline-flex items-center text-sm text-orange-600 dark:text-orange-400 hover:text-orange-800 dark:hover:text-orange-300">
+                                        <i class="fas fa-external-link-alt mr-2"></i>
+                                        视频多维表格参考案例
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-hover bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center mr-4 mt-1">
+                                <span class="text-red-600 dark:text-red-400 font-bold text-sm">05</span>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">深度理解智能体技术</h3>
+                                <p class="text-gray-600 dark:text-gray-300 mb-4">Meta工作思维、RAG技术、节点化编程思维，从工作流到程序化的思维转换</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-3 py-1 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm rounded-full">Meta思维</span>
+                                    <span class="px-3 py-1 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm rounded-full">RAG技术</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-hover bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 bg-indigo-100 dark:bg-indigo-900 rounded-lg flex items-center justify-center mr-4 mt-1">
+                                <span class="text-indigo-600 dark:text-indigo-400 font-bold text-sm">06</span>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">答疑与学习资源</h3>
+                                <p class="text-gray-600 dark:text-gray-300 mb-4">课后实践任务、扩展学习资源，国内外技术工具与平台的全面指南</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-sm rounded-full">实践任务</span>
+                                    <span class="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-sm rounded-full">学习资源</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 实操环节概览 -->
+        <section class="py-16 bg-white dark:bg-gray-900">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12 fade-in">
+                    <h2 class="text-3xl font-bold section-title mb-4">实操环节概览</h2>
+                    <p class="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">五个核心实操环节，循序渐进掌握智能体开发</p>
+                </div>
+
+                <div class="relative">
+                    <!-- 连接线 -->
+                    <div class="absolute left-4 top-8 bottom-8 w-0.5 bg-gradient-to-b from-blue-500 to-purple-500 hidden lg:block"></div>
+
+                    <div class="space-y-8">
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm mr-6 relative z-10">
+                                1
+                            </div>
+                            <div class="flex-1 card-hover bg-gray-50 dark:bg-gray-800 p-6 rounded-xl">
+                                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">平台搭建</h3>
+                                <p class="text-gray-600 dark:text-gray-300">Coze平台注册、界面导览、创建第一个Bot的基本设置</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold text-sm mr-6 relative z-10">
+                                2
+                            </div>
+                            <div class="flex-1 card-hover bg-gray-50 dark:bg-gray-800 p-6 rounded-xl">
+                                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">角色设定对比练习</h3>
+                                <p class="text-gray-600 dark:text-gray-300">电商客服场景，自然语言与结构化提示词的效果对比</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-sm mr-6 relative z-10">
+                                3
+                            </div>
+                            <div class="flex-1 card-hover bg-gray-50 dark:bg-gray-800 p-6 rounded-xl">
+                                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">配置优化</h3>
+                                <p class="text-gray-600 dark:text-gray-300 mb-3">智能菜单设计、快捷回复配置、异常处理设置</p>
+                                <div class="text-sm text-gray-500 dark:text-gray-400">
+                                    <p>• 智能菜单：引导用户交互路径</p>
+                                    <p>• 快捷回复：高频问题一键解决</p>
+                                    <p>• 异常处理：无法回答时的优雅降级</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white font-bold text-sm mr-6 relative z-10">
+                                4
+                            </div>
+                            <div class="flex-1 card-hover bg-gray-50 dark:bg-gray-800 p-6 rounded-xl">
+                                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">测试验证</h3>
+                                <p class="text-gray-600 dark:text-gray-300 mb-3">场景模拟测试、数据准确性验证、边界情况处理</p>
+                                <div class="text-sm text-gray-500 dark:text-gray-400">
+                                    <p>• 模拟真实对话场景测试</p>
+                                    <p>• 数据准确性和响应速度验证</p>
+                                    <p>• 边界情况处理验证</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 核心概念详解 -->
+        <section id="concepts" class="py-16 bg-white dark:bg-gray-900">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12 fade-in">
+                    <h2 class="text-3xl font-bold section-title mb-4">智能体核心概念解析</h2>
+                    <p class="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">重新理解Agent的本质，澄清概念混乱</p>
+                </div>
+
+                <!-- Agent概念澄清 -->
+                <div class="mb-16">
+                    <div class="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 p-8 rounded-2xl">
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mr-6 mt-1">
+                                <i class="fas fa-lightbulb text-purple-600 dark:text-purple-400 text-xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Agent概念的澄清</h3>
+                                <p class="text-gray-700 dark:text-gray-300 text-lg leading-relaxed mb-4">
+                                    正如吴恩达老师所指出的，当前Agent概念存在定义混乱的问题，这与之前的Web3、元宇宙现象类似。我们需要从根本上理解什么是真正的Agent。
+                                </p>
+                                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg border-l-4 border-purple-500">
+                                    <h4 class="font-semibold text-gray-900 dark:text-white mb-2">从能量与信息处理的角度看Agent</h4>
+                                    <p class="text-gray-600 dark:text-gray-300">
+                                        在AI出现之前，我们很少称计算机程序为"agent"，因为虽然它们能够利用计算机的电能作为能量来源，但无法处理复杂的信息。现在AI的出现，实际上打通了这个智能瓶颈——agent不仅有了能量（计算资源），更重要的是获得了处理复杂信息的能力。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 平台对比 -->
+                <div class="mb-16">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">主流智能体平台对比</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="card-hover bg-gray-50 dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+                            <div class="text-center mb-4">
+                                <div class="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-code-branch text-green-600 dark:text-green-400 text-2xl"></i>
+                                </div>
+                                <h4 class="text-xl font-bold text-gray-900 dark:text-white">n8n</h4>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">开源工作流自动化</p>
+                            </div>
+                            <div class="space-y-3">
+                                <div>
+                                    <h5 class="font-semibold text-green-600 dark:text-green-400 mb-2">优势</h5>
+                                    <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                        <li>• 灵活性高，社区活跃</li>
+                                        <li>• 完全控制，可自定义</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h5 class="font-semibold text-red-600 dark:text-red-400 mb-2">劣势</h5>
+                                    <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                        <li>• 技术门槛高</li>
+                                        <li>• 需要自部署维护</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-hover bg-gray-50 dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+                            <div class="text-center mb-4">
+                                <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-building text-blue-600 dark:text-blue-400 text-2xl"></i>
+                                </div>
+                                <h4 class="text-xl font-bold text-gray-900 dark:text-white">Dify</h4>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">企业级AI应用开发平台</p>
+                            </div>
+                            <div class="space-y-3">
+                                <div>
+                                    <h5 class="font-semibold text-green-600 dark:text-green-400 mb-2">优势</h5>
+                                    <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                        <li>• 企业功能完整</li>
+                                        <li>• 支持私有化部署</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h5 class="font-semibold text-red-600 dark:text-red-400 mb-2">劣势</h5>
+                                    <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                        <li>• 成本较高</li>
+                                        <li>• 配置复杂，学习曲线陡</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-hover bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 p-6 rounded-xl border-2 border-purple-200 dark:border-purple-700">
+                            <div class="text-center mb-4">
+                                <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-rocket text-purple-600 dark:text-purple-400 text-2xl"></i>
+                                </div>
+                                <h4 class="text-xl font-bold text-gray-900 dark:text-white">Coze</h4>
+                                <p class="text-sm text-purple-600 dark:text-purple-400 font-medium">字节跳动智能体平台</p>
+                            </div>
+                            <div class="space-y-3">
+                                <div>
+                                    <h5 class="font-semibold text-green-600 dark:text-green-400 mb-2">优势</h5>
+                                    <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                        <li>• 零代码门槛</li>
+                                        <li>• 中文生态完善</li>
+                                        <li>• 集成度高</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-purple-100 dark:bg-purple-900/30 p-3 rounded-lg">
+                                    <p class="text-sm text-purple-700 dark:text-purple-300 font-medium">
+                                        💡 推荐：快速原型验证和中小企业应用的最佳选择
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 实操指南 -->
+        <section id="practice" class="py-16 bg-gray-50 dark:bg-gray-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12 fade-in">
+                    <h2 class="text-3xl font-bold section-title mb-4">实操指南</h2>
+                    <p class="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">从平台搭建到Bot完善的完整实操流程</p>
+                </div>
+
+                <!-- COSTAR框架 -->
+                <div class="mb-16">
+                    <div class="bg-white dark:bg-gray-900 p-8 rounded-2xl">
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">COSTAR框架回顾</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                                <h4 class="font-semibold text-blue-700 dark:text-blue-300 mb-2">Context</h4>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">任务上下文和背景信息</p>
+                            </div>
+                            <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                                <h4 class="font-semibold text-green-700 dark:text-green-300 mb-2">Objective</h4>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">明确的目标和期望结果</p>
+                            </div>
+                            <div class="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
+                                <h4 class="font-semibold text-purple-700 dark:text-purple-300 mb-2">Style</h4>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">输出风格和格式要求</p>
+                            </div>
+                            <div class="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg">
+                                <h4 class="font-semibold text-orange-700 dark:text-orange-300 mb-2">Tone</h4>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">语调和情感表达方式</p>
+                            </div>
+                            <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
+                                <h4 class="font-semibold text-red-700 dark:text-red-300 mb-2">Audience</h4>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">目标受众和用户群体</p>
+                            </div>
+                            <div class="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-lg">
+                                <h4 class="font-semibold text-indigo-700 dark:text-indigo-300 mb-2">Response</h4>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">期望的响应格式</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Claude复杂提示词结构 -->
+                <div class="mb-16">
+                    <div class="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-8 rounded-2xl">
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">Claude复杂提示词的10要素结构</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-4">
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-purple-700 dark:text-purple-300 mb-2">1. 任务上下文</h4>
+                                    <p class="text-gray-600 dark:text-gray-300 text-sm">对应COSTAR的Context + Objective</p>
+                                </div>
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-pink-700 dark:text-pink-300 mb-2">2. 语调设定</h4>
+                                    <p class="text-gray-600 dark:text-gray-300 text-sm">对应COSTAR的Tone</p>
+                                </div>
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-blue-700 dark:text-blue-300 mb-2">3. 详细规则与边界条件</h4>
+                                    <p class="text-gray-600 dark:text-gray-300 text-sm">明确的约束和限制</p>
+                                </div>
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-green-700 dark:text-green-300 mb-2">4. 示例演示</h4>
+                                    <p class="text-gray-600 dark:text-gray-300 text-sm">⭐ 最关键的要素</p>
+                                </div>
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                                    <h4 class="font-semibold text-orange-700 dark:text-orange-300 mb-2">5. 输入数据结构化处理</h4>
+                                    <p class="text-gray-600 dark:text-gray-300 text-sm">数据预处理和格式化</p>
+                                </div>
+                            </div>
+                            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg">
+                                <h4 class="font-bold text-gray-900 dark:text-white mb-4">💡 关键提升点</h4>
+                                <div class="space-y-3">
+                                    <div class="flex items-start">
+                                        <span class="w-2 h-2 bg-red-500 rounded-full mt-2 mr-3"></span>
+                                        <p class="text-sm text-gray-600 dark:text-gray-300">
+                                            <strong>示例演示</strong>是最关键的要素，比理论描述更有效
+                                        </p>
+                                    </div>
+                                    <div class="flex items-start">
+                                        <span class="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3"></span>
+                                        <p class="text-sm text-gray-600 dark:text-gray-300">
+                                            <strong>边界条件</strong>帮助Agent处理异常情况
+                                        </p>
+                                    </div>
+                                    <div class="flex items-start">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3"></span>
+                                        <p class="text-sm text-gray-600 dark:text-gray-300">
+                                            <strong>结构化处理</strong>提升信息匹配准确度
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 信息匹配与识别 -->
+                <div class="mb-16">
+                    <div class="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 p-8 rounded-2xl">
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">信息的匹配与识别机制</h3>
+                        <p class="text-gray-700 dark:text-gray-300 text-lg leading-relaxed mb-6">
+                            在设计Agent时，核心要解决的是<strong>信息的提供——匹配与识别</strong>问题。这涉及到如何让Agent能够：
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                                <i class="fas fa-search text-green-500 text-2xl mb-3"></i>
+                                <h4 class="font-semibold text-gray-900 dark:text-white mb-2">准确识别用户需求</h4>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">理解用户真实意图和隐含需求</p>
+                            </div>
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                                <i class="fas fa-link text-blue-500 text-2xl mb-3"></i>
+                                <h4 class="font-semibold text-gray-900 dark:text-white mb-2">匹配合适的知识和资源</h4>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">从知识库中找到最相关的信息</p>
+                            </div>
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                                <i class="fas fa-bullseye text-purple-500 text-2xl mb-3"></i>
+                                <h4 class="font-semibold text-gray-900 dark:text-white mb-2">提供精准的响应</h4>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">生成符合期望的高质量回答</p>
+                            </div>
+                        </div>
+                        <div class="mt-6 bg-white dark:bg-gray-800 p-4 rounded-lg border-l-4 border-green-500">
+                            <p class="text-gray-600 dark:text-gray-300">
+                                这个过程需要我们重新思考组织内的分工协作方式
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 实操对比练习 -->
+                <div class="mb-16">
+                    <div class="bg-white dark:bg-gray-900 p-8 rounded-2xl border-2 border-green-200 dark:border-green-700">
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">🔬 核心实操对比练习</h3>
+                        <p class="text-center text-gray-600 dark:text-gray-300 mb-8">电商客服场景 - 效果对比演示</p>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <!-- 第一轮：自然语言 -->
+                            <div class="bg-red-50 dark:bg-red-900/20 p-6 rounded-xl">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white font-bold mr-3">1</div>
+                                    <h4 class="text-xl font-semibold text-gray-900 dark:text-white">第一轮：自然语言描述</h4>
+                                </div>
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg mb-4">
+                                    <h5 class="font-medium text-gray-900 dark:text-white mb-2">提示词示例：</h5>
+                                    <p class="text-gray-600 dark:text-gray-300 text-sm italic">
+                                        "你是一个电商客服，要热情友好地回答客户问题，解决他们的疑问。"
+                                    </p>
+                                </div>
+                                <div class="space-y-2">
+                                    <h5 class="font-semibold text-red-700 dark:text-red-300">问题：</h5>
+                                    <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                        <li>• 回答不够专业</li>
+                                        <li>• 缺乏具体指导</li>
+                                        <li>• 没有边界约束</li>
+                                        <li>• 无法处理复杂场景</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- 第二轮：结构化提示词 -->
+                            <div class="bg-green-50 dark:bg-green-900/20 p-6 rounded-xl">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold mr-3">2</div>
+                                    <h4 class="text-xl font-semibold text-gray-900 dark:text-white">第二轮：结构化提示词</h4>
+                                </div>
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg mb-4">
+                                    <h5 class="font-medium text-gray-900 dark:text-white mb-2">COSTAR结构示例：</h5>
+                                    <div class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                        <p><strong>Context:</strong> 专业电商客服</p>
+                                        <p><strong>Objective:</strong> 解决问题 + 提升满意度</p>
+                                        <p><strong>Style:</strong> 专业、准确、高效</p>
+                                        <p><strong>Tone:</strong> 友好热情但不过度</p>
+                                        <p><strong>Audience:</strong> 在线购物用户</p>
+                                        <p><strong>Response:</strong> 结构化回答格式</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <h5 class="font-semibold text-green-700 dark:text-green-300">优势：</h5>
+                                    <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                        <li>• 回答更加专业准确</li>
+                                        <li>• 有明确的处理流程</li>
+                                        <li>• 包含边界条件设定</li>
+                                        <li>• 可复用和优化</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 实操指导 -->
+                        <div class="mt-8 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 p-6 rounded-xl">
+                            <h4 class="text-lg font-bold text-gray-900 dark:text-white mb-4 text-center">🎯 课堂实操步骤</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="text-center">
+                                    <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold mx-auto mb-2">1</div>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">分组实操</p>
+                                    <p class="text-xs text-gray-600 dark:text-gray-300">每组先用自然语言设计客服</p>
+                                </div>
+                                <div class="text-center">
+                                    <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold mx-auto mb-2">2</div>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">结构化重设计</p>
+                                    <p class="text-xs text-gray-600 dark:text-gray-300">应用COSTAR框架重新设计</p>
+                                </div>
+                                <div class="text-center">
+                                    <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white font-bold mx-auto mb-2">3</div>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">效果对比</p>
+                                    <p class="text-xs text-gray-600 dark:text-gray-300">测试并分享两种方法的差异</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 工作流实操详解 -->
+        <section id="workflow" class="py-16 bg-white dark:bg-gray-900">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12 fade-in">
+                    <h2 class="text-3xl font-bold section-title mb-4">工作流实操演示</h2>
+                    <p class="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">智能客服数据管理工作流的完整构建过程</p>
+                </div>
+
+                <!-- 工作流概念回顾 -->
+                <div class="mb-12">
+                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-8 rounded-2xl">
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">工作流基本模式</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-download text-blue-600 dark:text-blue-400 text-2xl"></i>
+                                </div>
+                                <h4 class="font-bold text-gray-900 dark:text-white mb-2">数据输入</h4>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">用户查询、请求信息</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-indigo-100 dark:bg-indigo-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-cogs text-indigo-600 dark:text-indigo-400 text-2xl"></i>
+                                </div>
+                                <h4 class="font-bold text-gray-900 dark:text-white mb-2">逻辑处理</h4>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">数据检索、业务逻辑</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-upload text-purple-600 dark:text-purple-400 text-2xl"></i>
+                                </div>
+                                <h4 class="font-bold text-gray-900 dark:text-white mb-2">结果输出</h4>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">结构化回答、状态更新</p>
+                            </div>
+                        </div>
+
+                        <!-- 参考案例链接 -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                                <h4 class="font-semibold text-gray-900 dark:text-white mb-2">🎥 视频多维表格案例</h4>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm mb-3">数据流转在工作流中的核心作用演示</p>
+                                <a href="https://e4twfvn5yj.feishu.cn/base/HtROb1XRnaKNa8snrX4cXqN4nad?table=tblHedwLkvynzUQp&view=vewPJjazxL"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm">
+                                    ↗ 查看飞书多维表格演示
+                                </a>
+                            </div>
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                                <h4 class="font-semibold text-gray-900 dark:text-white mb-2">🤖 AI泉酱工作流案例</h4>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm mb-3">复杂业务逻辑的自动化实现参考</p>
+                                <a href="https://www.coze.cn/work_flow?space_id=7374905002604806179&workflow_id=7473020021918203940"
+                                   target="_blank" rel="noopener noreferrer"
+                                   class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm">
+                                    ↗ 查看AI泉酱工作流
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 初学者友好的实操步骤 -->
+                <div class="bg-white dark:bg-gray-900 border-2 border-green-200 dark:border-green-700 rounded-2xl p-8">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">🌟 初学者实操：简单工作流体验</h3>
+                    <p class="text-center text-gray-600 dark:text-gray-300 mb-8">让我们从最简单的工作流开始，循序渐进地理解核心概念</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                        <!-- 第一步：观察学习 -->
+                        <div class="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-xl">
+                            <div class="flex items-center mb-4">
+                                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold mr-3">1</div>
+                                <h4 class="text-xl font-bold text-gray-900 dark:text-white">观察学习阶段</h4>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                                    <h5 class="font-medium text-gray-900 dark:text-white mb-2">📖 先观察现成案例</h5>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">
+                                        访问AI泉酱工作流，看看一个完整的工作流是什么样子
+                                    </p>
+                                </div>
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                                    <h5 class="font-medium text-gray-900 dark:text-white mb-2">🔍 理解基本概念</h5>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">
+                                        观察：输入 → 处理 → 输出的基本流程
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 第二步：简单实践 -->
+                        <div class="bg-green-50 dark:bg-green-900/20 p-6 rounded-xl">
+                            <div class="flex items-center mb-4">
+                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold mr-3">2</div>
+                                <h4 class="text-xl font-bold text-gray-900 dark:text-white">简单实践阶段</h4>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                                    <h5 class="font-medium text-gray-900 dark:text-white mb-2">⚡ 创建简单工作流</h5>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">
+                                        从今天的Bot开始，添加一个简单的工作流节点
+                                    </p>
+                                </div>
+                                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                                    <h5 class="font-medium text-gray-900 dark:text-white mb-2">🧪 测试与调整</h5>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">
+                                        测试流程是否正常工作，体验节点化思维
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 循序渐进的学习路径 -->
+                    <div class="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 p-6 rounded-xl">
+                        <h4 class="text-lg font-bold text-gray-900 dark:text-white mb-4 text-center">📈 循序渐进的学习路径</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="text-center">
+                                <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-2">
+                                    <span class="text-blue-600 dark:text-blue-400 font-bold text-sm">1</span>
+                                </div>
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">观察案例</p>
+                                <p class="text-xs text-gray-600 dark:text-gray-300">理解工作流概念</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-2">
+                                    <span class="text-green-600 dark:text-green-400 font-bold text-sm">2</span>
+                                </div>
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">简单实践</p>
+                                <p class="text-xs text-gray-600 dark:text-gray-300">创建基础工作流</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-10 h-10 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center mx-auto mb-2">
+                                    <span class="text-orange-600 dark:text-orange-400 font-bold text-sm">3</span>
+                                </div>
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">进阶学习</p>
+                                <p class="text-xs text-gray-600 dark:text-gray-300">下节课深入学习</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-2">
+                                    <span class="text-purple-600 dark:text-purple-400 font-bold text-sm">4</span>
+                                </div>
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">实际应用</p>
+                                <p class="text-xs text-gray-600 dark:text-gray-300">解决实际问题</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 友好提醒 -->
+                    <div class="mt-6 bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 p-4 rounded-lg border-l-4 border-blue-500">
+                        <div class="flex items-start">
+                            <i class="fas fa-lightbulb text-blue-600 dark:text-blue-400 text-lg mr-3 mt-1"></i>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white mb-1">💡 温馨提示</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">
+                                    第一次接触工作流，不用着急理解所有细节。重点是体验"节点化思维"和"数据流转"的概念。复杂的实现我们留到下节课详细学习！
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 深度解析 -->
+        <section id="advanced" class="py-16 bg-white dark:bg-gray-900">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12 fade-in">
+                    <h2 class="text-3xl font-bold section-title mb-4">深度解析</h2>
+                    <p class="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">Meta工作思维与技术深度解析</p>
+                </div>
+
+                <!-- Meta工作思维 -->
+                <div class="mb-16">
+                    <div class="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 p-8 rounded-2xl">
+                        <div class="flex items-start">
+                            <div class="w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center mr-6 mt-1">
+                                <i class="fas fa-layer-group text-orange-600 dark:text-orange-400 text-xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Agent结合组织优化的Meta工作思维</h3>
+                                <div class="mb-6">
+                                    <h4 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">从Agent视角重新审视工作本身</h4>
+                                    <p class="text-gray-700 dark:text-gray-300 text-lg leading-relaxed">
+                                        如果说当前的工作对接规范还停留在相对低级的状态，没有覆盖COSTAR的要素，那么我们可以首先将工作本身提升一个层级，然后再用Agent的视野去重新审视和优化工作流程中的信息和能量。这相当于进行<strong>Meta工作</strong>——对工作方式本身进行工作。
+                                    </p>
+                                </div>
+
+                                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg">
+                                    <h4 class="font-semibold text-gray-900 dark:text-white mb-4">组织内Agent应用的思考框架</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div class="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg">
+                                            <h5 class="font-semibold text-orange-700 dark:text-orange-300 mb-2">识别低效环节</h5>
+                                            <p class="text-gray-600 dark:text-gray-300 text-sm">哪些工作流程可以通过Agent优化</p>
+                                        </div>
+                                        <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
+                                            <h5 class="font-semibold text-red-700 dark:text-red-300 mb-2">重新定义角色</h5>
+                                            <p class="text-gray-600 dark:text-gray-300 text-sm">人与Agent的协作分工</p>
+                                        </div>
+                                        <div class="bg-pink-50 dark:bg-pink-900/20 p-4 rounded-lg">
+                                            <h5 class="font-semibold text-pink-700 dark:text-pink-300 mb-2">提升标准化水平</h5>
+                                            <p class="text-gray-600 dark:text-gray-300 text-sm">用Agent思维规范工作流程</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RAG技术 -->
+                <div class="mb-16">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">RAG、数据集和长上下文技术</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div class="card-hover bg-gray-50 dark:bg-gray-800 p-6 rounded-xl">
+                            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-4">
+                                <i class="fas fa-database text-blue-600 dark:text-blue-400 text-xl"></i>
+                            </div>
+                            <h4 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">RAG (检索增强生成)</h4>
+                            <ul class="text-gray-600 dark:text-gray-300 space-y-2 text-sm">
+                                <li>• 外部知识库 + 实时检索 + 生成回答</li>
+                                <li>• 知识更新灵活，准确性更高</li>
+                                <li>• 与传统知识库的区别和互补关系</li>
+                            </ul>
+                        </div>
+
+                        <div class="card-hover bg-gray-50 dark:bg-gray-800 p-6 rounded-xl">
+                            <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4">
+                                <i class="fas fa-chart-bar text-green-600 dark:text-green-400 text-xl"></i>
+                            </div>
+                            <h4 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">数据集管理</h4>
+                            <ul class="text-gray-600 dark:text-gray-300 space-y-2 text-sm">
+                                <li>• 结构化 vs 非结构化数据的处理策略</li>
+                                <li>• 数据质量对AI回答质量的决定性影响</li>
+                                <li>• 版本管理和更新策略</li>
+                            </ul>
+                        </div>
+
+                        <div class="card-hover bg-gray-50 dark:bg-gray-800 p-6 rounded-xl">
+                            <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mb-4">
+                                <i class="fas fa-comments text-purple-600 dark:text-purple-400 text-xl"></i>
+                            </div>
+                            <h4 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">长上下文技术</h4>
+                            <ul class="text-gray-600 dark:text-gray-300 space-y-2 text-sm">
+                                <li>• 如何处理复杂的多轮对话</li>
+                                <li>• 上下文窗口的管理和优化策略</li>
+                                <li>• 记忆机制的设计与实现</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 节点化编程思维 -->
+                <div class="mb-16">
+                    <div class="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 p-8 rounded-2xl">
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">节点、程序和封装的概念</h3>
+                        <p class="text-gray-700 dark:text-gray-300 text-lg leading-relaxed mb-6">
+                            从工作流到程序化思维的转换，是掌握智能体技术的关键环节。
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg">
+                                <h4 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">节点化思维</h4>
+                                <ul class="text-gray-600 dark:text-gray-300 space-y-2">
+                                    <li>• 每个功能模块都是一个独立的处理节点</li>
+                                    <li>• 节点间的数据传递和状态管理</li>
+                                    <li>• 可视化编程 vs 传统编程的思维转换</li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg">
+                                <h4 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">程序封装</h4>
+                                <ul class="text-gray-600 dark:text-gray-300 space-y-2">
+                                    <li>• 复杂提示词的模块化设计</li>
+                                    <li>• 可复用组件的构建方法</li>
+                                    <li>• 从简单Bot到复杂工作流的演进路径</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 学习资源 -->
+        <section id="resources" class="py-16 bg-gray-50 dark:bg-gray-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12 fade-in">
+                    <h2 class="text-3xl font-bold section-title mb-4">学习资源</h2>
+                    <p class="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">扩展学习资源和实践任务指南</p>
+                </div>
+
+                <!-- 必做作业 -->
+                <div class="mb-16">
+                    <div class="bg-white dark:bg-gray-900 p-8 rounded-2xl">
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">必做作业</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div class="card-hover border border-gray-200 dark:border-gray-700 p-6 rounded-xl">
+                                <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-4">
+                                    <span class="text-blue-600 dark:text-blue-400 font-bold">1</span>
+                                </div>
+                                <h4 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">完善智能体</h4>
+                                <p class="text-gray-600 dark:text-gray-300">优化今天创建的客服Bot，至少应用3个复杂提示词要素</p>
+                            </div>
+
+                            <div class="card-hover border border-gray-200 dark:border-gray-700 p-6 rounded-xl">
+                                <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4">
+                                    <span class="text-green-600 dark:text-green-400 font-bold">2</span>
+                                </div>
+                                <h4 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">工作流实践</h4>
+                                <p class="text-gray-600 dark:text-gray-300">设计一个包含数据查询和记录的完整业务流程</p>
+                            </div>
+
+                            <div class="card-hover border border-gray-200 dark:border-gray-700 p-6 rounded-xl">
+                                <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mb-4">
+                                    <span class="text-purple-600 dark:text-purple-400 font-bold">3</span>
+                                </div>
+                                <h4 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">场景应用</h4>
+                                <p class="text-gray-600 dark:text-gray-300">将学到的概念应用到自己工作中的一个具体场景</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 扩展学习资源 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white dark:bg-gray-900 p-6 rounded-xl">
+                        <h4 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">国外技术工具与平台</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <h5 class="font-semibold text-blue-600 dark:text-blue-400 mb-2">工作流平台</h5>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">Zapier, Make (原Integromat), Bubble, Retool</p>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold text-green-600 dark:text-green-400 mb-2">无代码开发</h5>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">Webflow, Airtable, Notion API</p>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold text-purple-600 dark:text-purple-400 mb-2">AI工具生态</h5>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">LangChain, Pinecone, Weaviate</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-gray-900 p-6 rounded-xl">
+                        <h4 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">学习资源与社区</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <h5 class="font-semibold text-orange-600 dark:text-orange-400 mb-2">课程平台</h5>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">No Code MBA, Makerpad, BuildSpace</p>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold text-red-600 dark:text-red-400 mb-2">技术社区</h5>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">Product Hunt, IndieHackers, AI工具日报</p>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold text-indigo-600 dark:text-indigo-400 mb-2">资讯追踪</h5>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">Ben's Bites, The Rundown AI, AI Breakfast</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-gray-900 p-6 rounded-xl">
+                        <h4 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">重要工具与平台链接</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <h5 class="font-semibold text-teal-600 dark:text-teal-400 mb-2">Coze平台</h5>
+                                <a href="https://www.coze.cn" target="_blank" rel="noopener noreferrer"
+                                   class="text-gray-600 dark:text-gray-300 text-sm hover:text-teal-600 dark:hover:text-teal-400">
+                                    ↗ Coze官方平台 - 开始创建智能体
+                                </a>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold text-cyan-600 dark:text-cyan-400 mb-2">AI辅助编程工具</h5>
+                                <div class="text-gray-600 dark:text-gray-300 text-sm space-y-1">
+                                    <p>• <strong>Cursor:</strong> AI辅助编程工具（下节课重点）</p>
+                                    <p>• <strong>Trae:</strong> 字节辅助编程工具（国际版推荐）</p>
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold text-pink-600 dark:text-pink-400 mb-2">课程相关资源</h5>
+                                <div class="text-gray-600 dark:text-gray-300 text-sm space-y-1">
+                                    <p>• Coze官方文档和进阶教程</p>
+                                    <p>• GitHub开源智能体项目</p>
+                                    <p>• 企业级AI应用案例研究</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 下节课预告 -->
+                <div class="mt-16">
+                    <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-8 rounded-2xl text-white text-center">
+                        <h3 class="text-2xl font-bold mb-4">下节课预告</h3>
+                        <p class="text-xl mb-4">工作流进阶 + Cursor辅助网页开发</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+                            <div class="bg-white/10 p-4 rounded-lg">
+                                <h4 class="font-semibold mb-2">主题</h4>
+                                <p class="text-sm">工作流进阶 + Cursor辅助网页开发</p>
+                            </div>
+                            <div class="bg-white/10 p-4 rounded-lg">
+                                <h4 class="font-semibold mb-2">连接点</h4>
+                                <p class="text-sm">今天的数据流基础 + 可视化界面开发</p>
+                            </div>
+                            <div class="bg-white/10 p-4 rounded-lg">
+                                <h4 class="font-semibold mb-2">准备工作</h4>
+                                <p class="text-sm">熟练使用今天创建的Bot，思考一个需要网页界面的应用场景</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 作者信息 -->
+        <section class="py-16 bg-gradient-to-br from-gray-900 to-gray-800 text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <div class="mb-8">
+                    <div class="w-24 h-24 bg-gradient-to-br from-primary-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-user text-3xl text-white"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold mb-4">关于作者</h2>
+                    <p class="text-xl text-gray-300 mb-8">Izumi.屈源</p>
+                </div>
+
+                <div class="flex justify-center space-x-8 mb-8">
+                    <a href="https://github.com/OtokoNoIzumi" target="_blank" rel="noopener noreferrer"
+                       class="flex items-center space-x-2 bg-gray-700 hover:bg-gray-600 px-6 py-3 rounded-lg transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                        <span>GitHub</span>
+                    </a>
+                    <a href="https://space.bilibili.com/82205" target="_blank" rel="noopener noreferrer"
+                       class="flex items-center space-x-2 bg-pink-600 hover:bg-pink-500 px-6 py-3 rounded-lg transition-colors">
+                        <i class="fab fa-bilibili text-xl"></i>
+                        <span>Bilibili</span>
+                    </a>
+                </div>
+
+                <p class="text-gray-400">
+                    © 2025 Izumi.屈源. 保留所有权利。
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- JavaScript -->
+    <script>
+        // 主题切换功能
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+
+        // 检查本地存储的主题设置
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            html.classList.toggle('dark', savedTheme === 'dark');
+        } else {
+            // 默认跟随系统设置
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            html.classList.toggle('dark', prefersDark);
+        }
+
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+        });
+
+        // 移动端菜单切换
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        mobileMenuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 滚动进度条
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = (scrollTop / scrollHeight) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        });
+
+        // 平滑滚动到锚点
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // 导航栏激活状态
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                const sectionHeight = section.offsetHeight;
+                const scrollPosition = window.pageYOffset;
+
+                if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // 页面加载动画
+        window.addEventListener('load', () => {
+            document.querySelectorAll('.fade-in').forEach((el, index) => {
+                setTimeout(() => {
+                    el.style.opacity = '1';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>
