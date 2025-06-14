@@ -9,7 +9,7 @@
   - 一些成果预览 https://x.com/TheAIColony/status/1927272278158442904
 
 ### 1.2 有复杂编辑工具后的AI图片生成演示
-- **Cursor中的SVG编辑**现场演示
+- **Cursor中的SVG编辑**现场演示 svg转换成图片的网址： https://onlinestool.com/svg-code-to-image
   - 设计师意图与AI修改的界面协作
   - 如何在保持创作控制权的同时发挥AI辅助优势
   - 复杂工具背后的"Less is More"设计哲学预览
