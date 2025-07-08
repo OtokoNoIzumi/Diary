@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FFH2血肉魔像强化攻略 | Flesh Golem Strategy Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            900: '#0c4a6e'
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-out',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                        'float': 'float 3s ease-in-out infinite'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .btn-hover {
+            transition: all 0.2s ease;
+        }
+        .btn-hover:hover {
+            transform: scale(1.05);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .section-divider {
+            background: linear-gradient(90deg, transparent, #e5e7eb, transparent);
+            height: 1px;
+        }
+        .dark .section-divider {
+            background: linear-gradient(90deg, transparent, #374151, transparent);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50 backdrop-blur-sm bg-opacity-90 dark:bg-opacity-90">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-magic text-2xl text-primary-600 animate-float"></i>
+                    <h1 class="text-xl font-bold gradient-text">FFH2 攻略指南</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="langToggle" class="btn-hover px-4 py-2 bg-primary-500 text-white rounded-lg text-sm font-medium">
+                        <i class="fas fa-language mr-2"></i>
+                        <span id="langText">English</span>
+                    </button>
+                    <button id="themeToggle" class="btn-hover p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                        <i class="fas fa-sun dark:hidden"></i>
+                        <i class="fas fa-moon hidden dark:block"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Hero Section -->
+        <section class="text-center mb-12 animate-fade-in">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4 gradient-text" data-zh="血肉魔像终极强化攻略" data-en="Ultimate Flesh Golem Enhancement Guide">
+                血肉魔像终极强化攻略
+            </h2>
+            <p class="text-xl text-gray-600 dark:text-gray-400 mb-8" data-zh="掌握创造能够击败奥利克飞升者的终极单位技巧" data-en="Master the art of creating units capable of defeating Auric Ascended">
+                掌握创造能够击败奥利克飞升者的终极单位技巧
+            </p>
+            <a href="https://www.bilibili.com/video/BV1as61YRELt" target="_blank" class="inline-flex items-center space-x-2 bg-primary-50 dark:bg-primary-900/20 px-4 py-2 rounded-full hover:bg-primary-100 dark:hover:bg-primary-900/40 transition-colors duration-200">
+                <i class="fas fa-video text-primary-600"></i>
+                <span class="text-primary-600 dark:text-primary-400 font-medium" data-zh="观看实战录屏演示" data-en="Watch Video Tutorial">观看实战录屏演示</span>
+                <i class="fas fa-external-link-alt text-primary-500 text-xs"></i>
+            </a>
+        </section>
+
+        <!-- Core Strategy -->
+        <section class="mb-12 animate-slide-up">
+            <div class="card-hover bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-200 dark:border-gray-700">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-bullseye text-3xl text-primary-600 mr-4"></i>
+                    <h3 class="text-2xl font-bold" data-zh="核心策略" data-en="Core Strategy">核心策略</h3>
+                </div>
+                <div class="prose prose-lg dark:prose-invert max-w-none">
+                    <p data-zh="核心思路是使用深海霸王宗教。2级狂热祭司升级为3级单位后，可在靠水格子召唤17攻击力的水生单位大海妖。将其融合到3级肢体魔法召唤的血肉傀儡中，就能创造出至少17攻击力的白板陆地单位。" data-en="The core strategy revolves around the Octopus Overlords religion. After promoting a Tier 2 Cultist to a Tier 3 unit, you can summon a 17-attack aquatic unit, the Kraken, on water tiles. Fuse this Kraken into a Flesh Golem summoned by Tier 3 Body magic, and you can create a land unit with at least 17 base attack.">
+                        核心思路是使用深海霸王宗教。2级狂热祭司升级为3级单位后，可在靠水格子召唤17攻击力的水生单位大海妖。将其融合到3级肢体魔法召唤的血肉傀儡中，就能创造出至少17攻击力的白板陆地单位。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Enhancement Section - Chinese uses Timeline, English uses Grid -->
+        <section class="mb-12">
+            <h3 class="text-2xl font-bold mb-8 text-center" data-zh="属性强化指南" data-en="Stats Enhancement Guide">属性强化指南</h3>
+
+            <!-- Chinese Timeline Layout -->
+            <div id="zh-stats" class="space-y-8">
+                <!-- Step 1: Initial Setup -->
+                <div class="relative">
+                    <div class="flex items-center mb-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold mr-4 relative z-10">1</div>
+                        <h4 class="text-xl font-semibold" data-zh="初期融合准备" data-en="Initial Fusion Preparation">初期融合准备</h4>
+                    </div>
+                    <div class="ml-14 bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-zh="先融合一个-1/-1变异单位，这样后期白板属性都拉平，避免偶发的随机-1/-1影响最终效果。" data-en="First fuse a -1/-1 mutation unit to balance out potential negative random rolls during later fusions.">先融合一个-1/-1变异单位，这样后期白板属性都拉平，避免偶发的随机-1/-1影响最终效果。</p>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-exclamation-triangle text-yellow-500"></i>
+                            <span class="text-sm text-yellow-600 dark:text-yellow-400" data-zh="重要：负属性变异必须在最终强化前融合" data-en="Important: Negative stat mutations must be fused before final enhancement">重要：负属性变异必须在最终强化前融合</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Core Power -->
+                <div class="relative">
+                    <div class="flex items-center mb-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-green-500 text-white rounded-full flex items-center justify-center font-bold mr-4 relative z-10">2</div>
+                        <h4 class="text-xl font-semibold" data-zh="核心攻击力获取" data-en="Core Attack Power">核心攻击力获取</h4>
+                    </div>
+                    <div class="ml-14 bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                                <h5 class="font-semibold text-blue-700 dark:text-blue-300 mb-2" data-zh="大海妖融合" data-en="Kraken Fusion">大海妖融合</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400" data-zh="深海霸王宗教3级狂热祭司在水边召唤17攻击力大海妖" data-en="Octopus Overlords religion Tier 3 Cultist summons 17-attack Kraken near water">深海霸王宗教3级狂热祭司在水边召唤17攻击力大海妖</p>
+                            </div>
+                            <div class="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
+                                <h5 class="font-semibold text-purple-700 dark:text-purple-300 mb-2" data-zh="血肉魔像基础" data-en="Flesh Golem Base">血肉魔像基础</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400" data-zh="3级肢体魔法召唤血肉傀儡，融合大海妖获得17基础攻击" data-en="Tier 3 Body magic summons Flesh Golem, fuse with Kraken for 17 base attack">3级肢体魔法召唤血肉傀儡，融合大海妖获得17基础攻击</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Mutation Enhancement -->
+                <div class="relative">
+                    <div class="flex items-center mb-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold mr-4 relative z-10">3</div>
+                        <h4 class="text-xl font-semibold" data-zh="变异强化阶段" data-en="Mutation Enhancement">变异强化阶段</h4>
+                    </div>
+                    <div class="ml-14 bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-zh="利用2级混乱魔法的变异系统，选择性融合己方单位随机获得的强力词条：" data-en="Use Tier 2 Chaos magic mutations, selectively fuse powerful traits randomly acquired by units:">利用2级混乱魔法的变异系统，选择性融合己方单位随机获得的强力词条：</p>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <div class="text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                                <i class="fas fa-fist-raised text-red-500 text-xl mb-1"></i>
+                                <p class="text-sm font-semibold" data-zh="强壮" data-en="Strong">强壮</p>
+                            </div>
+                            <div class="text-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                                <i class="fas fa-bolt text-orange-500 text-xl mb-1"></i>
+                                <p class="text-sm font-semibold" data-zh="英雄之力I" data-en="Heroic Strength I">英雄之力I</p>
+                            </div>
+                            <div class="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                <i class="fas fa-shield text-blue-500 text-xl mb-1"></i>
+                                <p class="text-sm font-semibold" data-zh="英雄之盾I" data-en="Heroic Shield I">英雄之盾I</p>
+                            </div>
+                            <div class="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                                <i class="fas fa-plus text-green-500 text-xl mb-1"></i>
+                                <p class="text-sm font-semibold" data-zh="潜在+2/+2" data-en="Potential +2/+2">潜在+2/+2</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Equipment Enhancement -->
+                <div class="relative">
+                    <div class="flex items-center mb-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-yellow-500 text-white rounded-full flex items-center justify-center font-bold mr-4 relative z-10">4</div>
+                        <h4 class="text-xl font-semibold" data-zh="装备属性转化" data-en="Equipment Stat Conversion">装备属性转化</h4>
+                    </div>
+                    <div class="ml-14 bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                        <div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg mb-4">
+                            <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                            <span class="font-semibold text-yellow-700 dark:text-yellow-300" data-zh="关键提示：" data-en="Key Tip:">关键提示：</span>
+                            <span class="text-gray-600 dark:text-gray-400" data-zh="装备的属性提升要在达到17攻击力基础上再实施，才能转化成白板属性！" data-en="Equipment stat boosts must be applied after achieving 17 base attack to convert into base stats!">装备的属性提升要在达到17攻击力基础上再实施，才能转化成白板属性！</span>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400" data-zh="如果游戏中掉落加面板的装备，或出现大指挥官，都可以在此基础上继续提升属性。" data-en="If stat-boosting equipment drops or Great Commander appears, can further enhance stats on this foundation.">如果游戏中掉落加面板的装备，或出现大指挥官，都可以在此基础上继续提升属性。</p>
+                    </div>
+                </div>
+
+                <!-- Step 5: Final Buffs -->
+                <div class="relative">
+                    <div class="flex items-center mb-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-red-500 text-white rounded-full flex items-center justify-center font-bold mr-4">5</div>
+                        <h4 class="text-xl font-semibold" data-zh="终极增益获取" data-en="Ultimate Buff Acquisition">终极增益获取</h4>
+                    </div>
+                    <div class="ml-14 bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                        <p class="text-gray-600 dark:text-gray-400 mb-4" data-zh="白板属性拉满后，再获取额外的永驻面板buff：" data-en="After maximizing base stats, acquire additional permanent buffs:">白板属性拉满后，再获取额外的永驻面板buff：</p>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                                <div class="flex items-center">
+                                    <i class="fas fa-fire text-red-500 mr-2"></i>
+                                    <span data-zh="火矢 (2级附加魔法)" data-en="Fire Arrows (Tier 2 Enhancement)">火矢 (2级附加魔法)</span>
+                                </div>
+                                <span class="text-red-500 font-semibold">+1</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                                <div class="flex items-center">
+                                    <i class="fas fa-skull-crossbones text-green-500 mr-2"></i>
+                                    <span data-zh="毒刃 (2级自然魔法)" data-en="Poisoned Blade (Tier 2 Nature)">毒刃 (2级自然魔法)</span>
+                                </div>
+                                <span class="text-green-500 font-semibold">+1</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                <div class="flex items-center">
+                                    <i class="fas fa-crown text-blue-500 mr-2"></i>
+                                    <span data-zh="英雄之力II、英雄之盾II" data-en="Heroic Strength II, Heroic Shield II">英雄之力II、英雄之盾II</span>
+                                </div>
+                                <span class="text-blue-500 font-semibold">+2</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                                <div class="flex items-center">
+                                    <i class="fas fa-gem text-yellow-500 mr-2"></i>
+                                    <span data-zh="武器 (铁器+2, 秘银+4等)" data-en="Weapons (Iron +2, Mithril +4, etc.)">武器 (铁器+2, 秘银+4等)</span>
+                                </div>
+                                <span class="text-yellow-500 font-semibold">+2~4</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg">
+                            <p class="text-center font-bold text-lg text-purple-700 dark:text-purple-300" data-zh="视频中最终成果：28攻击/27防御！" data-en="Final result in video: 28 Attack / 27 Defense!">视频中最终成果：28攻击/27防御！</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- English Grid Layout -->
+            <div id="en-stats" class="hidden grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Base Stats -->
+                <div class="card-hover bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-slide-up">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-chart-line text-2xl text-green-600 mr-3"></i>
+                        <h4 class="text-xl font-semibold" data-zh="基础属性提升" data-en="Base Stats Enhancement">Base Stats Enhancement</h4>
+                    </div>
+                    <ul class="space-y-3 text-gray-600 dark:text-gray-400">
+                        <li class="flex items-start">
+                            <i class="fas fa-caret-right text-primary-500 mt-1 mr-2"></i>
+                            <span data-zh="利用2级混乱魔法的变异系统" data-en="Utilize mutations from Tier 2 Chaos magic">Utilize mutations from Tier 2 Chaos magic</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-caret-right text-primary-500 mt-1 mr-2"></i>
+                            <span data-zh="选择性融合强力词条(+2/+2)" data-en="Selectively fuse powerful traits (+2/+2)">Selectively fuse powerful traits (+2/+2)</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-caret-right text-primary-500 mt-1 mr-2"></i>
+                            <span data-zh="装备掉落后进一步强化" data-en="Further enhance with equipment drops">Further enhance with equipment drops</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Mutation System -->
+                <div class="card-hover bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-slide-up">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-dna text-2xl text-purple-600 mr-3"></i>
+                        <h4 class="text-xl font-semibold" data-zh="变异融合系统" data-en="Mutation Fusion System">Mutation Fusion System</h4>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                            <span data-zh="强壮" data-en="Strong">Strong</span>
+                            <span class="text-red-500 font-semibold">+1/+1</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                            <span data-zh="英雄之力I" data-en="Heroic Strength I">Heroic Strength I</span>
+                            <span class="text-orange-500 font-semibold">+1</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                            <span data-zh="英雄之盾I" data-en="Heroic Shield I">Heroic Shield I</span>
+                            <span class="text-blue-500 font-semibold">+1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Permanent Buffs -->
+                <div class="card-hover bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-slide-up">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-shield-alt text-2xl text-purple-600 mr-3"></i>
+                        <h4 class="text-xl font-semibold" data-zh="永久增益效果" data-en="Permanent Buffs">Permanent Buffs</h4>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                            <span data-zh="火矢" data-en="Fire Arrows">Fire Arrows</span>
+                            <span class="text-red-500 font-semibold">+1</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                            <span data-zh="毒刃" data-en="Poisoned Blade">Poisoned Blade</span>
+                            <span class="text-green-500 font-semibold">+1</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                            <span data-zh="英雄之力/盾II" data-en="Heroic Strength/Shield II">Heroic Strength/Shield II</span>
+                            <span class="text-blue-500 font-semibold">+2</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                            <span data-zh="秘银武器" data-en="Mithril Weapons">Mithril Weapons</span>
+                            <span class="text-yellow-500 font-semibold">+4</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Essential Promotions -->
+        <section class="mb-12">
+            <div class="card-hover bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-8 shadow-lg border border-gray-200 dark:border-gray-700">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-star text-3xl text-yellow-500 mr-4"></i>
+                    <h3 class="text-2xl font-bold" data-zh="必备晋升技能" data-en="Essential Promotions">必备晋升技能</h3>
+                </div>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+                        <h4 class="text-lg font-semibold mb-3 text-red-600" data-zh="食人" data-en="Cannibalize">食人</h4>
+                        <p class="text-gray-600 dark:text-gray-400" data-zh="战斗后+10%回复，配合高面板近乎无敌" data-en="+10% healing after combat, nearly invincible with high stats">战斗后+10%回复，配合高面板近乎无敌</p>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+                        <h4 class="text-lg font-semibold mb-3 text-blue-600" data-zh="闪击作战" data-en="Blitz">闪击作战</h4>
+                        <p class="text-gray-600 dark:text-gray-400" data-zh="一回合可以攻击多次" data-en="Allows multiple attacks per turn">一回合可以攻击多次</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Movement Configurations -->
+        <section class="mb-12">
+            <h3 class="text-2xl font-bold mb-8 text-center" data-zh="移动力配置方案" data-en="Movement Configurations">移动力配置方案</h3>
+
+            <!-- Tabbed Layout for Visual Difference -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div class="flex border-b border-gray-200 dark:border-gray-700">
+                    <button class="tab-btn flex-1 px-6 py-4 text-center font-medium transition-colors duration-200 bg-primary-500 text-white" data-tab="flying">
+                        <i class="fas fa-feather-alt mr-2"></i>
+                        <span data-zh="飞行方案" data-en="Flying Build">飞行方案</span>
+                    </button>
+                    <button class="tab-btn flex-1 px-6 py-4 text-center font-medium transition-colors duration-200 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700" data-tab="ground">
+                        <i class="fas fa-running mr-2"></i>
+                        <span data-zh="地面方案" data-en="Ground Build">地面方案</span>
+                    </button>
+                </div>
+
+                <div class="p-6">
+                    <div id="flying" class="tab-content">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-wind text-2xl text-blue-500 mr-3"></i>
+                            <h4 class="text-xl font-semibold" data-zh="高机动性飞行配置" data-en="High Mobility Flying Configuration">高机动性飞行配置</h4>
+                        </div>
+                        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span data-zh="最大攻击次数" data-en="Maximum Attacks">最大攻击次数</span>
+                                <span data-zh="5-6次/回合" data-en="5-6 times/turn" class="font-bold text-blue-600">5-6次/回合</span>
+                            </div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400" data-zh="基础1+移动力晋升×2+轻型1+飞行1+重型" data-en="Base 1 + Movement ×2 + Lightweight 1 + Flying 1 + Heavy">
+                                基础1+移动力晋升×2+轻型1+飞行1+重型
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                                <i class="fas fa-check-circle text-green-500 text-xl mb-2"></i>
+                                <p class="text-sm" data-zh="忽略地形" data-en="Ignore Terrain">忽略地形</p>
+                            </div>
+                            <div class="text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                                <i class="fas fa-times-circle text-red-500 text-xl mb-2"></i>
+                                <p class="text-sm" data-zh="无道路加成" data-en="No Road Bonus">无道路加成</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="ground" class="tab-content hidden">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-road text-2xl text-green-500 mr-3"></i>
+                            <h4 class="text-xl font-semibold" data-zh="道路优化地面配置" data-en="Road-Optimized Ground Configuration">道路优化地面配置</h4>
+                        </div>
+                        <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 mb-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span data-zh="中期支援能力" data-en="Mid-game Support">中期支援能力</span>
+                                <span class="font-bold text-green-600" data-zh="优秀" data-en="Excellent">优秀</span>
+                            </div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400" data-zh="基础1+移动力晋升×2+轻型1" data-en="Base 1 + Movement ×2 + Lightweight 1">
+                                基础1+移动力晋升×2+轻型1
+                            </div>
+                        </div>
+                        <div class="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                            <i class="fas fa-highway text-blue-500 text-2xl mb-2"></i>
+                            <p data-zh="享受完整道路移速加成，适合中后期大规模作战" data-en="Full road movement bonus, ideal for late-game large-scale operations">享受完整道路移速加成，适合中后期大规模作战</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Sources -->
+        <section class="mb-12">
+            <div class="card-hover bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-200 dark:border-gray-700">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-graduation-cap text-3xl text-indigo-600 mr-4"></i>
+                    <h3 class="text-2xl font-bold" data-zh="晋升经验来源" data-en="Promotion Experience Sources">晋升经验来源</h3>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4 text-indigo-600" data-zh="关键经验节点" data-en="Key Experience Thresholds">关键经验节点</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
+                                <span data-zh="4次晋升" data-en="4 Promotions">4次晋升</span>
+                                <span class="font-bold">13经验</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
+                                <span data-zh="5次晋升" data-en="5 Promotions">5次晋升</span>
+                                <span class="font-bold">20经验</span>
+                            </div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                                <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
+                                <span data-zh="魅力领袖特性必备！无此特性经验需求为17/26，几乎不可能达成" data-en="Charismatic Leader trait essential! Without it, requirements become 17/26, nearly impossible">魅力领袖特性必备！无此特性经验需求为17/26，几乎不可能达成</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4 text-indigo-600" data-zh="奇观建筑加成详解" data-en="Wonder Bonuses Detailed">奇观建筑加成详解</h4>
+                        <div class="space-y-3">
+                            <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-semibold" data-zh="天母祭坛 (国家奇观)" data-en="Altar of Luonnotar (National)">天母祭坛 (国家奇观)</span>
+                                    <span class="text-blue-500 font-bold" data-zh="神职+n×2经验" data-en="Disciple +n×2 XP">神职+n×2经验</span>
+                                </div>
+                                <p class="text-xs text-gray-600 dark:text-gray-400" data-zh="n为城市中神职专属建筑数量，配合神殿等建筑可大量增加经验" data-en="n = number of Disciple buildings in city, combines with temples for massive XP">n为城市中神职专属建筑数量，配合神殿等建筑可大量增加经验</p>
+                            </div>
+
+                            <div class="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-semibold" data-zh="九王骑巡 (世界奇观)" data-en="Ride of Nine Kings (World)">九王骑巡 (世界奇观)</span>
+                                    <span class="text-purple-500 font-bold" data-zh="骑兵+10经验" data-en="Mounted +10 XP">骑兵+10经验</span>
+                                </div>
+                                <p class="text-xs text-gray-600 dark:text-gray-400" data-zh="对所有骑兵单位有效，包括骑士、战马弓箭手等" data-en="Affects all Mounted units including Knights, Horse Archers, etc.">对所有骑兵单位有效，包括骑士、战马弓箭手等</p>
+                            </div>
+
+                            <div class="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-semibold" data-zh="泰坦巨像 (世界奇观)" data-en="Form of Titan (World)">泰坦巨像 (世界奇观)</span>
+                                    <span class="text-green-500 font-bold" data-zh="全兵+2经验" data-en="All Units +2 XP">全兵+2经验</span>
+                                </div>
+                                <p class="text-xs text-gray-600 dark:text-gray-400" data-zh="全文明所有单位都获得经验加成，性价比极高" data-en="All civilization units gain XP bonus, extremely cost-effective">全文明所有单位都获得经验加成，性价比极高</p>
+                            </div>
+
+                            <div class="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-semibold" data-zh="指挥所 (大指挥官)" data-en="Command Post (Great Commander)">指挥所 (大指挥官)</span>
+                                    <span class="text-yellow-500 font-bold" data-zh="陆兵+2经验" data-en="Land Units +2 XP">陆兵+2经验</span>
+                                </div>
+                                <p class="text-xs text-gray-600 dark:text-gray-400" data-zh="大指挥官建造的建筑，仅对陆地单位有效" data-en="Built by Great Commander, affects land units only">大指挥官建造的建筑，仅对陆地单位有效</p>
+                            </div>
+
+                            <div class="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-semibold" data-zh="英雄史诗 (国家奇观)" data-en="Heroic Epic (National)">英雄史诗 (国家奇观)</span>
+                                    <span class="text-red-500 font-bold" data-zh="造兵速度×2" data-en="Unit Production ×2">造兵速度×2</span>
+                                </div>
+                                <p class="text-xs text-gray-600 dark:text-gray-400" data-zh="大幅提升单位生产效率，是血肉魔像量产的关键" data-en="Greatly improves unit production efficiency, key for mass Flesh Golem production">大幅提升单位生产效率，是血肉魔像量产的关键</p>
+                            </div>
+
+                            <div class="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-semibold" data-zh="英雄圣殿 (国家奇观)" data-en="Shrine of Champion (National)">英雄圣殿 (国家奇观)</span>
+                                    <span class="text-orange-500 font-bold" data-zh="免费1次晋升" data-en="Free 1 Promotion">免费1次晋升</span>
+                                </div>
+                                <p class="text-xs text-gray-600 dark:text-gray-400" data-zh="需要英雄死亡后才能建造，提供的免费晋升非常珍贵" data-en="Requires hero death to build, free promotion is extremely valuable">需要英雄死亡后才能建造，提供的免费晋升非常珍贵</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-lg">
+                            <h5 class="font-semibold text-indigo-700 dark:text-indigo-300 mb-2" data-zh="建造优先级建议" data-en="Construction Priority">建造优先级建议</h5>
+                            <ul class="text-sm space-y-1">
+                                <li data-zh="🏆 第二工业城市：晋升相关奇观" data-en="🏆 Second industrial city: Promotion wonders">🏆 第二工业城市：晋升相关奇观</li>
+                                <li data-zh="🏛️ 主城：抢夺其他重要奇观" data-en="🏛️ Capital: Compete for other important wonders">🏛️ 主城：抢夺其他重要奇观</li>
+                                <li data-zh="🔧 其他城市：专注变异单位生产" data-en="🔧 Other cities: Focus on mutation unit production">🔧 其他城市：专注变异单位生产</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+                <!-- Special Units & Abilities -->
+        <section class="mb-12">
+            <h3 class="text-2xl font-bold mb-8 text-center" data-zh="特殊单位与能力详解" data-en="Special Units & Abilities Detailed">特殊单位与能力详解</h3>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="card-hover bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-leaf text-3xl text-green-500 mb-2"></i>
+                        <h4 class="font-semibold" data-zh="绿叶使者 → 游侠" data-en="Disciple of Leaves → Ranger">绿叶使者 → 游侠</h4>
+                    </div>
+                    <div class="space-y-2 text-sm">
+                        <p class="text-gray-600 dark:text-gray-400" data-zh="• 绿叶之友宗教的神职单位" data-en="• Fellowship of Leaves religion Disciple unit">• 绿叶之友宗教的神职单位</p>
+                        <p class="text-gray-600 dark:text-gray-400" data-zh="• 可转职成游侠(侦查单位)" data-en="• Can promote to Ranger (Recon unit)">• 可转职成游侠(侦查单位)</p>
+                        <p class="text-gray-600 dark:text-gray-400" data-zh="• 神职经验转移到侦查技能树" data-en="• Transfers Disciple experience to Recon skill tree">• 神职经验转移到侦查技能树</p>
+                        <p class="text-green-600 dark:text-green-400 font-semibold" data-zh="⭐ 可获得毒刃+1效果" data-en="⭐ Can acquire Poisoned Blade +1">⭐ 可获得毒刃+1效果</p>
+                    </div>
+                </div>
+
+                <div class="card-hover bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-secret text-3xl text-purple-500 mb-2"></i>
+                        <h4 class="font-semibold" data-zh="巴尔塞拉弗模仿师" data-en="Balseraphs Mimic">巴尔塞拉弗模仿师</h4>
+                    </div>
+                    <div class="space-y-2 text-sm">
+                        <p class="text-gray-600 dark:text-gray-400" data-zh="• 巴尔塞拉弗文明专属单位" data-en="• Balseraphs civilization exclusive unit">• 巴尔塞拉弗文明专属单位</p>
+                        <p class="text-gray-600 dark:text-gray-400" data-zh="• 可获取其他途径无法获得的晋升" data-en="• Can acquire promotions unobtainable elsewhere">• 可获取其他途径无法获得的晋升</p>
+                        <p class="text-gray-600 dark:text-gray-400" data-zh="• 机械攻城、吸血鬼等特殊能力" data-en="• Mechanical Siege, Vampire, and other special abilities">• 机械攻城、吸血鬼等特殊能力</p>
+                        <p class="text-purple-600 dark:text-purple-400 font-semibold" data-zh="⚠️ 不能晋升成无生命单位" data-en="⚠️ Cannot promote to undead units">⚠️ 不能晋升成无生命单位</p>
+                    </div>
+                </div>
+
+                <div class="card-hover bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-dragon text-3xl text-red-500 mb-2"></i>
+                        <h4 class="font-semibold" data-zh="转化德鲁伊" data-en="Entrapment Druid">转化德鲁伊</h4>
+                    </div>
+                    <div class="space-y-2 text-sm">
+                        <p class="text-gray-600 dark:text-gray-400" data-zh="• 2级神职单位专德鲁伊升级" data-en="• Tier 2 Disciple specialized as Druid upgrade">• 2级神职单位专德鲁伊升级</p>
+                        <p class="text-gray-600 dark:text-gray-400" data-zh="• 快速点出3级转化魔法" data-en="• Quickly unlock Tier 3 Entrapment magic">• 快速点出3级转化魔法</p>
+                        <p class="text-gray-600 dark:text-gray-400" data-zh="• 50%战胜后捕捉敌方单位" data-en="• 50% chance to capture units after victory">• 50%战胜后捕捉敌方单位</p>
+                        <p class="text-red-600 dark:text-red-400 font-semibold" data-zh="🐉 对巨龙等世界单位有效！" data-en="🐉 Works on Dragons and world units!">🐉 对巨龙等世界单位有效！</p>
+                    </div>
+                </div>
+
+                <div class="card-hover bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-fire-flame-curved text-3xl text-orange-500 mb-2"></i>
+                        <h4 class="font-semibold" data-zh="凤凰之血复活单位" data-en="Phoenix Blood Revival">凤凰之血复活单位</h4>
+                    </div>
+                    <div class="space-y-2 text-sm">
+                        <p class="text-gray-600 dark:text-gray-400" data-zh="• 凤凰之血国家奇观效果" data-en="• Phoenix Blood national wonder effect">• 凤凰之血国家奇观效果</p>
+                        <p class="text-gray-600 dark:text-gray-400" data-zh="• 初次复活后获得1次不死效果" data-en="• Gains 1 immortality after first revival">• 初次复活后获得1次不死效果</p>
+                        <p class="text-yellow-600 dark:text-yellow-400 font-semibold" data-zh="⚠️ 不死状态下无法直接融合" data-en="⚠️ Cannot fuse while immortal">⚠️ 不死状态下无法直接融合</p>
+                        <p class="text-orange-600 dark:text-orange-400" data-zh="💡 需要死亡/解散后在首都复活" data-en="💡 Must die/disband then revive in capital">💡 需要死亡/解散后在首都复活</p>
+                    </div>
+                </div>
+
+                <div class="card-hover bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-feather text-3xl text-blue-500 mb-2"></i>
+                        <h4 class="font-semibold" data-zh="猎鹰飞行融合" data-en="Hawk Flying Fusion">猎鹰飞行融合</h4>
+                    </div>
+                    <div class="space-y-2 text-sm">
+                        <p class="text-gray-600 dark:text-gray-400" data-zh="• 前期单位猎鹰自带飞翔能力" data-en="• Early-game Hawk has inherent Flying">• 前期单位猎鹰自带飞翔能力</p>
+                        <p class="text-gray-600 dark:text-gray-400" data-zh="• 融合后获得+1移动力和飞行" data-en="• Grants +1 movement and Flying when fused">• 融合后获得+1移动力和飞行</p>
+                        <p class="text-blue-600 dark:text-blue-400" data-zh="✅ 开荒期跨越地形障碍" data-en="✅ Early exploration across terrain">✅ 开荒期跨越地形障碍</p>
+                        <p class="text-red-600 dark:text-red-400" data-zh="❌ 无法享受道路移速加成" data-en="❌ No road movement bonus">❌ 无法享受道路移速加成</p>
+                    </div>
+                </div>
+
+                <div class="card-hover bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-tools text-3xl text-gray-500 mb-2"></i>
+                        <h4 class="font-semibold" data-zh="其他城市变异来源" data-en="Mutation Sources">其他城市变异来源</h4>
+                    </div>
+                    <div class="space-y-2 text-sm">
+                        <p class="text-gray-600 dark:text-gray-400" data-zh="• 其他城市专门提供变异单位" data-en="• Other cities specialize in mutation units">• 其他城市专门提供变异单位</p>
+                        <p class="text-gray-600 dark:text-gray-400" data-zh="• 不建造太多造兵设施" data-en="• Minimize unit production buildings">• 不建造太多造兵设施</p>
+                        <p class="text-gray-600 dark:text-gray-400" data-zh="• 25锤造侦查单位斥候" data-en="• 25 hammer Scout units for mutations">• 25锤造侦查单位斥候</p>
+                        <p class="text-green-600 dark:text-green-400 font-semibold" data-zh="⚡ 可以1回合1个量产" data-en="⚡ Can mass produce 1 per turn">⚡ 可以1回合1个量产</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Summoning Rules -->
+        <section class="mb-12">
+            <div class="card-hover bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl p-8 shadow-lg border border-gray-200 dark:border-gray-700">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-hand-sparkles text-3xl text-purple-600 mr-4"></i>
+                    <h3 class="text-2xl font-bold" data-zh="召唤规则详解" data-en="Summoning Rules Explained">召唤规则详解</h3>
+                </div>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white dark:bg-gray-800 rounded-lg p-6">
+                        <h4 class="font-semibold mb-4 flex items-center">
+                            <i class="fas fa-calculator text-blue-500 mr-2"></i>
+                            <span data-zh="数量限制机制" data-en="Quantity Limit Mechanism">数量限制机制</span>
+                        </h4>
+                        <div class="space-y-3">
+                            <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                <p class="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-1" data-zh="基础规则" data-en="Basic Rule">基础规则</p>
+                                <p class="text-xs text-gray-600 dark:text-gray-400" data-zh="血肉魔像数量 = 掌握3级肢体魔法的单位数量" data-en="Flesh Golem count = Units with Tier 3 Body magic">血肉魔像数量 = 掌握3级肢体魔法的单位数量</p>
+                            </div>
+                            <div class="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                                <p class="text-sm font-semibold text-green-700 dark:text-green-300 mb-1" data-zh="重要特性" data-en="Important Feature">重要特性</p>
+                                <p class="text-xs text-gray-600 dark:text-gray-400" data-zh="召唤后解散法师不影响已召唤的魔像" data-en="Dismissing mages after summoning doesn't affect existing golems">召唤后解散法师不影响已召唤的魔像</p>
+                            </div>
+                            <div class="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                                <p class="text-sm font-semibold text-red-700 dark:text-red-300 mb-1" data-zh="风险提示" data-en="Risk Warning">风险提示</p>
+                                <p class="text-xs text-gray-600 dark:text-gray-400" data-zh="魔像死亡后无法重新召唤，除非重新训练3级肢体法师" data-en="Dead golems cannot be resummoned unless retraining Tier 3 Body mages">魔像死亡后无法重新召唤，除非重新训练3级肢体法师</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-gray-800 rounded-lg p-6">
+                        <h4 class="font-semibold mb-4 flex items-center">
+                            <i class="fas fa-crown text-purple-500 mr-2"></i>
+                            <span data-zh="巴尔塞拉弗特殊机制" data-en="Balseraphs Special Mechanism">巴尔塞拉弗特殊机制</span>
+                        </h4>
+                        <div class="space-y-3">
+                            <div class="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                                <p class="text-sm font-semibold text-purple-700 dark:text-purple-300 mb-1" data-zh="玩偶系统" data-en="Effigy System">玩偶系统</p>
+                                <p class="text-xs text-gray-600 dark:text-gray-400" data-zh="法师先造玩偶(Effigy)再召唤血肉魔像" data-en="Mages create Effigies before summoning Flesh Golems">法师先造玩偶(Effigy)再召唤血肉魔像</p>
+                            </div>
+                            <div class="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                                <p class="text-sm font-semibold text-yellow-700 dark:text-yellow-300 mb-1" data-zh="数量翻倍" data-en="Double Quantity">数量翻倍</p>
+                                <p class="text-xs text-gray-600 dark:text-gray-400" data-zh="通过玩偶机制，血肉魔像上限数量可以翻倍！" data-en="Through Effigy mechanism, Flesh Golem limit can be doubled!">通过玩偶机制，血肉魔像上限数量可以翻倍！</p>
+                            </div>
+                            <div class="text-center mt-4">
+                                <div class="inline-flex items-center px-3 py-1 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-full">
+                                    <i class="fas fa-star text-yellow-500 mr-1"></i>
+                                    <span class="text-sm font-semibold text-purple-700 dark:text-purple-300" data-zh="文明独有优势" data-en="Civilization Unique Advantage">文明独有优势</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl p-6">
+                    <h4 class="font-semibold mb-4 flex items-center text-indigo-700 dark:text-indigo-300">
+                        <i class="fas fa-trophy text-yellow-500 mr-2"></i>
+                        <span data-zh="实战案例：9个血肉魔像量产" data-en="Practical Case: 9 Flesh Golems Mass Production">实战案例：9个血肉魔像量产</span>
+                    </h4>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div class="bg-white dark:bg-gray-800 rounded-lg p-4">
+                            <h5 class="font-semibold text-blue-600 dark:text-blue-400 mb-2" data-zh="魔法组合策略" data-en="Magic Combination Strategy">魔法组合策略</h5>
+                            <ul class="text-sm space-y-1">
+                                <li class="flex items-center">
+                                    <i class="fas fa-hand-sparkles text-purple-500 mr-2"></i>
+                                    <span data-zh="3级肢体魔法" data-en="Tier 3 Body Magic">3级肢体魔法</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-skull text-gray-500 mr-2"></i>
+                                    <span data-zh="3级死亡魔法" data-en="Tier 3 Death Magic">3级死亡魔法</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-user-graduate text-gold-500 mr-2"></i>
+                                    <span data-zh="英雄大法师" data-en="Heroic Archmage">英雄大法师</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 rounded-lg p-4">
+                            <h5 class="font-semibold text-green-600 dark:text-green-400 mb-2" data-zh="生产能力" data-en="Production Capability">生产能力</h5>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-green-600 dark:text-green-400">9</div>
+                                <p class="text-sm text-gray-600 dark:text-gray-400" data-zh="血肉魔像总数" data-en="Total Flesh Golems">血肉魔像总数</p>
+                            </div>
+                            <p class="text-xs text-gray-600 dark:text-gray-400 mt-2" data-zh="死亡后可快速重建" data-en="Can quickly rebuild after death">死亡后可快速重建</p>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 rounded-lg p-4">
+                            <h5 class="font-semibold text-red-600 dark:text-red-400 mb-2" data-zh="战斗效果" data-en="Combat Effectiveness">战斗效果</h5>
+                            <div class="text-center">
+                                <i class="fas fa-dragon text-4xl text-red-500 mb-2"></i>
+                                <p class="text-sm font-bold text-red-600 dark:text-red-400" data-zh="吊打最终Boss" data-en="Destroys Final Boss">吊打最终Boss</p>
+                            </div>
+                            <p class="text-xs text-gray-600 dark:text-gray-400 mt-2" data-zh="28/27面板轻松碾压" data-en="28/27 stats easily dominates">28/27面板轻松碾压</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider mb-12"></div>
+
+        <!-- Author Section -->
+        <section class="text-center animate-fade-in">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-200 dark:border-gray-700">
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold mb-2" data-zh="作者信息" data-en="Author Information">作者信息</h3>
+                    <p class="text-lg text-primary-600 font-semibold">Izumi.屈源</p>
+                </div>
+
+                <div class="flex justify-center space-x-6 mb-6">
+                    <a href="https://otokonoizumi.github.io" target="_blank" class="btn-hover flex items-center space-x-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600">
+                        <i class="fab fa-github"></i>
+                        <span>GitHub</span>
+                    </a>
+                    <a href="https://space.bilibili.com/82205" target="_blank" class="btn-hover flex items-center space-x-2 px-4 py-2 bg-pink-100 dark:bg-pink-900/30 rounded-lg text-pink-700 dark:text-pink-300 hover:bg-pink-200 dark:hover:bg-pink-900/50">
+                        <i class="fas fa-video"></i>
+                        <span>Bilibili</span>
+                    </a>
+                </div>
+
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    <span data-zh="© 2025 版权所有" data-en="© 2025 All rights reserved">© 2025 版权所有</span>
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Theme switching
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+
+        // Check for saved theme preference or default to system preference
+        const savedTheme = localStorage.getItem('theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        if (savedTheme) {
+            html.classList.toggle('dark', savedTheme === 'dark');
+        } else {
+            html.classList.toggle('dark', systemPrefersDark);
+        }
+
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+        });
+
+                // Language switching
+        const langToggle = document.getElementById('langToggle');
+        const langText = document.getElementById('langText');
+        let currentLang = 'zh';
+
+        function switchLanguage() {
+            const elements = document.querySelectorAll('[data-zh][data-en]');
+
+            elements.forEach(element => {
+                if (currentLang === 'zh') {
+                    element.textContent = element.getAttribute('data-en');
+                } else {
+                    element.textContent = element.getAttribute('data-zh');
+                }
+            });
+
+            // Switch layout for Stats Enhancement section
+            const zhStats = document.getElementById('zh-stats');
+            const enStats = document.getElementById('en-stats');
+
+            if (currentLang === 'zh') {
+                // Switching to English
+                zhStats.classList.add('hidden');
+                enStats.classList.remove('hidden');
+            } else {
+                // Switching to Chinese
+                zhStats.classList.remove('hidden');
+                enStats.classList.add('hidden');
+            }
+
+            currentLang = currentLang === 'zh' ? 'en' : 'zh';
+            langText.textContent = currentLang === 'zh' ? 'English' : '中文';
+
+            // Update document language
+            document.documentElement.lang = currentLang === 'zh' ? 'zh-CN' : 'en';
+        }
+
+        langToggle.addEventListener('click', switchLanguage);
+
+        // Tab functionality for movement section
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetTab = btn.getAttribute('data-tab');
+
+                // Update button styles
+                tabBtns.forEach(b => {
+                    b.classList.remove('bg-primary-500', 'text-white');
+                    b.classList.add('text-gray-600', 'dark:text-gray-400', 'hover:bg-gray-50', 'dark:hover:bg-gray-700');
+                });
+                btn.classList.add('bg-primary-500', 'text-white');
+                btn.classList.remove('text-gray-600', 'dark:text-gray-400', 'hover:bg-gray-50', 'dark:hover:bg-gray-700');
+
+                // Update content
+                tabContents.forEach(content => {
+                    content.classList.add('hidden');
+                });
+                document.getElementById(targetTab).classList.remove('hidden');
+            });
+        });
+
+        // Smooth scroll animation on page load
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all animated elements
+        document.querySelectorAll('.animate-slide-up, .animate-fade-in').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+            observer.observe(el);
+        });
+
+        // Stagger animations for cards
+        document.querySelectorAll('.card-hover').forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.1}s`;
+        });
+    </script>
+</body>
+</html>
