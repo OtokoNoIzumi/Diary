@@ -289,7 +289,7 @@
                         const cost = marketPriceTotal;
                         const points = cost * specialPointsMultiplier;
                         const pointsValue = points / 100 / (pointsDiscount / 10);
-                        const finalDiscount = (1 - (cost / marketPriceTotal) * (1 / (1 + pointsValue / marketPrice))) * 100;
+                        const finalDiscount = (1 - (cost / marketPriceTotal) * (1 / (1 + pointsValue / marketPriceTotal))) * 100;
                         return {
                             cost: cost,
                             points: points,
@@ -306,7 +306,7 @@
                         const cost = marketPriceTotal * memberDiscount;
                         const points = cost * pointsMultiplier;
                         const pointsValue = points / 100 / (pointsDiscount / 10);
-                        const finalDiscount = (1 - (cost / marketPriceTotal) * (1 / (1 + pointsValue / marketPrice))) * 100;
+                        const finalDiscount = (1 - (cost / marketPriceTotal) * (1 / (1 + pointsValue / marketPriceTotal))) * 100;
                         return {
                             cost: cost,
                             points: points,
@@ -323,7 +323,7 @@
                         const cost = marketPriceTotal * memberDiscount * 0.9;
                         const points = cost * pointsMultiplier;
                         const pointsValue = points / 100 / (pointsDiscount / 10);
-                        const finalDiscount = (1 - (cost / marketPriceTotal) * (1 / (1 + pointsValue / marketPrice))) * 100;
+                        const finalDiscount = (1 - (cost / marketPriceTotal) * (1 / (1 + pointsValue / marketPriceTotal))) * 100;
                         return {
                             cost: cost,
                             points: points,
@@ -340,7 +340,7 @@
                         const cost = marketPriceTotal * memberDiscount;
                         const points = cost * pointsMultiplier * 2;
                         const pointsValue = points / 100 / (pointsDiscount / 10);
-                        const finalDiscount = (1 - (cost / marketPriceTotal) * (1 / (1 + pointsValue / marketPrice))) * 100;
+                        const finalDiscount = (1 - (cost / marketPriceTotal) * (1 / (1 + pointsValue / marketPriceTotal))) * 100;
                         return {
                             cost: cost,
                             points: points,
@@ -361,14 +361,14 @@
                         const cost = lowRoomPrice * bookingDays * memberDiscount * 0.9;
                         const points = cost * pointsMultiplier;
                         const pointsValue = points / 100 / (pointsDiscount / 10);
-                        const finalDiscount = (1 - (cost / marketPriceTotal) * (1 / (1 + pointsValue / marketPrice))) * 100;
+                        const finalDiscount = (1 - (cost / marketPriceTotal) * (1 / (1 + pointsValue / marketPriceTotal))) * 100;
                         
                         // 计算升房券折扣率：1-(1-升房券的最终折扣率)/(1-连续预定折上折的最终折扣率)
                         // 先计算连续预定折上折的折扣率
                         const consecutiveCost = marketPriceTotal * memberDiscount * 0.9;
                         const consecutivePoints = consecutiveCost * pointsMultiplier;
                         const consecutivePointsValue = consecutivePoints / 100 / (pointsDiscount / 10);
-                        const consecutiveDiscountRate = (1 - (consecutiveCost / marketPriceTotal) * (1 / (1 + consecutivePointsValue / marketPrice)));
+                        const consecutiveDiscountRate = (1 - (consecutiveCost / marketPriceTotal) * (1 / (1 + consecutivePointsValue / marketPriceTotal)));
                         
                         const upgradeDiscountRate = finalDiscount / 100;
                         const upgradeDiscount = (1 - (1 - upgradeDiscountRate) / (1 - consecutiveDiscountRate)) * 100;
@@ -387,7 +387,7 @@
             }
             
             displayResults(results);
-            calculatePriceThreshold(marketPriceTotal, coupon, pointsCoupon, memberDiscount, pointsDiscount, results);
+            calculatePriceThreshold(marketPrice, coupon, pointsCoupon, memberDiscount, pointsDiscount, results);
         }
         
         let allExpanded = false;
