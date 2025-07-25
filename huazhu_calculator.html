@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>华住会订房折扣计算器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .input-focus {
+            transition: all 0.3s ease;
+        }
+        .input-focus:focus {
+            transform: scale(1.02);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <!-- 主题切换按钮 -->
+    <button id="theme-toggle" class="fixed top-4 right-4 z-50 p-3 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110">
+        <i class="fas fa-sun text-yellow-500 dark:hidden"></i>
+        <i class="fas fa-moon text-blue-500 hidden dark:block"></i>
+    </button>
+
+    <div class="min-h-screen py-8 px-4">
+        <div class="max-w-7xl mx-auto">
+            <!-- 标题区域 -->
+            <div class="text-center mb-12 fade-in">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+                    <i class="fas fa-calculator text-primary-500 mr-3"></i>
+                    华住会订房折扣计算器
+                </h1>
+                <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                    智能计算华住会各种优惠方案，帮您找到最优惠的订房选择
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- 输入参数区域 -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 hover-lift fade-in">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
+                            <i class="fas fa-sliders-h text-primary-500 mr-3"></i>
+                            计算参数
+                        </h2>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    门市价 (元)
+                                </label>
+                                <input type="number" id="marketPrice" placeholder="请输入门市价" 
+                                       class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white input-focus">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    低房型门市价 (元)
+                                </label>
+                                <input type="number" id="lowRoomPrice" placeholder="请输入低房型门市价" 
+                                       class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white input-focus">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    预定天数
+                                </label>
+                                <div class="flex items-center space-x-2">
+                                    <button type="button" onclick="adjustDays(-1)" class="px-3 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <input type="number" id="bookingDays" value="1" min="1" 
+                                           class="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white input-focus text-center">
+                                    <button type="button" onclick="adjustDays(1)" class="px-3 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    优惠券 (元)
+                                </label>
+                                <input type="number" id="coupon" placeholder="请输入优惠券金额" 
+                                       class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white input-focus">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    积分券 (积分)
+                                </label>
+                                <input type="number" id="pointsCoupon" placeholder="请输入积分券数量" 
+                                       class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white input-focus">
+                            </div>
+                        </div>
+                        
+                        <hr class="my-6 border-gray-200 dark:border-gray-600">
+                        
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                            <i class="fas fa-cog text-primary-500 mr-2"></i>
+                            设定参数
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    会员基础折扣
+                                </label>
+                                <input type="number" id="memberDiscount" value="0.85" step="0.01" min="0" max="1" 
+                                       class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white input-focus">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    会员积分倍率
+                                </label>
+                                <input type="number" id="pointsMultiplier" value="5" min="1" 
+                                       class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white input-focus">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    积分兑房折扣 (折)
+                                </label>
+                                <input type="number" id="pointsDiscount" value="5" min="1" max="10" 
+                                       class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white input-focus">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    会员特惠积分倍率
+                                </label>
+                                <input type="number" id="specialPointsMultiplier" value="12" min="1" 
+                                       class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white input-focus">
+                            </div>
+                        </div>
+                        
+                        <button onclick="calculateAll()" class="w-full mt-6 bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg">
+                            <i class="fas fa-calculator mr-2"></i>
+                            开始计算
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 计算结果区域 -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 hover-lift fade-in">
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
+                            <i class="fas fa-chart-bar text-primary-500 mr-3"></i>
+                            优惠方案对比
+                        </h2>
+                        
+                        <div class="mb-4">
+                            <button id="toggleAllDetails" onclick="toggleAllResults()" class="bg-primary-500 hover:bg-primary-600 text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 hover:scale-105" style="display: none;">
+                                <i class="fas fa-expand-alt mr-2"></i>
+                                <span id="toggleAllText">展开全部详情</span>
+                            </button>
+                        </div>
+                        
+                        <div id="results" class="space-y-6">
+                            <div class="text-center text-gray-500 dark:text-gray-400 py-12">
+                                <i class="fas fa-info-circle text-4xl mb-4"></i>
+                                <p class="text-lg">请输入计算参数并点击"开始计算"查看结果</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 优惠券和积分使用房价线 -->
+                    <div class="mt-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 hover-lift">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                            <i class="fas fa-line-chart text-primary-500 mr-2"></i>
+                            优惠券和积分使用房价线
+                        </h3>
+                        <div id="priceThreshold" class="text-center text-gray-500 dark:text-gray-400">
+                            <p>计算后显示建议使用优惠券和积分的房价阈值</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 作者信息区域 -->
+    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-16">
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <div class="text-center">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">作者信息</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-4">Izumi.屈源</p>
+                <div class="flex justify-center space-x-6 mb-4">
+                    <a href="https://otokonoizumi.github.io" target="_blank" 
+                       class="text-gray-600 dark:text-gray-300 hover:text-primary-500 transition-colors duration-300">
+                        <i class="fab fa-github text-xl mr-2"></i>Github
+                    </a>
+                    <a href="https://space.bilibili.com/82205" target="_blank" 
+                       class="text-gray-600 dark:text-gray-300 hover:text-primary-500 transition-colors duration-300">
+                        <i class="fab fa-bilibili text-xl mr-2"></i>Bilibili
+                    </a>
+                </div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    © 2025 Izumi.屈源. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 主题切换功能
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        
+        // 检查系统主题偏好
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const savedTheme = localStorage.getItem('theme');
+        
+        if (savedTheme) {
+            html.classList.toggle('dark', savedTheme === 'dark');
+        } else {
+            html.classList.toggle('dark', prefersDark);
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+        });
+        
+        // 天数调整函数
+        function adjustDays(change) {
+            const input = document.getElementById('bookingDays');
+            const currentValue = parseInt(input.value) || 1;
+            const newValue = Math.max(1, currentValue + change);
+            input.value = newValue;
+        }
+        
+        // 计算函数
+        function calculateAll() {
+            const marketPrice = parseFloat(document.getElementById('marketPrice').value) || 0;
+            const lowRoomPrice = parseFloat(document.getElementById('lowRoomPrice').value) || 0;
+            const bookingDays = parseInt(document.getElementById('bookingDays').value) || 1;
+            const coupon = parseFloat(document.getElementById('coupon').value) || 0;
+            const pointsCoupon = parseFloat(document.getElementById('pointsCoupon').value) || 0;
+            const memberDiscount = parseFloat(document.getElementById('memberDiscount').value) || 0.85;
+            const pointsMultiplier = parseFloat(document.getElementById('pointsMultiplier').value) || 5;
+            const pointsDiscount = parseFloat(document.getElementById('pointsDiscount').value) || 5;
+            const specialPointsMultiplier = parseFloat(document.getElementById('specialPointsMultiplier').value) || 12;
+            
+            if (marketPrice <= 0) {
+                alert('请输入有效的门市价');
+                return;
+            }
+            
+            const marketPriceTotal = marketPrice * bookingDays;
+            
+            const results = [
+                {
+                    name: '会员积分特惠房',
+                    calculate: () => {
+                        const cost = marketPriceTotal;
+                        const points = cost * specialPointsMultiplier;
+                        const pointsValue = points / 100 / (pointsDiscount / 10);
+                        const finalDiscount = (1 - (cost / marketPriceTotal) * (1 / (1 + pointsValue / marketPrice))) * 100;
+                        return {
+                            cost: cost,
+                            points: points,
+                            savings: marketPriceTotal - cost,
+                            pointsValue: pointsValue,
+                            discount: finalDiscount.toFixed(1),
+                            fix_savings: (marketPriceTotal * finalDiscount / 100).toFixed(2)
+                        };
+                    }
+                },
+                {
+                    name: '会员门市价',
+                    calculate: () => {
+                        const cost = marketPriceTotal * memberDiscount;
+                        const points = cost * pointsMultiplier;
+                        const pointsValue = points / 100 / (pointsDiscount / 10);
+                        const finalDiscount = (1 - (cost / marketPriceTotal) * (1 / (1 + pointsValue / marketPrice))) * 100;
+                        return {
+                            cost: cost,
+                            points: points,
+                            savings: marketPriceTotal - cost,
+                            pointsValue: pointsValue,
+                            discount: finalDiscount.toFixed(1),
+                            fix_savings: (marketPriceTotal * finalDiscount / 100).toFixed(2)
+                        };
+                    }
+                },
+                {
+                    name: '连续预定折上折',
+                    calculate: () => {
+                        const cost = marketPriceTotal * memberDiscount * 0.9;
+                        const points = cost * pointsMultiplier;
+                        const pointsValue = points / 100 / (pointsDiscount / 10);
+                        const finalDiscount = (1 - (cost / marketPriceTotal) * (1 / (1 + pointsValue / marketPrice))) * 100;
+                        return {
+                            cost: cost,
+                            points: points,
+                            savings: marketPriceTotal - cost,
+                            pointsValue: pointsValue,
+                            discount: finalDiscount.toFixed(1),
+                            fix_savings: (marketPriceTotal * finalDiscount / 100).toFixed(2)
+                        };
+                    }
+                },
+                {
+                    name: '28日双倍积分门市价',
+                    calculate: () => {
+                        const cost = marketPriceTotal * memberDiscount;
+                        const points = cost * pointsMultiplier * 2;
+                        const pointsValue = points / 100 / (pointsDiscount / 10);
+                        const finalDiscount = (1 - (cost / marketPriceTotal) * (1 / (1 + pointsValue / marketPrice))) * 100;
+                        return {
+                            cost: cost,
+                            points: points,
+                            savings: marketPriceTotal - cost,
+                            pointsValue: pointsValue,
+                            discount: finalDiscount.toFixed(1),
+                            fix_savings: (marketPriceTotal * finalDiscount / 100).toFixed(2)
+                        };
+                    }
+                }
+            ];
+            
+            // 如果有低房型门市价，添加升房券连续预定折上折
+            if (lowRoomPrice > 0) {
+                results.push({
+                    name: '升房券连续预定折上折',
+                    calculate: () => {
+                        const cost = lowRoomPrice * bookingDays * memberDiscount * 0.9;
+                        const points = cost * pointsMultiplier;
+                        const pointsValue = points / 100 / (pointsDiscount / 10);
+                        const finalDiscount = (1 - (cost / marketPriceTotal) * (1 / (1 + pointsValue / marketPrice))) * 100;
+                        
+                        // 计算升房券折扣率：1-(1-升房券的最终折扣率)/(1-连续预定折上折的最终折扣率)
+                        // 先计算连续预定折上折的折扣率
+                        const consecutiveCost = marketPriceTotal * memberDiscount * 0.9;
+                        const consecutivePoints = consecutiveCost * pointsMultiplier;
+                        const consecutivePointsValue = consecutivePoints / 100 / (pointsDiscount / 10);
+                        const consecutiveDiscountRate = (1 - (consecutiveCost / marketPriceTotal) * (1 / (1 + consecutivePointsValue / marketPrice)));
+                        
+                        const upgradeDiscountRate = finalDiscount / 100;
+                        const upgradeDiscount = (1 - (1 - upgradeDiscountRate) / (1 - consecutiveDiscountRate)) * 100;
+                        
+                        return {
+                            cost: cost,
+                            points: points,
+                            savings: marketPriceTotal - cost,
+                            pointsValue: pointsValue,
+                            discount: finalDiscount.toFixed(1),
+                            upgradeDiscount: upgradeDiscount.toFixed(1),
+                            fix_savings: (marketPriceTotal * finalDiscount / 100).toFixed(2)
+                        };
+                    }
+                });
+            }
+            
+            displayResults(results);
+            calculatePriceThreshold(marketPriceTotal, coupon, pointsCoupon, memberDiscount, pointsDiscount, results);
+        }
+        
+        let allExpanded = false;
+        
+        function displayResults(results) {
+            const resultsContainer = document.getElementById('results');
+            const toggleButton = document.getElementById('toggleAllDetails');
+            resultsContainer.innerHTML = '';
+            toggleButton.style.display = 'block';
+            
+            results.forEach((result, index) => {
+                const data = result.calculate();
+                const resultCard = document.createElement('div');
+                resultCard.className = 'bg-gray-50 dark:bg-gray-700 rounded-xl p-6 hover-lift';
+                resultCard.style.animationDelay = `${index * 0.1}s`;
+                resultCard.classList.add('fade-in');
+                
+                resultCard.innerHTML = `
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white flex items-center">
+                                <i class="fas fa-tag text-primary-500 mr-2"></i>
+                                ${result.name}
+                            </h3>
+                            <p class="text-sm text-green-600 dark:text-green-400 mt-1">换算节省额 ¥${data.fix_savings}</p>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <div class="text-right">
+                                <p class="text-sm text-gray-600 dark:text-gray-400">最终折扣率</p>
+                                <p class="text-2xl font-bold text-primary-600 dark:text-primary-400">${data.discount}%</p>
+                            </div>
+                            <button onclick="toggleDetails(${index})" class="p-2 text-gray-500 hover:text-primary-500 transition-colors">
+                                <i class="fas fa-chevron-down transform transition-transform duration-300" id="chevron-${index}"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="details-content hidden" id="details-${index}">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                            <div class="text-center">
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">预定开支</p>
+                                <p class="text-lg font-bold text-gray-900 dark:text-white">¥${data.cost.toFixed(2)}</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">可获得积分</p>
+                                <p class="text-lg font-bold text-blue-600 dark:text-blue-400">${data.points.toFixed(0)}</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">开支差值</p>
+                                <p class="text-lg font-bold ${data.savings >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}">¥${data.savings.toFixed(2)}</p>
+                                ${result.name === '升房券连续预定折上折' && data.upgradeDiscount ? `
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1 mt-2">升房券折扣率</p>
+                                <p class="text-lg font-bold text-purple-600 dark:text-purple-400">${data.upgradeDiscount}%</p>
+                                ` : ''}
+                            </div>
+                            <div class="text-center">
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">积分价值</p>
+                                <p class="text-lg font-bold text-purple-600 dark:text-purple-400">¥${data.pointsValue.toFixed(2)}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                resultsContainer.appendChild(resultCard);
+            });
+        }
+        
+        function toggleDetails(index) {
+            const details = document.getElementById(`details-${index}`);
+            const chevron = document.getElementById(`chevron-${index}`);
+            
+            if (details.classList.contains('hidden')) {
+                details.classList.remove('hidden');
+                chevron.style.transform = 'rotate(180deg)';
+            } else {
+                details.classList.add('hidden');
+                chevron.style.transform = 'rotate(0deg)';
+            }
+        }
+        
+        function toggleAllResults() {
+            const allDetails = document.querySelectorAll('.details-content');
+            const allChevrons = document.querySelectorAll('[id^="chevron-"]');
+            const toggleText = document.getElementById('toggleAllText');
+            const toggleIcon = document.querySelector('#toggleAllDetails i');
+            
+            allExpanded = !allExpanded;
+            
+            allDetails.forEach(detail => {
+                if (allExpanded) {
+                    detail.classList.remove('hidden');
+                } else {
+                    detail.classList.add('hidden');
+                }
+            });
+            
+            allChevrons.forEach(chevron => {
+                chevron.style.transform = allExpanded ? 'rotate(180deg)' : 'rotate(0deg)';
+            });
+            
+            if (allExpanded) {
+                toggleText.textContent = '折叠全部详情';
+                toggleIcon.className = 'fas fa-compress-alt mr-2';
+            } else {
+                toggleText.textContent = '展开全部详情';
+                toggleIcon.className = 'fas fa-expand-alt mr-2';
+            }
+        }
+        
+        function calculatePriceThreshold(marketPriceTotal, coupon, pointsCoupon, memberDiscount, pointsDiscount, results) {
+            const thresholdContainer = document.getElementById('priceThreshold');
+            
+            // 计算积分券价值
+            const pointsCouponValue = pointsCoupon > 0 ? pointsCoupon / 100 / (pointsDiscount / 10) : 0;
+            
+            // 计算门市价分界线：当门市价低于此值时使用优惠券更划算
+            let thresholdPrice = 0;
+            if (coupon > 0 || pointsCouponValue > 0) {
+                thresholdPrice = 10 * coupon / memberDiscount + 0.9 * pointsCoupon / pointsDiscount
+            }
+            
+            thresholdContainer.innerHTML = `
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
+                        <h4 class="font-bold text-yellow-800 dark:text-yellow-200 mb-2">
+                            <i class="fas fa-ticket-alt mr-2"></i>优惠券信息
+                        </h4>
+                        <p class="text-yellow-700 dark:text-yellow-300">
+                            ${coupon > 0 ? `优惠券金额: ¥${coupon.toFixed(2)}` : '未设置优惠券'}
+                        </p>
+                    </div>
+                    <div class="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4">
+                        <h4 class="font-bold text-purple-800 dark:text-purple-200 mb-2">
+                            <i class="fas fa-coins mr-2"></i>积分券信息
+                        </h4>
+                        <p class="text-purple-700 dark:text-purple-300">
+                            ${pointsCouponValue > 0 ? `积分券价值: ¥${pointsCouponValue.toFixed(2)}` : '未设置积分券'}
+                        </p>
+                    </div>
+                </div>
+                ${thresholdPrice > 0 ? `
+                <div class="mt-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 text-center">
+                    <h4 class="font-bold text-blue-800 dark:text-blue-200 mb-2">
+                        <i class="fas fa-line-chart mr-2"></i>优惠券和积分使用建议
+                    </h4>
+                    <p class="text-blue-700 dark:text-blue-300">
+                        门市价总价低于 <span class="font-bold text-xl">¥${thresholdPrice.toFixed(2)}</span> 时，使用优惠券和积分券更划算
+                    </p>
+                </div>
+                ` : ''}
+            `;
+        }
+        
+        // 页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const elements = document.querySelectorAll('.fade-in');
+            elements.forEach((el, index) => {
+                el.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+</html>
