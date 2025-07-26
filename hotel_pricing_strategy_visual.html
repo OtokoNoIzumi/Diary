@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>酒店预订价格策略设计方案 - 可视化展示</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8'
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-out',
+                        'slide-up': 'slideUp 0.8s ease-out',
+                        'float': 'float 3s ease-in-out infinite'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .dark .gradient-bg {
+            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .dark .card-hover:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }
+        .scroll-smooth {
+            scroll-behavior: smooth;
+        }
+        
+        /* 音频播放器样式 */
+        #progressBar {
+            transition: width 0.1s ease;
+        }
+        
+        /* 文档详细查看样式 */
+        .markdown-content {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        .markdown-content h1, .markdown-content h2, .markdown-content h3 {
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .markdown-content ul, .markdown-content ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .markdown-content p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300 scroll-smooth">
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md z-50 border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-hotel text-2xl text-primary-600"></i>
+                    <h1 class="text-xl font-bold">酒店价格策略</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="doc-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors" title="查看完整文档">
+                        <i class="fas fa-file-text"></i>
+                    </button>
+                    <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:inline"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main class="pt-16">
+        <!-- 英雄区域 -->
+        <section class="gradient-bg py-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <div class="animate-fade-in">
+                    <h1 class="text-4xl md:text-6xl font-bold text-white mb-6">
+                        酒店预订价格策略
+                        <span class="block text-2xl md:text-3xl font-normal mt-2 text-blue-100">设计方案</span>
+                    </h1>
+                    <p class="text-xl text-blue-100 max-w-3xl mx-auto mb-8">
+                        通过重构预订价格机制，建立基于履约激励的市场信号传递系统，实现酒店定价灵活性与消费者确定性需求的平衡
+                    </p>
+                    <div class="flex justify-center space-x-4">
+                        <a href="#core-elements" class="bg-white text-primary-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                            查看方案详情
+                        </a>
+                        <a href="https://otokonoizumi.github.io/Diary/huazhu_calculator" target="_blank" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-primary-600 transition-colors">
+                            价格计算工具
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 音频播放器 -->
+        <section id="audio-section" class="py-12 bg-gray-100 dark:bg-gray-800">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-6">
+                    <div class="text-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">
+                            <i class="fas fa-headphones text-primary-600 mr-2"></i>
+                            酒店预订价格策略方案音频解读
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-400">收听专业解读，深入了解策略设计思路</p>
+                    </div>
+
+                    <!-- 隐藏原生音频控件但保留功能 -->
+                    <audio id="audioPlayer" class="hidden" preload="metadata">
+                        <source src="media/酒店预订价格策略方案.ogg" type="audio/ogg">
+                        您的浏览器不支持音频播放器
+                    </audio>
+
+                    <!-- 播放进度条 -->
+                    <div class="mb-4">
+                        <div id="progressContainer" class="relative h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden cursor-pointer">
+                            <!-- 进度条 -->
+                            <div id="progressBar" class="absolute h-full bg-primary-500 w-0 rounded-full"></div>
+                            <!-- 拖动手柄 -->
+                            <div id="progressHandle" class="absolute h-4 w-4 bg-primary-500 rounded-full border-2 border-white dark:border-gray-800 top-1/2 transform -translate-y-1/2 -translate-x-1/2" style="left: 0%"></div>
+                        </div>
+                        <!-- 时间标记 -->
+                        <div class="flex justify-between mt-2">
+                            <span id="currentTime" class="text-sm text-gray-500 dark:text-gray-400">0:00</span>
+                            <span id="duration" class="text-sm text-gray-500 dark:text-gray-400">--:--</span>
+                        </div>
+                    </div>
+
+                    <!-- 控制按钮 -->
+                    <div class="flex justify-between items-center">
+                        <!-- 播放速度控制 -->
+                        <button id="playbackSpeed" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 bg-gray-200 dark:bg-gray-700 px-3 py-2 rounded-lg transition-colors">
+                            <span class="text-sm font-medium">1X</span>
+                        </button>
+
+                        <div class="flex space-x-6 items-center">
+                            <!-- 后退10秒 -->
+                            <button id="rewind10" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 relative transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.333 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z" />
+                                </svg>
+                                <span class="absolute text-xs font-bold bottom-0 right-0 bg-gray-200 dark:bg-gray-700 rounded-full w-5 h-5 flex items-center justify-center">10</span>
+                            </button>
+
+                            <!-- 播放/暂停按钮 -->
+                            <button id="playPauseBtn" class="text-white bg-primary-500 hover:bg-primary-600 p-3 rounded-full transition-colors">
+                                <svg id="playIcon" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <svg id="pauseIcon" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </button>
+
+                            <!-- 前进10秒 -->
+                            <button id="forward10" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 relative transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.933 12.8a1 1 0 000-1.6L6.6 7.2A1 1 0 005 8v8a1 1 0 001.6.8l5.333-4zM19.933 12.8a1 1 0 000-1.6l-5.333-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.333-4z" />
+                                </svg>
+                                <span class="absolute text-xs font-bold bottom-0 right-0 bg-gray-200 dark:bg-gray-700 rounded-full w-5 h-5 flex items-center justify-center">10</span>
+                            </button>
+                        </div>
+
+                        <!-- 空白区域保持布局平衡 -->
+                        <div class="w-16"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 悬浮按钮，用于呼出迷你播放器 -->
+        <button id="floatingShowButton" class="fixed bottom-6 right-6 z-50 bg-primary-500 text-white rounded-full p-3 shadow-lg hover:bg-primary-600 transition-all duration-300 transform scale-0 opacity-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12 6-12 7" />
+            </svg>
+        </button>
+
+        <!-- 固定在底部的迷你播放控制器 -->
+        <div id="miniPlayer" class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-md transform translate-y-full transition-transform duration-300 z-50 border-t border-gray-200 dark:border-gray-700">
+            <div class="container mx-auto max-w-6xl px-4 py-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <button id="miniPlayPauseBtn" class="mr-3 bg-gray-200 dark:bg-gray-700 p-2 rounded-full flex-shrink-0">
+                            <svg id="miniPlayIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <svg id="miniPauseIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </button>
+                        <div class="text-sm">
+                            <div class="font-medium truncate max-w-[150px] sm:max-w-xs">酒店预订价格策略方案</div>
+                            <div id="miniTimeDisplay" class="text-xs text-gray-500 dark:text-gray-400">0:00 / --:--</div>
+                        </div>
+                    </div>
+
+                    <div class="flex-grow mx-4 hidden sm:block">
+                        <div id="miniProgressContainer" class="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full overflow-hidden cursor-pointer">
+                            <div id="miniProgressBar" class="bg-primary-500 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex space-x-3 flex-shrink-0">
+                        <button id="miniRewind10" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.333 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z" />
+                            </svg>
+                        </button>
+                        <button id="miniForward10" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.933 12.8a1 1 0 000-1.6L6.6 7.2A1 1 0 005 8v8a1 1 0 001.6.8l5.333-4zM19.933 12.8a1 1 0 000-1.6l-5.333-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.333-4z" />
+                            </svg>
+                        </button>
+                        <button id="miniSpeedBtn" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 px-2 bg-gray-200 dark:bg-gray-700 rounded">
+                            <span class="text-xs font-medium">1X</span>
+                        </button>
+                        <button id="toggleMiniPlayer" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 移动端专用进度条，只在移动端显示 -->
+                <div class="mt-2 sm:hidden">
+                    <div id="mobileProgressContainer" class="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full overflow-hidden cursor-pointer">
+                        <div id="mobileProgressBar" class="bg-primary-500 h-2 rounded-full" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 文档详细查看模态框 -->
+        <div id="docModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+                    <div class="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
+                        <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200">
+                            <i class="fas fa-file-text text-primary-600 mr-2"></i>
+                            酒店预订价格策略设计方案 - 完整文档
+                        </h3>
+                        <button id="closeDocModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="markdown-content p-6 text-gray-700 dark:text-gray-300" id="markdownContent">
+                        <!-- Markdown内容将在这里动态加载 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 核心要素优化目标 -->
+        <section id="core-elements" class="py-20 bg-white dark:bg-gray-900">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16 animate-slide-up">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                        <i class="fas fa-target text-primary-600 mr-3"></i>
+                        核心要素优化目标
+                    </h2>
+                    <p class="text-xl text-gray-600 dark:text-gray-400">解决传统酒店预订模式中的核心矛盾</p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="card-hover bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 p-6 rounded-xl border border-blue-200 dark:border-blue-700">
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-float">
+                                <i class="fas fa-chart-line text-white text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-3 text-blue-800 dark:text-blue-200">经营指标信号质量</h3>
+                            <div class="space-y-3">
+                                <div class="bg-red-100 dark:bg-red-900/30 p-3 rounded-lg">
+                                    <p class="text-sm text-red-700 dark:text-red-300 font-medium">现状问题</p>
+                                    <p class="text-xs text-red-600 dark:text-red-400 mt-1">频繁的免费取消与重订，导致预订信号严重失真</p>
+                                </div>
+                                <div class="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg">
+                                    <p class="text-sm text-green-700 dark:text-green-300 font-medium">优化目标</p>
+                                    <p class="text-xs text-green-600 dark:text-green-400 mt-1">通过履约激励机制，获取高质量的经营信号</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-hover bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 p-6 rounded-xl border border-green-200 dark:border-green-700">
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-float" style="animation-delay: 0.5s">
+                                <i class="fas fa-dollar-sign text-white text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-3 text-green-800 dark:text-green-200">酒店收益</h3>
+                            <div class="space-y-3">
+                                <div class="bg-red-100 dark:bg-red-900/30 p-3 rounded-lg">
+                                    <p class="text-sm text-red-700 dark:text-red-300 font-medium">现状问题</p>
+                                    <p class="text-xs text-red-600 dark:text-red-400 mt-1">价格保护政策使酒店承担所有价格下行风险</p>
+                                </div>
+                                <div class="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg">
+                                    <p class="text-sm text-green-700 dark:text-green-300 font-medium">优化目标</p>
+                                    <p class="text-xs text-green-600 dark:text-green-400 mt-1">保持充分的调价灵活性，实现收益最大化</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-hover bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 p-6 rounded-xl border border-purple-200 dark:border-purple-700">
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-float" style="animation-delay: 1s">
+                                <i class="fas fa-heart text-white text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-3 text-purple-800 dark:text-purple-200">消费者口碑</h3>
+                            <div class="space-y-3">
+                                <div class="bg-red-100 dark:bg-red-900/30 p-3 rounded-lg">
+                                    <p class="text-sm text-red-700 dark:text-red-300 font-medium">现状问题</p>
+                                    <p class="text-xs text-red-600 dark:text-red-400 mt-1">口碑建立在"占便宜"而非"好体验"上</p>
+                                </div>
+                                <div class="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg">
+                                    <p class="text-sm text-green-700 dark:text-green-300 font-medium">优化目标</p>
+                                    <p class="text-xs text-green-600 dark:text-green-400 mt-1">建立基于"专业、可靠、值得信赖"的深层次口碑</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-hover bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 p-6 rounded-xl border border-orange-200 dark:border-orange-700">
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-float" style="animation-delay: 1.5s">
+                                <i class="fas fa-smile text-white text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-3 text-orange-800 dark:text-orange-200">消费者体验</h3>
+                            <div class="space-y-3">
+                                <div class="bg-red-100 dark:bg-red-900/30 p-3 rounded-lg">
+                                    <p class="text-sm text-red-700 dark:text-red-300 font-medium">现状问题</p>
+                                    <p class="text-xs text-red-600 dark:text-red-400 mt-1">持续的价格焦虑，担心"买贵了"或"踏空了"</p>
+                                </div>
+                                <div class="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg">
+                                    <p class="text-sm text-green-700 dark:text-green-300 font-medium">优化目标</p>
+                                    <p class="text-xs text-green-600 dark:text-green-400 mt-1">提供价格确定性和惊喜奖励，消除价格焦虑</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 预订流程设计 -->
+        <section class="py-20 bg-gray-50 dark:bg-gray-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                        <i class="fas fa-cogs text-primary-600 mr-3"></i>
+                        全新预订流程设计
+                    </h2>
+                    <p class="text-xl text-gray-600 dark:text-gray-400">履约激励与确定性承诺</p>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="space-y-8">
+                        <div class="card-hover bg-white dark:bg-gray-900 p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                            <h3 class="text-2xl font-bold mb-6 text-primary-600">
+                                <i class="fas fa-check-circle mr-3"></i>
+                                预订确认阶段
+                            </h3>
+                            <div class="bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/20 dark:to-green-900/20 p-6 rounded-lg border-l-4 border-primary-500">
+                                <h4 class="font-bold text-lg mb-3 text-gray-800 dark:text-gray-200">感谢您选择我们！</h4>
+                                <p class="text-gray-700 dark:text-gray-300 mb-4">您的预订对我们至关重要。为回报您的信赖，我们郑重承诺：</p>
+                                <div class="space-y-3">
+                                    <div class="flex items-start space-x-3">
+                                        <i class="fas fa-lock text-green-500 mt-1"></i>
+                                        <div>
+                                            <span class="font-semibold text-green-700 dark:text-green-300">价格锁定：</span>
+                                            <span class="text-gray-600 dark:text-gray-400">您预订的价格已被锁定，入住前绝不要求补缴差价</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start space-x-3">
+                                        <i class="fas fa-gift text-blue-500 mt-1"></i>
+                                        <div>
+                                            <span class="font-semibold text-blue-700 dark:text-blue-300">履约奖励：</span>
+                                            <span class="text-gray-600 dark:text-gray-400">完成入住后，自动获得10元无门槛抵用券</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start space-x-3">
+                                        <i class="fas fa-star text-purple-500 mt-1"></i>
+                                        <div>
+                                            <span class="font-semibold text-purple-700 dark:text-purple-300">体验保障：</span>
+                                            <span class="text-gray-600 dark:text-gray-400">如遇降价，主动提供专属升级服务选择</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="card-hover bg-white dark:bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                            <h4 class="text-xl font-bold mb-4 text-green-600">
+                                <i class="fas fa-trophy mr-2"></i>
+                                履约奖励机制
+                            </h4>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                                    <span class="font-medium">基础奖励</span>
+                                    <span class="text-green-600 font-bold">10元</span>
+                                </div>
+                                <div class="space-y-2">
+                                    <p class="text-sm font-medium text-gray-700 dark:text-gray-300">会员加成：</p>
+                                    <div class="grid grid-cols-2 gap-2 text-sm">
+                                        <div class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded">
+                                            <span>银卡</span><span class="text-blue-600 font-bold">15元</span>
+                                        </div>
+                                        <div class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded">
+                                            <span>金卡</span><span class="text-yellow-600 font-bold">20元</span>
+                                        </div>
+                                        <div class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded">
+                                            <span>铂金</span><span class="text-purple-600 font-bold">30元</span>
+                                        </div>
+                                        <div class="flex justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded">
+                                            <span>连续履约</span><span class="text-orange-600 font-bold">+5元</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 价格策略 -->
+        <section class="py-20 bg-white dark:bg-gray-900">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                        <i class="fas fa-chart-bar text-primary-600 mr-3"></i>
+                        价格驱动与调整策略
+                    </h2>
+                    <p class="text-xl text-gray-600 dark:text-gray-400">分离参数机制，灵活应对市场变化</p>
+                </div>
+
+                <div class="grid lg:grid-cols-3 gap-8">
+                    <div class="card-hover bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 p-8 rounded-xl border border-blue-200 dark:border-blue-700">
+                        <div class="text-center mb-6">
+                            <div class="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-clock text-white text-3xl"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-blue-800 dark:text-blue-200">认知窗口设计</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                                <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">时间单位</p>
+                                <p class="text-lg font-bold text-blue-600">按天调整</p>
+                            </div>
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                                <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">生效时间</p>
+                                <p class="text-lg font-bold text-blue-600">每日凌晨3点</p>
+                            </div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">确保同一天内价格保持绝对稳定</p>
+                        </div>
+                    </div>
+
+                    <div class="card-hover bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 p-8 rounded-xl border border-green-200 dark:border-green-700">
+                        <div class="text-center mb-6">
+                            <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-calculator text-white text-3xl"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-green-800 dark:text-green-200">分离参数机制</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                                <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">基准门市价</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">相对稳定的价值锚点</p>
+                            </div>
+                            <div class="text-center text-2xl font-bold text-gray-400">×</div>
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                                <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">动态折扣率</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">实时响应市场变化</p>
+                            </div>
+                            <div class="text-center text-lg font-bold text-green-600">= 最终价格</div>
+                        </div>
+                    </div>
+
+                    <div class="card-hover bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 p-8 rounded-xl border border-purple-200 dark:border-purple-700">
+                        <div class="text-center mb-6">
+                            <div class="w-20 h-20 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-shield-alt text-white text-3xl"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-purple-800 dark:text-purple-200">极端低价策略</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                                <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">触发条件</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">入住率极低 + 充足升级资源</p>
+                            </div>
+                            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg">
+                                <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">应对措施</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">联动响应服务策略</p>
+                            </div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">确保降价收益大于补偿成本</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 响应服务策略 -->
+        <section class="py-20 bg-gray-50 dark:bg-gray-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                        <i class="fas fa-concierge-bell text-primary-600 mr-3"></i>
+                        响应服务策略
+                    </h2>
+                    <p class="text-xl text-gray-600 dark:text-gray-400">用体验升维代替价格补偿</p>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <div class="card-hover bg-white dark:bg-gray-900 p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                        <div class="text-center mb-6">
+                            <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-star text-white text-2xl"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-green-600 mb-2">方案A：服务升级补偿</h3>
+                            <span class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-sm font-medium">酒店优先推荐</span>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                                <h4 class="font-bold text-green-700 dark:text-green-300 mb-2">操作方式</h4>
+                                <p class="text-gray-600 dark:text-gray-400">保持原预订价格不变</p>
+                            </div>
+                            <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                                <h4 class="font-bold text-green-700 dark:text-green-300 mb-2">补偿内容</h4>
+                                <ul class="text-gray-600 dark:text-gray-400 space-y-1">
+                                    <li>• 免费升级房型</li>
+                                    <li>• 赠送双人早餐</li>
+                                    <li>• 延迟退房服务</li>
+                                    <li>• 下午茶礼遇</li>
+                                </ul>
+                            </div>
+                            <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                                <h4 class="font-bold text-blue-700 dark:text-blue-300 mb-2">目标效果</h4>
+                                <p class="text-gray-600 dark:text-gray-400">利用极低边际成本创造超值体验，保住更高房费</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-hover bg-white dark:bg-gray-900 p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                        <div class="text-center mb-6">
+                            <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-balance-scale text-white text-2xl"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-blue-600 mb-2">方案B：价格匹配</h3>
+                            <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-medium">客户选择</span>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                                <h4 class="font-bold text-blue-700 dark:text-blue-300 mb-2">操作方式</h4>
+                                <p class="text-gray-600 dark:text-gray-400">协助免费取消原订单，按当前更低价重新预订</p>
+                            </div>
+                            <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                                <h4 class="font-bold text-blue-700 dark:text-blue-300 mb-2">特别说明</h4>
+                                <p class="text-gray-600 dark:text-gray-400">新订单依然可获得履约奖励</p>
+                            </div>
+                            <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                                <h4 class="font-bold text-green-700 dark:text-green-300 mb-2">适用场景</h4>
+                                <p class="text-gray-600 dark:text-gray-400">满足价格极度敏感客户需求，保住入住率指标</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 商业价值分析 -->
+        <section class="py-20 bg-white dark:bg-gray-900">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                        <i class="fas fa-chart-pie text-primary-600 mr-3"></i>
+                        商业价值分析
+                    </h2>
+                    <p class="text-xl text-gray-600 dark:text-gray-400">双赢策略，创造可持续价值</p>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-12">
+                    <div class="space-y-6">
+                        <div class="card-hover bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 p-8 rounded-xl border border-green-200 dark:border-green-700">
+                            <h3 class="text-2xl font-bold text-green-800 dark:text-green-200 mb-6">
+                                <i class="fas fa-building text-green-600 mr-3"></i>
+                                酒店收益提升
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="flex items-start space-x-3">
+                                    <i class="fas fa-signal text-green-500 mt-1"></i>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800 dark:text-gray-200">真实需求信号</h4>
+                                        <p class="text-gray-600 dark:text-gray-400 text-sm">履约激励减少虚假预订</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <i class="fas fa-arrows-alt text-green-500 mt-1"></i>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800 dark:text-gray-200">定价灵活性保持</h4>
+                                        <p class="text-gray-600 dark:text-gray-400 text-sm">可根据市场变化及时调价</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <i class="fas fa-smile text-green-500 mt-1"></i>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800 dark:text-gray-200">客户满意度提升</h4>
+                                        <p class="text-gray-600 dark:text-gray-400 text-sm">超预期服务体验</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <i class="fas fa-cut text-green-500 mt-1"></i>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800 dark:text-gray-200">运营成本降低</h4>
+                                        <p class="text-gray-600 dark:text-gray-400 text-sm">减少价格争议和客服工作量</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <i class="fas fa-gem text-green-500 mt-1"></i>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800 dark:text-gray-200">品牌差异化</h4>
+                                        <p class="text-gray-600 dark:text-gray-400 text-sm">简单规则和超预期服务建立竞争优势</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="card-hover bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 p-8 rounded-xl border border-blue-200 dark:border-blue-700">
+                            <h3 class="text-2xl font-bold text-blue-800 dark:text-blue-200 mb-6">
+                                <i class="fas fa-users text-blue-600 mr-3"></i>
+                                消费者体验优化
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="flex items-start space-x-3">
+                                    <i class="fas fa-check-circle text-blue-500 mt-1"></i>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800 dark:text-gray-200">决策确定性</h4>
+                                        <p class="text-gray-600 dark:text-gray-400 text-sm">最佳策略就是行程确定后下订单并按时入住</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <i class="fas fa-balance-scale text-blue-500 mt-1"></i>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800 dark:text-gray-200">公平感保障</h4>
+                                        <p class="text-gray-600 dark:text-gray-400 text-sm">不会成为"冤大头"</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <i class="fas fa-surprise text-blue-500 mt-1"></i>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800 dark:text-gray-200">意外惊喜</h4>
+                                        <p class="text-gray-600 dark:text-gray-400 text-sm">履约奖励和升级服务</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 用户类型对比表 -->
+                        <div class="card-hover bg-white dark:bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                            <h4 class="text-xl font-bold mb-4 text-center">不同用户类型体验对比</h4>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm">
+                                    <thead>
+                                        <tr class="border-b border-gray-200 dark:border-gray-700">
+                                            <th class="text-left py-2 font-semibold">用户类型</th>
+                                            <th class="text-left py-2 font-semibold">传统"安心订"</th>
+                                            <th class="text-left py-2 font-semibold">新机制体验</th>
+                                            <th class="text-center py-2 font-semibold">满意度</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="space-y-2">
+                                        <tr class="border-b border-gray-100 dark:border-gray-800">
+                                            <td class="py-3 font-medium text-blue-600">价格敏感型</td>
+                                            <td class="py-3 text-gray-600 dark:text-gray-400">反复下单预定和取消</td>
+                                            <td class="py-3 text-gray-600 dark:text-gray-400">自动享受最低价+履约奖励</td>
+                                            <td class="py-3 text-center text-yellow-500">★★★★★</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-100 dark:border-gray-800">
+                                            <td class="py-3 font-medium text-green-600">服务敏感型</td>
+                                            <td class="py-3 text-gray-600 dark:text-gray-400">只能获得价格补偿</td>
+                                            <td class="py-3 text-gray-600 dark:text-gray-400">可选择服务升级，体验超预期</td>
+                                            <td class="py-3 text-center text-yellow-500">★★★★★</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-3 font-medium text-purple-600">忠诚客户</td>
+                                            <td class="py-3 text-gray-600 dark:text-gray-400">与普通客户待遇相同</td>
+                                            <td class="py-3 text-gray-600 dark:text-gray-400">会员加成奖励，差异化服务</td>
+                                            <td class="py-3 text-center text-yellow-500">★★★★☆</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 核心思想 -->
+        <section class="py-20 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                        <i class="fas fa-lightbulb text-primary-600 mr-3"></i>
+                        核心思想与推广理念
+                    </h2>
+                    <p class="text-xl text-gray-600 dark:text-gray-400">先进商业思想的体现</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="card-hover bg-white dark:bg-gray-900 p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                        <div class="text-center mb-6">
+                            <div class="w-16 h-16 bg-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-sync-alt text-white text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-indigo-600">流程再造</h3>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 text-center">
+                            深刻理解"安心订"只是治标不治本的补丁，选择从根本上重塑整个预订流程
+                        </p>
+                    </div>
+
+                    <div class="card-hover bg-white dark:bg-gray-900 p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                        <div class="text-center mb-6">
+                            <div class="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-sitemap text-white text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-purple-600">系统思考</h3>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 text-center">
+                            按照从定价引擎到预订合约，再到运营响应的清晰链条构建系统，避免各环节互相掣肘
+                        </p>
+                    </div>
+
+                    <div class="card-hover bg-white dark:bg-gray-900 p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                        <div class="text-center mb-6">
+                            <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-magic text-white text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-blue-600">简化体验</h3>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 text-center">
+                            酒店通过智慧的系统设计，在内部消化市场的不确定性，向顾客提供极致简单的决策体验
+                        </p>
+                    </div>
+
+                    <div class="card-hover bg-white dark:bg-gray-900 p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                        <div class="text-center mb-6">
+                            <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-heart text-white text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-green-600">正向激励</h3>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 text-center">
+                            以正向的、人性化的激励和响应，取代冰冷的、机械的规则与惩罚
+                        </p>
+                    </div>
+
+                    <div class="card-hover bg-white dark:bg-gray-900 p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                        <div class="text-center mb-6">
+                            <div class="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-bolt text-white text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-orange-600">敏捷响应</h3>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 text-center">
+                            用响应代替预测，灵活应对市场变化，而非试图预测所有可能性
+                        </p>
+                    </div>
+
+                    <div class="card-hover bg-white dark:bg-gray-900 p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                        <div class="text-center mb-6">
+                            <div class="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-rocket text-white text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-red-600">设计势能</h3>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 text-center">
+                            好的商业设计本身蕴含强大势能，引导市场与用户朝向对各方都有利的方向发展
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-900 dark:bg-black text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fas fa-hotel text-2xl text-primary-400"></i>
+                        <h3 class="text-xl font-bold">酒店价格策略</h3>
+                    </div>
+                    <p class="text-gray-400">
+                        创新的酒店预订价格策略设计方案，实现酒店与消费者的双赢局面。
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">相关工具</h4>
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="https://otokonoizumi.github.io/Diary/huazhu_calculator" target="_blank" class="text-gray-400 hover:text-white transition-colors flex items-center space-x-2">
+                                <i class="fas fa-calculator"></i>
+                                <span>华住价格计算器</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">作者信息</h4>
+                    <div class="space-y-3">
+                        <p class="text-gray-400">
+                            <i class="fas fa-user mr-2"></i>
+                            作者：Izumi.屈源
+                        </p>
+                        <div class="flex space-x-4">
+                            <a href="https://otokonoizumi.github.io" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+                                <i class="fab fa-github text-xl"></i>
+                            </a>
+                            <a href="https://space.bilibili.com/82205" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+                                <i class="fab fa-bilibili text-xl"></i>
+                            </a>
+                        </div>
+                        <p class="text-gray-500 text-sm">
+                            © 2025 版权所有
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 主题切换功能
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        
+        // 检查系统主题偏好
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const savedTheme = localStorage.getItem('theme');
+        
+        // 设置初始主题
+        if (savedTheme) {
+            html.classList.toggle('dark', savedTheme === 'dark');
+        } else {
+            html.classList.toggle('dark', prefersDark);
+        }
+        
+        // 主题切换事件
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+        });
+        
+        // 平滑滚动到锚点
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // 滚动动画观察器
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        // 观察所有需要动画的元素
+        document.querySelectorAll('.card-hover').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+        
+        // 监听系统主题变化
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme')) {
+                html.classList.toggle('dark', e.matches);
+            }
+        });
+        
+        // 音频播放器功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const audioPlayer = document.getElementById('audioPlayer');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const playIcon = document.getElementById('playIcon');
+            const pauseIcon = document.getElementById('pauseIcon');
+            const progressBar = document.getElementById('progressBar');
+            const progressHandle = document.getElementById('progressHandle');
+            const progressContainer = document.getElementById('progressContainer');
+            const currentTimeEl = document.getElementById('currentTime');
+            const durationEl = document.getElementById('duration');
+            const rewind10 = document.getElementById('rewind10');
+            const forward10 = document.getElementById('forward10');
+            const playbackSpeedBtn = document.getElementById('playbackSpeed');
+
+            // 迷你播放器元素
+            const miniPlayer = document.getElementById('miniPlayer');
+            const miniPlayPauseBtn = document.getElementById('miniPlayPauseBtn');
+            const miniPlayIcon = document.getElementById('miniPlayIcon');
+            const miniPauseIcon = document.getElementById('miniPauseIcon');
+            const miniProgressBar = document.getElementById('miniProgressBar');
+            const miniTimeDisplay = document.getElementById('miniTimeDisplay');
+            const miniRewind10 = document.getElementById('miniRewind10');
+            const miniForward10 = document.getElementById('miniForward10');
+            const miniSpeedBtn = document.getElementById('miniSpeedBtn');
+            const mainAudioSection = document.getElementById('audio-section');
+
+            // 移动端进度条元素
+            const mobileProgressBar = document.getElementById('mobileProgressBar');
+            const mobileProgressContainer = document.getElementById('mobileProgressContainer');
+
+            // 悬浮按钮元素
+            const floatingShowButton = document.getElementById('floatingShowButton');
+
+            // 速度选项
+            const speeds = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+            let currentSpeedIndex = 2; // 默认是1x (索引2)
+
+            // 跟踪是否已经开始播放过
+            let hasPlaybackStarted = false;
+
+            // 跟踪是否手动隐藏了迷你播放器
+            let manuallyHiddenMiniPlayer = false;
+
+            // 初始化音频
+            audioPlayer.addEventListener('loadedmetadata', function() {
+                const duration = audioPlayer.duration;
+                const minutes = Math.floor(duration / 60);
+                const seconds = Math.floor(duration % 60);
+                durationEl.textContent = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+            });
+
+            // 播放/暂停
+            playPauseBtn.addEventListener('click', function() {
+                togglePlayPause();
+            });
+
+            // 迷你播放器的播放/暂停
+            miniPlayPauseBtn.addEventListener('click', function() {
+                togglePlayPause();
+            });
+
+            // 悬浮按钮点击显示迷你播放器
+            floatingShowButton.addEventListener('click', function() {
+                showMiniPlayer();
+                manuallyHiddenMiniPlayer = false;
+            });
+
+            function showMiniPlayer() {
+                miniPlayer.classList.remove('translate-y-full');
+                updateFloatingButtonVisibility();
+                updateFooterPadding();
+            }
+
+            function hideMiniPlayer() {
+                miniPlayer.classList.add('translate-y-full');
+                updateFloatingButtonVisibility();
+                updateFooterPadding();
+            }
+
+            function togglePlayPause() {
+                if (audioPlayer.paused) {
+                    audioPlayer.play();
+                    playIcon.classList.add('hidden');
+                    pauseIcon.classList.remove('hidden');
+                    miniPlayIcon.classList.add('hidden');
+                    miniPauseIcon.classList.remove('hidden');
+                    hasPlaybackStarted = true;
+                } else {
+                    audioPlayer.pause();
+                    playIcon.classList.remove('hidden');
+                    pauseIcon.classList.add('hidden');
+                    miniPlayIcon.classList.remove('hidden');
+                    miniPauseIcon.classList.add('hidden');
+                }
+
+                // 更新迷你播放器状态
+                updateMiniPlayerVisibility();
+            }
+
+            // 更新进度条
+            audioPlayer.addEventListener('timeupdate', function() {
+                const currentTime = audioPlayer.currentTime;
+                const duration = audioPlayer.duration;
+                const progressPercent = (currentTime / duration) * 100;
+
+                // 更新主进度条
+                progressBar.style.width = `${progressPercent}%`;
+                progressHandle.style.left = `${progressPercent}%`;
+
+                // 更新迷你进度条 (Web和移动端)
+                miniProgressBar.style.width = `${progressPercent}%`;
+                if (mobileProgressBar) {
+                    mobileProgressBar.style.width = `${progressPercent}%`;
+                }
+
+                // 更新当前时间显示
+                const minutes = Math.floor(currentTime / 60);
+                const seconds = Math.floor(currentTime % 60);
+                const timeText = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+                currentTimeEl.textContent = timeText;
+
+                // 更新迷你播放器时间显示
+                const durationMinutes = Math.floor(duration / 60);
+                const durationSeconds = Math.floor(duration % 60);
+                const durationText = `${durationMinutes}:${durationSeconds < 10 ? '0' + durationSeconds : durationSeconds}`;
+                miniTimeDisplay.textContent = `${timeText} / ${durationText}`;
+
+                // 设置播放标志
+                if (currentTime > 0) {
+                    hasPlaybackStarted = true;
+                }
+            });
+
+            // 点击进度条跳转
+            progressContainer.addEventListener('click', function(e) {
+                const progressWidth = this.clientWidth;
+                const clickX = e.offsetX;
+                const duration = audioPlayer.duration;
+
+                audioPlayer.currentTime = (clickX / progressWidth) * duration;
+            });
+
+            // 迷你播放器Web端进度条点击
+            const miniProgressContainer = document.getElementById('miniProgressContainer');
+            miniProgressContainer.addEventListener('click', function(e) {
+                if (!audioPlayer.duration) return;
+
+                const progressWidth = this.clientWidth;
+                const clickX = e.offsetX;
+                const duration = audioPlayer.duration;
+
+                audioPlayer.currentTime = (clickX / progressWidth) * duration;
+            });
+
+            // 迷你播放器移动端进度条点击
+            if (mobileProgressContainer) {
+                mobileProgressContainer.addEventListener('click', function(e) {
+                    if (!audioPlayer.duration) return;
+
+                    const progressWidth = this.clientWidth;
+                    const clickX = e.offsetX;
+                    const duration = audioPlayer.duration;
+
+                    audioPlayer.currentTime = (clickX / progressWidth) * duration;
+                });
+            }
+
+            // 切换显示/隐藏迷你播放器
+            const toggleMiniPlayer = document.getElementById('toggleMiniPlayer');
+            toggleMiniPlayer.addEventListener('click', function() {
+                if (miniPlayer.classList.contains('translate-y-full')) {
+                    // 当前隐藏，切换到显示
+                    showMiniPlayer();
+                    manuallyHiddenMiniPlayer = false;
+                    // 更新图标方向（指向下方）
+                    this.querySelector('svg path').setAttribute('d', 'M19 14l-7-7-7 7');
+                } else {
+                    // 当前显示，切换到隐藏
+                    hideMiniPlayer();
+                    manuallyHiddenMiniPlayer = true;
+                    // 更新图标方向（指向上方）
+                    this.querySelector('svg path').setAttribute('d', 'M19 9l-7 7-7-7');
+                }
+            });
+
+            // 更新迷你播放器和悬浮按钮的显示
+            function updateMiniPlayerVisibility() {
+                // 检查主播放器是否可见
+                const rect = mainAudioSection.getBoundingClientRect();
+                const isInView = (
+                    rect.top >= 0 &&
+                    rect.top < window.innerHeight &&
+                    rect.bottom > 0
+                );
+
+                // 只有主播放器可见时自动隐藏迷你播放器
+                if (isInView) {
+                    hideMiniPlayer();
+                    manuallyHiddenMiniPlayer = false;
+                } else if (hasPlaybackStarted && !manuallyHiddenMiniPlayer) {
+                    // 如果已经开始播放且主播放器不可见，且没有手动隐藏，则显示迷你播放器
+                    showMiniPlayer();
+                }
+
+                // 更新悬浮按钮可见性
+                updateFloatingButtonVisibility();
+            }
+
+            // 更新悬浮按钮可见性
+            function updateFloatingButtonVisibility() {
+                // 检查主播放器是否可见
+                const rect = mainAudioSection.getBoundingClientRect();
+                const isInView = (
+                    rect.top >= 0 &&
+                    rect.top < window.innerHeight &&
+                    rect.bottom > 0
+                );
+
+                // 检查迷你播放器是否隐藏
+                const isMiniPlayerHidden = miniPlayer.classList.contains('translate-y-full');
+
+                // 情况1: 主播放器没有播放进度，且没显示迷你播放器
+                // 情况2: 主播放器不可见，且手动隐藏了迷你播放器
+                if (((!hasPlaybackStarted || audioPlayer.currentTime === 0) && isMiniPlayerHidden) ||
+                    (!isInView && isMiniPlayerHidden && manuallyHiddenMiniPlayer)) {
+                    floatingShowButton.classList.remove('scale-0', 'opacity-0');
+                    floatingShowButton.classList.add('scale-100', 'opacity-100');
+                } else {
+                    floatingShowButton.classList.remove('scale-100', 'opacity-100');
+                    floatingShowButton.classList.add('scale-0', 'opacity-0');
+                }
+            }
+
+            // 拖动进度条功能
+            let isDragging = false;
+
+            progressHandle.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                // 防止冒泡到progressContainer的点击事件
+                e.stopPropagation();
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (!isDragging) return;
+
+                // 获取鼠标相对于进度条的位置
+                const rect = progressContainer.getBoundingClientRect();
+                const offsetX = Math.min(Math.max(0, e.clientX - rect.left), rect.width);
+                const percentage = offsetX / rect.width;
+
+                // 更新进度条UI
+                progressBar.style.width = `${percentage * 100}%`;
+                progressHandle.style.left = `${percentage * 100}%`;
+
+                // 更新时间显示
+                const newTime = percentage * audioPlayer.duration;
+                const minutes = Math.floor(newTime / 60);
+                const seconds = Math.floor(newTime % 60);
+                currentTimeEl.textContent = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+            });
+
+            document.addEventListener('mouseup', function() {
+                if (!isDragging) return;
+
+                // 获取拖动完成后的位置
+                const percentage = parseFloat(progressBar.style.width) / 100;
+
+                // 设置音频时间
+                audioPlayer.currentTime = percentage * audioPlayer.duration;
+
+                isDragging = false;
+            });
+
+            // 移动设备触摸支持
+            progressHandle.addEventListener('touchstart', function(e) {
+                isDragging = true;
+                e.stopPropagation();
+            });
+
+            document.addEventListener('touchmove', function(e) {
+                if (!isDragging) return;
+
+                const touch = e.touches[0];
+                const rect = progressContainer.getBoundingClientRect();
+                const offsetX = Math.min(Math.max(0, touch.clientX - rect.left), rect.width);
+                const percentage = offsetX / rect.width;
+
+                progressBar.style.width = `${percentage * 100}%`;
+                progressHandle.style.left = `${percentage * 100}%`;
+
+                const newTime = percentage * audioPlayer.duration;
+                const minutes = Math.floor(newTime / 60);
+                const seconds = Math.floor(newTime % 60);
+                currentTimeEl.textContent = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+            });
+
+            document.addEventListener('touchend', function() {
+                if (!isDragging) return;
+
+                const percentage = parseFloat(progressBar.style.width) / 100;
+                audioPlayer.currentTime = percentage * audioPlayer.duration;
+
+                isDragging = false;
+            });
+
+            // 后退10秒
+            rewind10.addEventListener('click', function() {
+                skipAudio(-10);
+            });
+
+            // 迷你播放器后退10秒
+            miniRewind10.addEventListener('click', function() {
+                skipAudio(-10);
+            });
+
+            // 前进10秒
+            forward10.addEventListener('click', function() {
+                skipAudio(10);
+            });
+
+            // 迷你播放器前进10秒
+            miniForward10.addEventListener('click', function() {
+                skipAudio(10);
+            });
+
+            function skipAudio(seconds) {
+                const newTime = Math.max(0, Math.min(audioPlayer.currentTime + seconds, audioPlayer.duration));
+                audioPlayer.currentTime = newTime;
+            }
+
+            // 切换播放速度
+            playbackSpeedBtn.addEventListener('click', function() {
+                changePlaybackSpeed();
+            });
+
+            // 迷你播放器切换播放速度
+            miniSpeedBtn.addEventListener('click', function() {
+                changePlaybackSpeed();
+            });
+
+            function changePlaybackSpeed() {
+                currentSpeedIndex = (currentSpeedIndex + 1) % speeds.length;
+                const newSpeed = speeds[currentSpeedIndex];
+                audioPlayer.playbackRate = newSpeed;
+                playbackSpeedBtn.querySelector('span').textContent = `${newSpeed}X`;
+                miniSpeedBtn.querySelector('span').textContent = `${newSpeed}X`;
+            }
+
+            // 音频结束时重置
+            audioPlayer.addEventListener('ended', function() {
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+                miniPlayIcon.classList.remove('hidden');
+                miniPauseIcon.classList.add('hidden');
+                progressBar.style.width = '0%';
+                progressHandle.style.left = '0%';
+                miniProgressBar.style.width = '0%';
+                currentTimeEl.textContent = '0:00';
+
+                // 不自动隐藏迷你播放器，让用户自己控制
+            });
+
+            // 使用Intersection Observer检测主播放器是否可见
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    updateMiniPlayerVisibility();
+                });
+            }, { threshold: 0.2 });  // 当主播放器有20%不可见时触发
+
+            // 开始观察主播放器
+            observer.observe(mainAudioSection);
+
+            // 监听窗口滚动，也检查播放状态
+            window.addEventListener('scroll', function() {
+                updateMiniPlayerVisibility();
+            });
+
+            // 监听音频播放状态变化
+            audioPlayer.addEventListener('play', function() {
+                updateMiniPlayerVisibility();
+                hasPlaybackStarted = true;
+            });
+
+            audioPlayer.addEventListener('pause', updateMiniPlayerVisibility);
+
+            // 音频时间重置时的处理
+            audioPlayer.addEventListener('seeked', function() {
+                if (audioPlayer.currentTime === 0) {
+                    hasPlaybackStarted = false;
+                    updateFloatingButtonVisibility();
+                }
+            });
+
+            // 添加页脚底部边距，防止迷你播放器遮挡内容
+            function updateFooterPadding() {
+                const footer = document.querySelector('footer');
+                if (!footer) return;
+
+                // 如果迷你播放器显示，添加足够的底部边距
+                if (!miniPlayer.classList.contains('translate-y-full')) {
+                    footer.style.paddingBottom = '80px';
+                } else {
+                    footer.style.paddingBottom = '0';
+                }
+            }
+
+            // 监听播放状态变化以更新底部边距
+            audioPlayer.addEventListener('play', updateFooterPadding);
+            audioPlayer.addEventListener('pause', updateFooterPadding);
+
+            // 监听迷你播放器显示状态变化以更新底部边距
+            const miniPlayerObserver = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.attributeName === 'class') {
+                        updateFooterPadding();
+                        updateFloatingButtonVisibility();
+                    }
+                });
+            });
+
+            miniPlayerObserver.observe(miniPlayer, { attributes: true });
+        });
+        
+        // 文档查看功能
+        const docToggle = document.getElementById('doc-toggle');
+        const docModal = document.getElementById('docModal');
+        const closeDocModal = document.getElementById('closeDocModal');
+        const markdownContent = document.getElementById('markdownContent');
+        
+        // Markdown文档内容
+        const markdownText = `# 酒店预订价格策略设计方案
+
+## 方案摘要
+
+本方案旨在通过重构预订价格机制，建立基于履约激励的市场信号传递系统，实现酒店定价灵活性与消费者确定性需求的平衡。核心思路是用"履约激励+确定性承诺"取代现有的"价格保护+免费取消"模式，在保持酒店充分调价灵活性的同时，为消费者提供价格确定性和惊喜奖励体验。
+
+## 核心要素优化目标
+
+### 1. 经营指标信号质量
+**现状问题：** 频繁的免费取消与重订，导致预订信号严重失真  
+**优化目标：** 通过履约激励机制，获取高质量的经营信号
+
+### 2. 酒店收益
+**现状问题：** 价格保护政策使酒店承担所有价格下行风险  
+**优化目标：** 保持充分的调价灵活性，实现收益最大化
+
+### 3. 消费者口碑
+**现状问题：** 口碑建立在"占便宜"而非"好体验"上  
+**优化目标：** 建立基于"专业、可靠、值得信赖"的深层次口碑
+
+### 4. 消费者体验
+**现状问题：** 持续的价格焦虑，担心"买贵了"或"踏空了"  
+**优化目标：** 提供价格确定性和惊喜奖励，消除价格焦虑
+
+## 现状盘点
+
+### 现有优惠与预订策略
+- **价格保护政策：** 承诺预订后价格下降时退还差价
+- **免费取消政策：** 允许用户在特定时间内免费取消预订
+- **会员积分体系：** 通过积分奖励提升用户忠诚度
+
+### 现行"安心订"规则分析
+**核心机制：** 价格保护 + 免费取消  
+**问题识别：**
+- 用户频繁取消重订，信号失真严重
+- 酒店承担所有价格风险，收益受损
+- 用户体验焦虑，持续关注价格变化
+- 运营成本高昂，客服压力巨大
+
+### 可用成本与奖励空间
+- **技术成本：** 系统开发与维护投入
+- **运营成本：** 客服处理与流程管理
+- **机会成本：** 价格保护带来的收益损失
+- **奖励空间：** 可转化为用户激励的资源池
+
+## 全新预订流程设计
+
+### 履约激励与确定性承诺
+**核心理念：** 用正向激励取代负向保护
+
+**具体机制：**
+1. **确定性承诺：** 预订价格锁定，不再变动
+2. **履约奖励：** 按时入住获得额外奖励
+3. **灵活调整：** 酒店保持完全的定价自主权
+
+### 奖励构成
+1. **基础履约奖励：** 按时入住的标准奖励
+2. **忠诚度加成：** 会员等级对应的奖励倍数
+3. **惊喜奖励：** 随机或特殊情况下的额外奖励
+4. **连续入住奖励：** 多次履约的累积奖励
+
+### 失效提醒机制
+**智能提醒系统：**
+- 预订确认后的关键节点提醒
+- 入住前24小时的最终确认
+- 个性化的贴心服务提醒
+
+## 价格驱动与调整策略
+
+### 价格变动基本原则
+1. **市场导向：** 根据供需关系灵活调价
+2. **透明公正：** 价格调整逻辑清晰可预期
+3. **用户友好：** 已预订用户价格锁定不变
+
+### 价格提高策略
+**触发条件：**
+- 预订量超过预期阈值
+- 竞争对手价格上涨
+- 特殊事件导致需求激增
+
+**执行机制：**
+- 渐进式调价，避免剧烈波动
+- 保护已预订用户的价格权益
+- 通过奖励机制补偿用户体验
+
+### 价格降低与极端低价策略
+**应用场景：**
+- 入住率低于预期目标
+- 竞争激烈需要抢占市场
+- 库存积压需要快速消化
+
+**策略要点：**
+- 新用户享受降价优惠
+- 老用户通过奖励获得等值补偿
+- 维护品牌价值，避免恶性竞争
+
+## 响应服务策略
+
+### 响应机制
+1. **智能客服：** AI驱动的24小时服务
+2. **人工升级：** 复杂问题的专业处理
+3. **主动关怀：** 基于用户行为的主动服务
+
+### 价值创造设计
+**服务增值：**
+- 个性化推荐与定制服务
+- 会员专属权益与体验
+- 生态合作伙伴的增值服务
+
+## 商业价值分析
+
+### 酒店收益提升
+1. **定价灵活性：** 完全的市场化定价能力
+2. **信号质量：** 高质量的预订数据支持决策
+3. **运营效率：** 减少客服成本和处理复杂度
+4. **品牌价值：** 建立专业可靠的品牌形象
+
+### 消费者体验优化
+1. **价格确定性：** 消除价格焦虑和比价压力
+2. **惊喜体验：** 通过奖励机制创造正向情感
+3. **服务品质：** 更专业的服务和更好的体验
+4. **信任建立：** 基于透明机制的长期信任关系
+
+### 不同用户类型的体验对比
+
+**价格敏感型用户：**
+- 现状：频繁比价，反复取消重订
+- 优化后：享受确定价格，获得履约奖励
+
+**便利导向型用户：**
+- 现状：担心价格变化，体验焦虑
+- 优化后：价格锁定，专注服务体验
+
+**忠诚度用户：**
+- 现状：享受会员权益，但仍需关注价格
+- 优化后：获得更多奖励，体验显著提升
+
+## 核心思想与推广理念
+
+### 流程再造
+深刻理解"安心订"只是治标不治本的补丁，选择从根本上重塑整个预订流程。
+
+### 系统思考
+按照从定价引擎到预订合约，再到运营响应的清晰链条构建系统，避免各环节互相掣肘。
+
+### 简化体验
+酒店通过智慧的系统设计，在内部消化市场的不确定性，向顾客提供极致简单的决策体验。
+
+### 正向激励
+以正向的、人性化的激励和响应，取代冰冷的、机械的规则与惩罚。
+
+### 敏捷响应
+用响应代替预测，灵活应对市场变化，而非试图预测所有可能性。
+
+### 设计势能
+好的商业设计本身蕴含强大势能，引导市场与用户朝向对各方都有利的方向发展。
+
+---
+
+**作者：** Izumi.屈源  
+**版权：** © 2025 版权所有`;
+        
+        // 改进的Markdown渲染函数
+        function renderMarkdown(text) {
+            // 先按行分割处理
+            const lines = text.split('\n');
+            let html = '';
+            let inList = false;
+            let listType = null; // 'ul' or 'ol'
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                const trimmedLine = line.trim();
+                
+                // 空行处理
+                if (trimmedLine === '') {
+                    if (inList) {
+                        html += `</${listType}>\n`;
+                        inList = false;
+                        listType = null;
+                    }
+                    html += '<br>\n';
+                    continue;
+                }
+                
+                // 标题处理
+                if (trimmedLine.startsWith('### ')) {
+                    if (inList) {
+                        html += `</${listType}>\n`;
+                        inList = false;
+                        listType = null;
+                    }
+                    html += `<h3 class="text-xl font-medium text-gray-800 dark:text-gray-200 mb-2 mt-4">${trimmedLine.substring(4)}</h3>\n`;
+                } else if (trimmedLine.startsWith('## ')) {
+                    if (inList) {
+                        html += `</${listType}>\n`;
+                        inList = false;
+                        listType = null;
+                    }
+                    html += `<h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-3 mt-6">${trimmedLine.substring(3)}</h2>\n`;
+                } else if (trimmedLine.startsWith('# ')) {
+                    if (inList) {
+                        html += `</${listType}>\n`;
+                        inList = false;
+                        listType = null;
+                    }
+                    html += `<h1 class="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-4">${trimmedLine.substring(2)}</h1>\n`;
+                }
+                // 分割线处理
+                else if (trimmedLine === '---') {
+                    if (inList) {
+                        html += `</${listType}>\n`;
+                        inList = false;
+                        listType = null;
+                    }
+                    html += '<hr class="my-6 border-gray-300 dark:border-gray-600">\n';
+                }
+                // 无序列表处理
+                else if (trimmedLine.startsWith('- ')) {
+                    if (!inList || listType !== 'ul') {
+                        if (inList) html += `</${listType}>\n`;
+                        html += '<ul class="list-disc list-inside mb-4 space-y-1">\n';
+                        inList = true;
+                        listType = 'ul';
+                    }
+                    const content = trimmedLine.substring(2);
+                    html += `<li class="ml-4">${processBoldText(content)}</li>\n`;
+                }
+                // 有序列表处理
+                else if (/^\d+\. /.test(trimmedLine)) {
+                    if (!inList || listType !== 'ol') {
+                        if (inList) html += `</${listType}>\n`;
+                        html += '<ol class="list-decimal list-inside mb-4 space-y-1">\n';
+                        inList = true;
+                        listType = 'ol';
+                    }
+                    const content = trimmedLine.replace(/^\d+\. /, '');
+                    html += `<li class="ml-4">${processBoldText(content)}</li>\n`;
+                }
+                // 普通段落处理
+                else {
+                    if (inList) {
+                        html += `</${listType}>\n`;
+                        inList = false;
+                        listType = null;
+                    }
+                    html += `<p class="mb-4 leading-relaxed">${processBoldText(trimmedLine)}</p>\n`;
+                }
+            }
+            
+            // 如果最后还在列表中，需要关闭
+            if (inList) {
+                html += `</${listType}>\n`;
+            }
+            
+            return html;
+        }
+        
+        // 处理粗体文本
+        function processBoldText(text) {
+            return text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-gray-900 dark:text-gray-100">$1</strong>');
+        }
+        
+        // 打开文档模态框
+        docToggle.addEventListener('click', function() {
+            markdownContent.innerHTML = renderMarkdown(markdownText);
+            docModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        });
+        
+        // 关闭文档模态框
+        closeDocModal.addEventListener('click', function() {
+            docModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        });
+        
+        // 点击模态框背景关闭
+        docModal.addEventListener('click', function(e) {
+            if (e.target === docModal) {
+                docModal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        });
+        
+        // ESC键关闭模态框
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !docModal.classList.contains('hidden')) {
+                docModal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        });
+    </script>
+</body>
+</html>
