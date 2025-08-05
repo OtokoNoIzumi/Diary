@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人时间管理周度分析报告 - 2025年8月第1周</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a'
+                        }
+                    },
+                    fontFamily: {
+                        'sans': ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .fade-in {
+            animation: fadeIn 0.6s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .dark .hover-lift:hover {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .dark .gradient-bg {
+            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <!-- 主题切换按钮 -->
+    <button id="theme-toggle" class="fixed top-4 right-4 z-50 p-3 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110">
+        <i class="fas fa-sun text-yellow-500 dark:hidden"></i>
+        <i class="fas fa-moon text-blue-400 hidden dark:block"></i>
+    </button>
+
+    <!-- 头部区域 -->
+    <header class="gradient-bg text-white py-16">
+        <div class="container mx-auto px-6">
+            <div class="text-center fade-in">
+                <h1 class="text-4xl md:text-6xl font-bold mb-4">
+                    <i class="fas fa-chart-line mr-4"></i>
+                    个人时间管理周度分析
+                </h1>
+                <p class="text-xl md:text-2xl opacity-90 mb-2">2025年8月第1周 (7/28 - 8/3)</p>
+                <p class="text-lg opacity-75">深度洞察 · 数据驱动 · 持续优化</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="container mx-auto px-6 py-12">
+
+        <!-- 音频播放器 -->
+        <section id="audio-section" class="py-12 bg-gray-100 dark:bg-gray-800">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-6">
+                    <div class="text-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">
+                            <i class="fas fa-headphones text-primary-600 mr-2"></i>
+                            个人时间管理周度总结音频解读
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-400">豆包AI博客——增加了自言自语和咳嗽的真实感，但主语丢失所以体验还是很怪哈哈。</p>
+                    </div>
+
+                    <!-- 隐藏原生音频控件但保留功能 -->
+                    <audio id="audioPlayer" class="hidden" preload="metadata">
+                        <source src="media/个人时间管理周度总结.ogg" type="audio/ogg">
+                        您的浏览器不支持音频播放器
+                    </audio>
+
+                    <!-- 播放进度条 -->
+                    <div class="mb-4">
+                        <div id="progressContainer" class="relative h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden cursor-pointer">
+                            <!-- 进度条 -->
+                            <div id="progressBar" class="absolute h-full bg-primary-500 w-0 rounded-full"></div>
+                            <!-- 拖动手柄 -->
+                            <div id="progressHandle" class="absolute h-4 w-4 bg-primary-500 rounded-full border-2 border-white dark:border-gray-800 top-1/2 transform -translate-y-1/2 -translate-x-1/2" style="left: 0%"></div>
+                        </div>
+                        <!-- 时间标记 -->
+                        <div class="flex justify-between mt-2">
+                            <span id="currentTime" class="text-sm text-gray-500 dark:text-gray-400">0:00</span>
+                            <span id="duration" class="text-sm text-gray-500 dark:text-gray-400">--:--</span>
+                        </div>
+                    </div>
+
+                    <!-- 控制按钮 -->
+                    <div class="flex justify-between items-center">
+                        <!-- 播放速度控制 -->
+                        <button id="playbackSpeed" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 bg-gray-200 dark:bg-gray-700 px-3 py-2 rounded-lg transition-colors">
+                            <span class="text-sm font-medium">1X</span>
+                        </button>
+
+                        <div class="flex space-x-6 items-center">
+                            <!-- 后退10秒 -->
+                            <button id="rewind10" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 relative transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.333 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z" />
+                                </svg>
+                                <span class="absolute text-xs font-bold bottom-0 right-0 bg-gray-200 dark:bg-gray-700 rounded-full w-5 h-5 flex items-center justify-center">10</span>
+                            </button>
+
+                            <!-- 播放/暂停按钮 -->
+                            <button id="playPauseBtn" class="text-white bg-primary-500 hover:bg-primary-600 p-3 rounded-full transition-colors">
+                                <svg id="playIcon" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <svg id="pauseIcon" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </button>
+
+                            <!-- 前进10秒 -->
+                            <button id="forward10" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 relative transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.933 12.8a1 1 0 000-1.6L6.6 7.2A1 1 0 005 8v8a1 1 0 001.6.8l5.333-4zM19.933 12.8a1 1 0 000-1.6l-5.333-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.333-4z" />
+                                </svg>
+                                <span class="absolute text-xs font-bold bottom-0 right-0 bg-gray-200 dark:bg-gray-700 rounded-full w-5 h-5 flex items-center justify-center">10</span>
+                            </button>
+                        </div>
+
+                        <!-- 空白区域保持布局平衡 -->
+                        <div class="w-16"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 悬浮按钮，用于呼出迷你播放器 -->
+        <button id="floatingShowButton" class="fixed bottom-6 right-6 z-50 bg-primary-500 text-white rounded-full p-3 shadow-lg hover:bg-primary-600 transition-all duration-300 transform scale-0 opacity-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12 6-12 7" />
+            </svg>
+        </button>
+
+        <!-- 固定在底部的迷你播放控制器 -->
+        <div id="miniPlayer" class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-md transform translate-y-full transition-transform duration-300 z-50 border-t border-gray-200 dark:border-gray-700">
+            <div class="container mx-auto max-w-6xl px-4 py-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <button id="miniPlayPauseBtn" class="mr-3 bg-gray-200 dark:bg-gray-700 p-2 rounded-full flex-shrink-0">
+                            <svg id="miniPlayIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <svg id="miniPauseIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </button>
+                        <div class="text-sm">
+                            <div class="font-medium truncate max-w-[150px] sm:max-w-xs">个人时间管理周度总结</div>
+                            <div id="miniTimeDisplay" class="text-xs text-gray-500 dark:text-gray-400">0:00 / --:--</div>
+                        </div>
+                    </div>
+
+                    <div class="flex-grow mx-4 hidden sm:block">
+                        <div id="miniProgressContainer" class="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full overflow-hidden cursor-pointer">
+                            <div id="miniProgressBar" class="bg-primary-500 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex space-x-3 flex-shrink-0">
+                        <button id="miniRewind10" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0019 16V8a1 1 0 00-1.6-.8l-5.333 4zM4.066 11.2a1 1 0 000 1.6l5.334 4A1 1 0 0011 16V8a1 1 0 00-1.6-.8l-5.334 4z" />
+                            </svg>
+                        </button>
+                        <button id="miniForward10" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.933 12.8a1 1 0 000-1.6L6.6 7.2A1 1 0 005 8v8a1 1 0 001.6.8l5.333-4zM19.933 12.8a1 1 0 000-1.6l-5.333-4A1 1 0 0013 8v8a1 1 0 001.6.8l5.333-4z" />
+                            </svg>
+                        </button>
+                        <button id="miniSpeedBtn" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 px-2 bg-gray-200 dark:bg-gray-700 rounded">
+                            <span class="text-xs font-medium">1X</span>
+                        </button>
+                        <button id="toggleMiniPlayer" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 移动端专用进度条，只在移动端显示 -->
+                <div class="mt-2 sm:hidden">
+                    <div id="mobileProgressContainer" class="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full overflow-hidden cursor-pointer">
+                        <div id="mobileProgressBar" class="bg-primary-500 h-2 rounded-full" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 核心发现概览 -->
+        <section class="mb-16 fade-in">
+            <h2 class="text-3xl font-bold mb-8 text-center">
+                <i class="fas fa-lightbulb text-yellow-500 mr-3"></i>
+                本周核心发现
+            </h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- 工作模式洞察 -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover-lift">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-brain text-blue-600 dark:text-blue-400 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold">工作模式洞察</h3>
+                    </div>
+                    <ul class="space-y-3 text-gray-600 dark:text-gray-300">
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                            <span><strong>深度工作能力强</strong>：单次最长811分钟（13.5小时）</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-exclamation-triangle text-yellow-500 mr-2 mt-1"></i>
+                            <span><strong>工作时间分布不均</strong>：集中在7/28-7/31</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-chart-line text-blue-500 mr-2 mt-1"></i>
+                            <span><strong>总强度很高</strong>：一周投入近52小时</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 生活节奏特征 -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover-lift">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-heart text-green-600 dark:text-green-400 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold">生活节奏特征</h3>
+                    </div>
+                    <ul class="space-y-3 text-gray-600 dark:text-gray-300">
+                        <li class="flex items-start">
+                            <i class="fas fa-bed text-purple-500 mr-2 mt-1"></i>
+                            <span><strong>睡眠模式不稳定</strong>：9次睡眠，时长差异巨大</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-utensils text-orange-500 mr-2 mt-1"></i>
+                            <span><strong>饮食规律性强</strong>：正餐平均34分钟</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-user-check text-blue-500 mr-2 mt-1"></i>
+                            <span><strong>个人护理时间合理</strong>：基本需求得到满足</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 行为模式识别 -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover-lift">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-search text-purple-600 dark:text-purple-400 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold">行为模式识别</h3>
+                    </div>
+                    <ul class="space-y-3 text-gray-600 dark:text-gray-300">
+                        <li class="flex items-start">
+                            <i class="fas fa-layer-group text-indigo-500 mr-2 mt-1"></i>
+                            <span><strong>批处理倾向</strong>：物资管理集中执行</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-smile text-yellow-500 mr-2 mt-1"></i>
+                            <span><strong>情绪化记录</strong>：对状态敏感度高</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-flask text-green-500 mr-2 mt-1"></i>
+                            <span><strong>实验性行为</strong>：显示自我观察意识</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 时间分配可视化 -->
+        <section class="mb-16 fade-in">
+            <h2 class="text-3xl font-bold mb-8 text-center">
+                <i class="fas fa-pie-chart text-blue-500 mr-3"></i>
+                时间分配结构分析
+            </h2>
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg">
+                <div class="grid lg:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <canvas id="timeChart" width="400" height="400"></canvas>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-4 h-4 bg-blue-500 rounded mr-3"></div>
+                                <span>休息睡眠</span>
+                            </div>
+                            <span class="font-semibold">30.9% (3556分钟)</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-4 h-4 bg-green-500 rounded mr-3"></div>
+                                <span>工作与创作</span>
+                            </div>
+                            <span class="font-semibold">26.8% (3084分钟)</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-4 h-4 bg-gray-400 rounded mr-3"></div>
+                                <span>无记录</span>
+                            </div>
+                            <span class="font-semibold">19.2% (2207分钟)</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-4 h-4 bg-yellow-500 rounded mr-3"></div>
+                                <span>其他</span>
+                            </div>
+                            <span class="font-semibold">6.6% (755分钟)</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-4 h-4 bg-purple-500 rounded mr-3"></div>
+                                <span>家务管理</span>
+                            </div>
+                            <span class="font-semibold">5.0% (571分钟)</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-4 h-4 bg-orange-500 rounded mr-3"></div>
+                                <span>饮食</span>
+                            </div>
+                            <span class="font-semibold">4.9% (569分钟)</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-4 h-4 bg-red-500 rounded mr-3"></div>
+                                <span>个人护理</span>
+                            </div>
+                            <span class="font-semibold">4.8% (557分钟)</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="w-4 h-4 bg-pink-500 rounded mr-3"></div>
+                                <span>娱乐放松</span>
+                            </div>
+                            <span class="font-semibold">1.9% (221分钟)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 异常值分析 -->
+        <section class="mb-16 fade-in">
+            <h2 class="text-3xl font-bold mb-8 text-center">
+                <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
+                异常值分析与关键洞察
+            </h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- 深度工作狂模式 -->
+                <div class="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 rounded-2xl p-6 border border-red-200 dark:border-red-800">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-fire text-red-500 text-2xl mr-3"></i>
+                        <h3 class="text-xl font-semibold text-red-800 dark:text-red-300">深度工作狂模式</h3>
+                    </div>
+                    <p class="text-red-700 dark:text-red-300 mb-3">7/29单次工作811分钟，显示极强专注力但可能影响生活平衡</p>
+                    <div class="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3">
+                        <p class="text-sm text-red-600 dark:text-red-400">⚠️ 工作时间极不规律，可能影响社交和健康</p>
+                    </div>
+                </div>
+
+                <!-- 睡眠补偿模式 -->
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-2xl p-6 border border-blue-200 dark:border-blue-800">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-moon text-blue-500 text-2xl mr-3"></i>
+                        <h3 class="text-xl font-semibold text-blue-800 dark:text-blue-300">睡眠补偿模式</h3>
+                    </div>
+                    <p class="text-blue-700 dark:text-blue-300 mb-3">多次小睡（57-204分钟），提示夜间睡眠可能不足</p>
+                    <div class="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3">
+                        <p class="text-sm text-blue-600 dark:text-blue-400">💡 工作太专注导致睡眠推迟，然后用长睡眠补偿</p>
+                    </div>
+                </div>
+
+                <!-- 社交缺失警示 -->
+                <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 rounded-2xl p-6 border border-yellow-200 dark:border-yellow-800">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-users text-yellow-500 text-2xl mr-3"></i>
+                        <h3 class="text-xl font-semibold text-yellow-800 dark:text-yellow-300">社交缺失警示</h3>
+                    </div>
+                    <p class="text-yellow-700 dark:text-yellow-300 mb-3">数据中几乎没有社交活动记录</p>
+                    <div class="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3">
+                        <p class="text-sm text-yellow-600 dark:text-yellow-400">⚠️ 这在心理健康上是一个警示信号</p>
+                    </div>
+                </div>
+
+                <!-- 伪休息事件 -->
+                <div class="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-2xl p-6 border border-purple-200 dark:border-purple-800">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-play-circle text-purple-500 text-2xl mr-3"></i>
+                        <h3 class="text-xl font-semibold text-purple-800 dark:text-purple-300">伪休息事件分析</h3>
+                    </div>
+                    <p class="text-purple-700 dark:text-purple-300 mb-3">07-30 12:15 计划小睡但刷了17分钟B站</p>
+                    <div class="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3">
+                        <p class="text-sm text-purple-600 dark:text-purple-400">💭 疲劳时倾向用娱乐替代真正的生理休息</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 行为模式框架 -->
+        <section class="mb-16 fade-in">
+            <h2 class="text-3xl font-bold mb-8 text-center">
+                <i class="fas fa-cogs text-purple-500 mr-3"></i>
+                行为模式框架
+            </h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- 效率型指标 -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover-lift">
+                    <div class="text-center mb-4">
+                        <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-tachometer-alt text-blue-600 dark:text-blue-400 text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold">效率型指标</h3>
+                    </div>
+                    <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                        <li>• 专注力指数</li>
+                        <li>• 节奏稳定性</li>
+                        <li>• 多任务切换频率</li>
+                    </ul>
+                </div>
+
+                <!-- 健康型指标 -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover-lift">
+                    <div class="text-center mb-4">
+                        <div class="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-heartbeat text-green-600 dark:text-green-400 text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold">健康型指标</h3>
+                    </div>
+                    <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                        <li>• 睡眠质量评估</li>
+                        <li>• 饮食规律性</li>
+                        <li>• 运动恢复比例</li>
+                    </ul>
+                </div>
+
+                <!-- 成长型指标 -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover-lift">
+                    <div class="text-center mb-4">
+                        <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-seedling text-purple-600 dark:text-purple-400 text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold">成长型指标</h3>
+                    </div>
+                    <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                        <li>• 实验行为频次</li>
+                        <li>• 问题解决速度</li>
+                        <li>• 自我观察深度</li>
+                    </ul>
+                </div>
+
+                <!-- 心理认知特征 -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover-lift">
+                    <div class="text-center mb-4">
+                        <div class="w-16 h-16 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fas fa-brain text-yellow-600 dark:text-yellow-400 text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold">心理认知特征</h3>
+                    </div>
+                    <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                        <li>• 元认知水平：远超常人</li>
+                        <li>• 完美主义倾向：显著</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 本周改进建议与行动计划 -->
+        <section class="mb-16 fade-in">
+            <h2 class="text-3xl font-bold mb-8 text-center">
+                <i class="fas fa-tasks text-blue-500 mr-3"></i>
+                本周改进建议与行动计划
+            </h2>
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg mb-8">
+                <div class="text-center mb-6">
+                    <p class="text-gray-600 dark:text-gray-300">基于本周数据分析，以下是针对性的改进建议。请根据个人情况选择接受或拒绝各项建议。</p>
+                </div>
+            </div>
+            <div class="space-y-6">
+                <!-- 建议1 -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover-lift">
+                    <div class="flex items-start mb-4">
+                        <input type="checkbox" id="suggestion1" checked class="mt-1 mr-4 w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <div class="flex-1">
+                            <label for="suggestion1" class="text-lg font-semibold cursor-pointer">建立工作时段分割机制</label>
+                            <div class="mt-2">
+                                <p class="text-gray-600 dark:text-gray-300 mb-2"><strong>理由：</strong>单次811分钟工作虽展现专注力，但可能降低整体效率和生活质量</p>
+                                <p class="text-gray-600 dark:text-gray-300 mb-2"><strong>具体建议：</strong>主动安排每小时1次的拉伸放松，如果深度专注则最多2小时</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400"><strong>预期效果：</strong>提高工作质量，减少疲劳累积，改善睡眠规律性</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 建议2 -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover-lift">
+                    <div class="flex items-start mb-4">
+                        <input type="checkbox" id="suggestion2" class="mt-1 mr-4 w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <div class="flex-1">
+                            <label for="suggestion2" class="text-lg font-semibold cursor-pointer">引入"能量状态"记录维度</label>
+                            <div class="mt-2">
+                                <p class="text-gray-600 dark:text-gray-300 mb-2"><strong>理由：</strong>从备注看你对疲劳、饥饿等状态敏感，但缺乏量化跟踪</p>
+                                <p class="text-gray-600 dark:text-gray-300 mb-2"><strong>具体建议：</strong>每次活动开始时记录精力状态（1-5分），结束时记录变化</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400"><strong>预期效果：</strong>发现个人能量管理规律，优化活动安排时机</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 建议3 -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover-lift">
+                    <div class="flex items-start mb-4">
+                        <input type="checkbox" id="suggestion3" checked class="mt-1 mr-4 w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <div class="flex-1">
+                            <label for="suggestion3" class="text-lg font-semibold cursor-pointer">设计"生活实验日志"</label>
+                            <div class="mt-2">
+                                <p class="text-gray-600 dark:text-gray-300 mb-2"><strong>理由：</strong>你已有实验意识（"试试啥也不干的时间"），但缺乏系统性</p>
+                                <p class="text-gray-600 dark:text-gray-300 mb-2"><strong>具体建议：</strong>每周设定2-3个小实验，记录假设、执行、结果和感受</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400"><strong>预期效果：</strong>加速个人最优模式探索，提高自我认知精度</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 建议4 -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover-lift">
+                    <div class="flex items-start mb-4">
+                        <input type="checkbox" id="suggestion4" class="mt-1 mr-4 w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <div class="flex-1">
+                            <label for="suggestion4" class="text-lg font-semibold cursor-pointer">建立"恢复时间"缓冲机制</label>
+                            <div class="mt-2">
+                                <p class="text-gray-600 dark:text-gray-300 mb-2"><strong>理由：</strong>高强度工作后缺乏主动恢复，依赖睡眠补偿效率低</p>
+                                <p class="text-gray-600 dark:text-gray-300 mb-2"><strong>具体建议：</strong>每次长时间工作后强制安排30-60分钟恢复活动（散步、拉伸等）</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400"><strong>预期效果：</strong>减少疲劳累积，提高后续活动质量，改善睡眠</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 建议5 -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover-lift">
+                    <div class="flex items-start mb-4">
+                        <input type="checkbox" id="suggestion5" class="mt-1 mr-4 w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <div class="flex-1">
+                            <label for="suggestion5" class="text-lg font-semibold cursor-pointer">优化物资管理的批处理策略</label>
+                            <div class="mt-2">
+                                <p class="text-gray-600 dark:text-gray-300 mb-2"><strong>理由：</strong>8/1集中409分钟整理虽高效，但可能造成单日疲劳峰值</p>
+                                <p class="text-gray-600 dark:text-gray-300 mb-2"><strong>具体建议：</strong>将大型整理任务分解为多个小块，分散到不同日期</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400"><strong>预期效果：</strong>减少单日负荷，提高整理质量，避免疲劳影响其他活动</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 优先级行动计划 -->
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 border border-blue-200 dark:border-blue-800">
+                    <h3 class="text-xl font-semibold mb-4 text-blue-800 dark:text-blue-300">
+                        <i class="fas fa-rocket mr-2"></i>
+                        优先级行动计划
+                    </h3>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="bg-white/50 dark:bg-gray-800/50 rounded-lg p-4">
+                            <h4 class="font-semibold text-red-600 dark:text-red-400 mb-2">🔥 优先级1：睡眠优化</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">建立稳定的睡眠-觉醒节律，设定固定睡眠时间窗口</p>
+                        </div>
+                        <div class="bg-white/50 dark:bg-gray-800/50 rounded-lg p-4">
+                            <h4 class="font-semibold text-orange-600 dark:text-orange-400 mb-2">⚡ 优先级2：工作节奏调整</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">设置工作时段上限，引入强制休息机制</p>
+                        </div>
+                        <div class="bg-white/50 dark:bg-gray-800/50 rounded-lg p-4">
+                            <h4 class="font-semibold text-green-600 dark:text-green-400 mb-2">🌱 优先级3：生活实验延续</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">继续探索个人最优生活模式，平衡完美主义倾向</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-900 dark:bg-black text-white py-12">
+        <div class="container mx-auto px-6">
+            <div class="text-center">
+                <div class="flex justify-center space-x-6 mb-6">
+                    <a href="https://otokonoizumi.github.io" target="_blank" class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                        <span>GitHub</span>
+                    </a>
+                    <a href="https://space.bilibili.com/82205" target="_blank" class="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+                        <i class="fas fa-video text-xl"></i>
+                        <span>Bilibili</span>
+                    </a>
+                </div>
+                <div class="text-gray-500 text-sm">
+                    <p>&copy; 2025 Izumi.屈源 数据驱动的个人成长探索者 保留所有权利.</p>
+                    <p class="mt-1">基于个人时间管理数据的深度分析与可视化</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 音频播放器功能
+        const audioPlayer = document.getElementById('audioPlayer');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const playIcon = document.getElementById('playIcon');
+        const pauseIcon = document.getElementById('pauseIcon');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const progressHandle = document.getElementById('progressHandle');
+        const currentTimeSpan = document.getElementById('currentTime');
+        const durationSpan = document.getElementById('duration');
+        const playbackSpeedBtn = document.getElementById('playbackSpeed');
+        const rewind10Btn = document.getElementById('rewind10');
+        const forward10Btn = document.getElementById('forward10');
+        
+        // 迷你播放器元素
+        const miniPlayer = document.getElementById('miniPlayer');
+        const miniPlayPauseBtn = document.getElementById('miniPlayPauseBtn');
+        const miniPlayIcon = document.getElementById('miniPlayIcon');
+        const miniPauseIcon = document.getElementById('miniPauseIcon');
+        const miniProgressContainer = document.getElementById('miniProgressContainer');
+        const miniProgressBar = document.getElementById('miniProgressBar');
+        const mobileProgressContainer = document.getElementById('mobileProgressContainer');
+        const mobileProgressBar = document.getElementById('mobileProgressBar');
+        const miniTimeDisplay = document.getElementById('miniTimeDisplay');
+        const miniRewind10 = document.getElementById('miniRewind10');
+        const miniForward10 = document.getElementById('miniForward10');
+        const miniSpeedBtn = document.getElementById('miniSpeedBtn');
+        const toggleMiniPlayer = document.getElementById('toggleMiniPlayer');
+        const floatingShowButton = document.getElementById('floatingShowButton');
+        
+        let playbackSpeeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
+        let currentSpeedIndex = 2; // 默认1x速度
+        let isDragging = false;
+        
+        // 格式化时间
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = Math.floor(seconds % 60);
+            return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+        
+        // 更新进度条
+        function updateProgress() {
+            if (!isDragging && audioPlayer.duration) {
+                const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+                progressBar.style.width = progress + '%';
+                progressHandle.style.left = progress + '%';
+                miniProgressBar.style.width = progress + '%';
+                mobileProgressBar.style.width = progress + '%';
+                
+                currentTimeSpan.textContent = formatTime(audioPlayer.currentTime);
+                const miniTime = `${formatTime(audioPlayer.currentTime)} / ${formatTime(audioPlayer.duration)}`;
+                miniTimeDisplay.textContent = miniTime;
+            }
+        }
+        
+        // 更新播放/暂停图标
+        function updatePlayPauseIcons(isPlaying) {
+            if (isPlaying) {
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+                miniPlayIcon.classList.add('hidden');
+                miniPauseIcon.classList.remove('hidden');
+            } else {
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+                miniPlayIcon.classList.remove('hidden');
+                miniPauseIcon.classList.add('hidden');
+            }
+        }
+        
+        // 播放/暂停功能
+        function togglePlayPause() {
+            if (audioPlayer.paused) {
+                audioPlayer.play();
+                updatePlayPauseIcons(true);
+            } else {
+                audioPlayer.pause();
+                updatePlayPauseIcons(false);
+            }
+        }
+        
+        // 设置进度
+        function setProgress(e, container) {
+            const rect = container.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const width = rect.width;
+            const percentage = (clickX / width) * 100;
+            const newTime = (percentage / 100) * audioPlayer.duration;
+            
+            if (newTime >= 0 && newTime <= audioPlayer.duration) {
+                audioPlayer.currentTime = newTime;
+            }
+        }
+        
+        // 显示/隐藏迷你播放器
+        function showMiniPlayer() {
+            miniPlayer.classList.remove('translate-y-full');
+            floatingShowButton.classList.add('scale-0', 'opacity-0');
+        }
+        
+        function hideMiniPlayer() {
+            miniPlayer.classList.add('translate-y-full');
+            floatingShowButton.classList.remove('scale-0', 'opacity-0');
+        }
+        
+        // 事件监听器
+        audioPlayer.addEventListener('loadedmetadata', () => {
+            durationSpan.textContent = formatTime(audioPlayer.duration);
+            const miniTime = `${formatTime(audioPlayer.currentTime)} / ${formatTime(audioPlayer.duration)}`;
+            miniTimeDisplay.textContent = miniTime;
+        });
+        
+        audioPlayer.addEventListener('timeupdate', updateProgress);
+        
+        audioPlayer.addEventListener('ended', () => {
+            updatePlayPauseIcons(false);
+        });
+        
+        // 主播放器控制
+        playPauseBtn.addEventListener('click', togglePlayPause);
+        
+        // 迷你播放器控制
+        miniPlayPauseBtn.addEventListener('click', togglePlayPause);
+        
+        // 进度条点击
+        progressContainer.addEventListener('click', (e) => setProgress(e, progressContainer));
+        miniProgressContainer.addEventListener('click', (e) => setProgress(e, miniProgressContainer));
+        mobileProgressContainer.addEventListener('click', (e) => setProgress(e, mobileProgressContainer));
+        
+        // 播放速度控制
+        function updatePlaybackSpeed() {
+            const speed = playbackSpeeds[currentSpeedIndex];
+            audioPlayer.playbackRate = speed;
+            const speedText = speed === 1 ? '1X' : speed + 'X';
+            playbackSpeedBtn.querySelector('span').textContent = speedText;
+            miniSpeedBtn.querySelector('span').textContent = speedText;
+        }
+        
+        playbackSpeedBtn.addEventListener('click', () => {
+            currentSpeedIndex = (currentSpeedIndex + 1) % playbackSpeeds.length;
+            updatePlaybackSpeed();
+        });
+        
+        miniSpeedBtn.addEventListener('click', () => {
+            currentSpeedIndex = (currentSpeedIndex + 1) % playbackSpeeds.length;
+            updatePlaybackSpeed();
+        });
+        
+        // 快进/快退
+        rewind10Btn.addEventListener('click', () => {
+            audioPlayer.currentTime = Math.max(0, audioPlayer.currentTime - 10);
+        });
+        
+        forward10Btn.addEventListener('click', () => {
+            audioPlayer.currentTime = Math.min(audioPlayer.duration, audioPlayer.currentTime + 10);
+        });
+        
+        miniRewind10.addEventListener('click', () => {
+            audioPlayer.currentTime = Math.max(0, audioPlayer.currentTime - 10);
+        });
+        
+        miniForward10.addEventListener('click', () => {
+            audioPlayer.currentTime = Math.min(audioPlayer.duration, audioPlayer.currentTime + 10);
+        });
+        
+        // 迷你播放器切换
+        toggleMiniPlayer.addEventListener('click', hideMiniPlayer);
+        floatingShowButton.addEventListener('click', showMiniPlayer);
+        
+        // 滚动时显示迷你播放器
+        let audioSectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting && !audioPlayer.paused) {
+                    showMiniPlayer();
+                } else if (entry.isIntersecting) {
+                    hideMiniPlayer();
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        audioSectionObserver.observe(document.getElementById('audio-section'));
+        
+        // 进度条拖拽功能
+        let startDrag = (e) => {
+            isDragging = true;
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', endDrag);
+            drag(e);
+        };
+        
+        let drag = (e) => {
+            if (isDragging) {
+                setProgress(e, progressContainer);
+            }
+        };
+        
+        let endDrag = () => {
+            isDragging = false;
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', endDrag);
+        };
+        
+        progressHandle.addEventListener('mousedown', startDrag);
+        
+        // 主题切换功能
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        
+        // 检查系统主题偏好
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const savedTheme = localStorage.getItem('theme');
+        
+        if (savedTheme) {
+            html.classList.toggle('dark', savedTheme === 'dark');
+        } else {
+            html.classList.toggle('dark', prefersDark);
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+        });
+        
+        // 时间分配饼图
+        const ctx = document.getElementById('timeChart').getContext('2d');
+        const isDark = html.classList.contains('dark');
+        
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['休息睡眠', '工作与创作', '无记录', '其他', '家务管理', '饮食', '个人护理', '娱乐放松'],
+                datasets: [{
+                    data: [30.9, 26.8, 19.2, 6.6, 5.0, 4.9, 4.8, 1.9],
+                    backgroundColor: [
+                        '#3B82F6', // 蓝色
+                        '#10B981', // 绿色
+                        '#6B7280', // 灰色
+                        '#F59E0B', // 黄色
+                        '#8B5CF6', // 紫色
+                        '#F97316', // 橙色
+                        '#EF4444', // 红色
+                        '#EC4899'  // 粉色
+                    ],
+                    borderWidth: 2,
+                    borderColor: isDark ? '#1F2937' : '#FFFFFF'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // 滚动动画
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        // 观察所有需要动画的元素
+        document.querySelectorAll('.fade-in').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
