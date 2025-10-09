@@ -6,7 +6,7 @@
 - 保持原文件的核心信息，但以更易读、可视化的方式呈现
 - 在页面底部添加作者信息区域，包含：
     - 作者姓名: [Izumi.屈源]
-    - 社交媒体链接: 至少包含Github：https://otokonoizumi.github.io 和 Bilibili https://space.bilibili.com/82205
+    - 社交媒体链接: 至少包含Github：https://otokonoizumi.github.io 、 Bilibili https://space.bilibili.com/82205 和推特 https://x.com/Fisheam
     - 版权信息和年份(当前是2025年)
 
 ## 设计风格
