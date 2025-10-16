@@ -681,18 +681,38 @@
                                 <div class="flex items-start">
                                     <span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold text-white mr-3 mt-0.5" style="background: var(--accent-gradient);">4</span>
                                     <div>
-                                        <h5 class="font-semibold mb-2">Spicy 模式与参数注入</h5>
-                                        <p class="text-sm mb-2" style="color: var(--text-secondary);">
-                                            Spicy 模式已经下线且在找不到，且 <code class="px-1 py-0.5 rounded text-xs" style="background-color: var(--bg-tertiary);">grok.com/rest/media/post/list</code> 里也没找到，但可以通过注入参数直接覆盖默认的模式。
+                                        <h5 class="font-semibold mb-2">模式参数与注入限制</h5>
+                                        <p class="text-sm mb-3" style="color: var(--text-secondary);">
+                                            目前发现的模式共有5种，其中选项名称与实际参数存在差异：
                                         </p>
-                                        <div class="p-3 rounded" style="background-color: var(--bg-tertiary);">
-                                            <p class="text-xs font-mono" style="color: var(--text-primary);">
-                                                --mode=extremly-crazy
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                                            <div class="p-3 rounded" style="background-color: var(--bg-tertiary);">
+                                                <p class="text-xs font-mono mb-1" style="color: var(--text-primary);">--mode=extremely-spicy-or-crazy</p>
+                                                <p class="text-xs" style="color: var(--text-secondary);">Spicy 模式（极少数人可用）</p>
+                                            </div>
+                                            <div class="p-3 rounded" style="background-color: var(--bg-tertiary);">
+                                                <p class="text-xs font-mono mb-1" style="color: var(--text-primary);">--mode=extremly-crazy</p>
+                                                <p class="text-xs" style="color: var(--text-secondary);">Fun 模式</p>
+                                            </div>
+                                            <div class="p-3 rounded" style="background-color: var(--bg-tertiary);">
+                                                <p class="text-xs font-mono mb-1" style="color: var(--text-primary);">--mode=custom</p>
+                                                <p class="text-xs" style="color: var(--text-secondary);">自定义模式，接受你我输入的提示词</p>
+                                            </div>
+                                            <div class="p-3 rounded" style="background-color: var(--bg-tertiary);">
+                                                <p class="text-xs font-mono mb-1" style="color: var(--text-primary);">--mode=speech</p>
+                                                <p class="text-xs" style="color: var(--text-secondary);">语音模式</p>
+                                            </div>
+                                            <div class="p-3 rounded" style="background-color: var(--bg-tertiary);">
+                                                <p class="text-xs font-mono mb-1" style="color: var(--text-primary);">--mode=normal</p>
+                                                <p class="text-xs" style="color: var(--text-secondary);">普通模式</p>
+                                            </div>
+                                        </div>
+                                        <div class="p-3 rounded border-l-4" style="background-color: var(--bg-secondary); border-left-color: #f59e0b;">
+                                            <p class="text-sm font-semibold mb-1" style="color: var(--text-primary);">⚠️ 参数注入限制</p>
+                                            <p class="text-sm" style="color: var(--text-secondary);">
+                                                通过用户输入注入模式参数无法真的替换模式（如Spicy），后台显示为 <code class="px-1 py-0.5 rounded text-xs" style="background-color: var(--bg-tertiary);">mode custom</code>，且原本内置的参数（--mode custom）会变成提示词的一部分。
                                             </p>
                                         </div>
-                                        <p class="text-sm mt-2" style="color: var(--text-secondary);">
-                                            这就是还保留的 Fun 模式，但其运作内核并不清楚，只是看这个参数也能略知一二何谓 Fun。目前能查到的记录有 <strong>extremly-crazy/custom/speech/normal</strong> 四个模式。
-                                        </p>
                                     </div>
                                 </div>
                             </div>
