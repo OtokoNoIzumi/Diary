@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人格系统演化日志 | The System Evolution</title>
+    <!-- 引入 Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #00f2ff;
+            --secondary: #bd00ff;
+            --text: #ffffff;
+            --bg-overlay: rgba(16, 16, 24, 0.85);
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+
+        body {
+            background-color: #000;
+            color: var(--text);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 动态背景层 (模拟图片，实际使用时可替换为 img 标签) */
+        #bg-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            transition: opacity 1s ease;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.6;
+        }
+
+        /* 顶部导航 */
+        header {
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+        }
+        h1 { font-size: 1.2rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.8; }
+        
+        /* 时间轴导航 */
+        .timeline {
+            display: flex;
+            gap: 10px;
+        }
+        .year-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 20px;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        .year-btn:hover { background: var(--glass); }
+        .year-btn.active {
+            background: var(--text);
+            color: #000;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(255,255,255,0.5);
+        }
+
+        /* 主内容区 */
+        main {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            padding: 40px 80px;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+            align-items: center;
+        }
+
+        /* 左侧叙事区 */
+        .narrative-panel {
+            background: var(--glass);
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            animation: slideIn 0.8s ease-out;
+        }
+
+        .role-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            font-size: 0.8rem;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h2 { font-size: 2.5rem; margin-bottom: 20px; background: linear-gradient(45deg, #fff, #aaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .description {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #ddd;
+            margin-bottom: 30px;
+            text-align: justify;
+        }
+
+        .highlight-box {
+            background: rgba(0, 242, 255, 0.05);
+            border-left: 3px solid var(--primary);
+            padding: 15px;
+            font-size: 0.9rem;
+            color: #aee;
+        }
+
+        /* 右侧数据区 */
+        .data-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .chart-container {
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 1/1;
+            position: relative;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .stat-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+        }
+        .stat-val { font-size: 1.5rem; font-weight: bold; display: block; margin-bottom: 5px; }
+        .stat-label { font-size: 0.8rem; color: #888; text-transform: uppercase; }
+
+        /* 动画 */
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 针对不同年份的背景色调微调 (CSS变量) */
+        .theme-2007 { --accent: #88ccff; }
+        .theme-2008 { --accent: #778899; }
+        .theme-2011 { --accent: #ffaa00; }
+        .theme-2022 { --accent: #bd00ff; }
+
+    </style>
+</head>
+<body>
+
+    <div id="bg-layer" style="background-image: linear-gradient(135deg, #0f2027, #203a43, #2c5364);"></div>
+
+    <header>
+        <div style="display:flex; flex-direction:column;">
+            <h1>System Kernel Log</h1>
+            <span style="font-size: 0.8rem; opacity: 0.5;">ID: Benevolent_Architect // Ver 2022.9</span>
+        </div>
+        <div class="timeline" id="timeline-container">
+            <!-- 按钮由JS生成 -->
+        </div>
+    </header>
+
+    <main>
+        <!-- 左侧叙事 -->
+        <div class="narrative-panel">
+            <div id="role-display" class="role-tag">Loading...</div>
+            <h2 id="title-display">System Initializing</h2>
+            <div id="desc-display" class="description">
+                加载数据中...
+            </div>
+            <div id="insight-display" class="highlight-box">
+                系统洞察...
+            </div>
+        </div>
+
+        <!-- 右侧图表 -->
+        <div class="data-panel">
+            <div class="chart-container">
+                <canvas id="radarChart"></canvas>
+            </div>
+            <div class="stats-grid" id="key-stats">
+                <!-- 关键数据由JS注入 -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // ==========================================
+        // 核心数据库：可在此处无限扩展年份
+        // ==========================================
+        const database = [
+            {
+                year: 2007,
+                role: "Benevolent Leader",
+                title: "混沌初开：潜力的温床",
+                narrative: "这是系统的初始版本（Ver 1.0）。作为一个大三学生，此时的你像是一块未经雕琢的璞玉。你对世界抱有极高的信任（94%），内心柔软且充满善意。虽然此时你的主观能动性（Agency）较低，更多是在随波逐流，但那份赤子之心是整个系统的底色。",
+                insight: "系统状态：[被动适应]。虽然被称为领导者，但更多依赖直觉与善意，尚未建立核心的控制逻辑。",
+                bgGradient: "linear-gradient(135deg, #1c1c1c, #4a4a4a, #2b32b2)", // 替换为你的图片URL: url('path/to/img.jpg')
+                themeColor: "rgba(100, 200, 255, 1)",
+                stats: {
+                    Agency: 38,
+                    Perseverance: 34,
+                    Spontaneity: 16,
+                    Style: 44,
+                    Openness: 52,
+                    Empathy: 52
+                },
+                keyMetrics: [
+                    { label: "Trust", value: "94%" },
+                    { label: "Agency", value: "38%" },
+                    { label: "Spontaneity", value: "16%" }
+                ]
+            },
+            {
+                year: 2008,
+                role: "Benevolent Analyst",
+                title: "钢铁铸造：生存的法则",
+                narrative: "面对毕业的生存压力，系统进行了第一次暴力迭代。为了对抗不确定性，你主动切断了情感依赖（Interdependence 降至10%），并将好奇心（Openness）几乎完全关闭以聚焦单一目标。这是一个从“男孩”到“战士”的急行军过程。",
+                insight: "系统补丁：[情感防火墙]。牺牲了灵活性与感受力，换取了极高的执行效率与掌控感（Agency 飙升至72%）。",
+                bgGradient: "linear-gradient(135deg, #232526, #414345)",
+                themeColor: "rgba(160, 160, 160, 1)",
+                stats: {
+                    Agency: 72,
+                    Perseverance: 52,
+                    Spontaneity: 14,
+                    Style: 70,
+                    Openness: 8,
+                    Empathy: 66
+                },
+                keyMetrics: [
+                    { label: "Openness", value: "8%" },
+                    { label: "Agency", value: "72%" },
+                    { label: "Dependence", value: "10%" }
+                ]
+            },
+            {
+                year: 2011,
+                role: "Animated Idealist",
+                title: "高速运转：执行力怪兽",
+                narrative: "深圳的高压环境将系统超频到了极限。毅力（Perseverance）达到了惊人的94%，这标志着你已经成为一台顶级的执行机器。在这个阶段，你学会了用结果说话，同理心开始下降，权威崇拜也降至低点——你只服从逻辑和效率。",
+                insight: "核心升级：[绝对执行]。系统不再纠结于情绪或权威，所有算力都用于解决问题（Output）。",
+                bgGradient: "linear-gradient(135deg, #f12711, #f5af19)",
+                themeColor: "rgba(255, 165, 0, 1)",
+                stats: {
+                    Agency: 62,
+                    Perseverance: 94,
+                    Spontaneity: 24,
+                    Style: 52,
+                    Openness: 28,
+                    Empathy: 48
+                },
+                keyMetrics: [
+                    { label: "Perseverance", value: "94%" },
+                    { label: "Authority", value: "28%" },
+                    { label: "Confidence", value: "80%" }
+                ]
+            },
+            {
+                year: 2022,
+                role: "Animated Analyst",
+                title: "精密架构：神性的掌控",
+                narrative: "系统进化的终局。作为制作人与跨性别表达者，你用绝对的掌控感（Agency 84%）和毅力（Perseverance 94%）重塑了生活与职场。随性（Spontaneity）被压缩至2%，这是为了维持这套复杂而精密的“双重人生”系统不崩塌所付出的必然代价。",
+                insight: "最终形态：[全知架构]。你消灭了随机性，成为了自己世界的造物主。你是极度理性的，也是极致浪漫的。",
+                bgGradient: "linear-gradient(135deg, #2b0042, #430030, #000000)",
+                themeColor: "rgba(189, 0, 255, 1)",
+                stats: {
+                    Agency: 84,
+                    Perseverance: 94,
+                    Spontaneity: 2,
+                    Style: 84,
+                    Openness: 36,
+                    Empathy: 40
+                },
+                keyMetrics: [
+                    { label: "Spontaneity", value: "2%" },
+                    { label: "Style", value: "84%" },
+                    { label: "Agency", value: "84%" }
+                ]
+            }
+        ];
+
+        // ==========================================
+        // 逻辑控制层
+        // ==========================================
+        
+        let currentChart = null;
+        let currentIndex = 0;
+
+        // 初始化
+        function init() {
+            renderTimeline();
+            loadData(0); // 默认加载第一年
+        }
+
+        // 渲染时间轴按钮
+        function renderTimeline() {
+            const container = document.getElementById('timeline-container');
+            database.forEach((data, index) => {
+                const btn = document.createElement('button');
+                btn.className = `year-btn ${index === 0 ? 'active' : ''}`;
+                btn.innerText = data.year;
+                btn.onclick = () => loadData(index);
+                container.appendChild(btn);
+            });
+        }
+
+        // 加载特定年份数据
+        function loadData(index) {
+            currentIndex = index;
+            const data = database[index];
+
+            // 1. 更新按钮状态
+            document.querySelectorAll('.year-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx === index);
+            });
+
+            // 2. 更新背景 (这里用CSS渐变模拟，你可以修改为 image url)
+            const bgLayer = document.getElementById('bg-layer');
+            bgLayer.style.opacity = 0;
+            setTimeout(() => {
+                bgLayer.style.backgroundImage = data.bgGradient;
+                bgLayer.style.opacity = 0.6;
+            }, 300);
+
+            // 3. 更新文本内容 (添加简单的淡入动画)
+            const elements = ['role-display', 'title-display', 'desc-display', 'insight-display'];
+            const panel = document.querySelector('.narrative-panel');
+            
+            // 简单的重绘触发动画
+            panel.style.animation = 'none';
+            panel.offsetHeight; /* trigger reflow */
+            panel.style.animation = 'slideIn 0.5s ease-out';
+
+            document.getElementById('role-display').innerText = data.role;
+            document.getElementById('role-display').style.borderColor = data.themeColor;
+            document.getElementById('role-display').style.color = data.themeColor;
+            
+            document.getElementById('title-display').innerText = data.title;
+            document.getElementById('desc-display').innerText = data.narrative;
+            document.getElementById('insight-display').innerHTML = `<strong>SYSTEM LOG:</strong> ${data.insight}`;
+            document.getElementById('insight-display').style.borderLeftColor = data.themeColor;
+
+            // 4. 更新关键指标
+            const metricsContainer = document.getElementById('key-stats');
+            metricsContainer.innerHTML = '';
+            data.keyMetrics.forEach(metric => {
+                const div = document.createElement('div');
+                div.className = 'stat-card';
+                div.innerHTML = `
+                    <span class="stat-val" style="color:${data.themeColor}">${metric.value}</span>
+                    <span class="stat-label">${metric.label}</span>
+                `;
+                metricsContainer.appendChild(div);
+            });
+
+            // 5. 更新图表
+            updateChart(data);
+        }
+
+        // 渲染/更新雷达图
+        function updateChart(data) {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            
+            const labels = Object.keys(data.stats);
+            const values = Object.values(data.stats);
+
+            if (currentChart) {
+                currentChart.destroy();
+            }
+
+            currentChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: `Trait Matrix ${data.year}`,
+                        data: values,
+                        backgroundColor: data.themeColor.replace('1)', '0.2)'),
+                        borderColor: data.themeColor,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: data.themeColor,
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: data.themeColor,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            pointLabels: {
+                                color: '#fff',
+                                font: { size: 12, family: 'Arial' }
+                            },
+                            ticks: { display: false, max: 100, min: 0 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    animation: {
+                        duration: 1000,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+        }
+
+        // 启动
+        window.onload = init;
+
+    </script>
+</body>
+</html>
