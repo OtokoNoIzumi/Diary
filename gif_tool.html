@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprite GIF Maker</title>
+    <!-- Tailwind for quick styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- GIF.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a1a;
+            color: #e5e5e5;
+        }
+
+        .frame-card {
+            background: #2a2a2a;
+            border: 1px solid #444;
+        }
+
+        .frame-card.active {
+            border-color: #3b82f6;
+            background: #2e3540;
+        }
+
+        canvas {
+            background-color: white;
+            /* Pure white as requested */
+            /* Removed checkerboard pattern */
+        }
+
+        input,
+        select {
+            background: #333;
+            border: 1px solid #555;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body class="p-6 h-screen flex flex-col">
+
+    <!-- Header -->
+    <div class="mb-4 flex justify-between items-center bg-gray-800 p-4 rounded-lg shadow-lg">
+        <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">Sprite
+            GIF Maker</h1>
+        <div class="space-x-4">
+            <button id="exportBtn"
+                class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded font-bold shadow transition">Generate
+                GIF</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex gap-6 overflow-hidden">
+
+        <!-- Left: Preview & Global Settings -->
+        <div class="w-1/3 flex flex-col gap-4 overflow-y-auto pr-2">
+            <!-- Source Image -->
+            <div class="bg-gray-800 p-4 rounded-lg shadow">
+                <h2 class="text-sm font-bold text-gray-400 mb-2 uppercase tracking-wide">Source</h2>
+                <div class="flex flex-col gap-2">
+                    <div class="flex gap-2">
+                        <input type="text" id="imgPath" value="./image/player_gif.png" class="flex-1 text-sm">
+                        <button id="loadPathBtn" class="bg-blue-600 px-3 py-1 rounded text-sm hover:bg-blue-500">Load
+                            Path</button>
+                    </div>
+                    <div class="text-xs text-gray-500 text-center">- OR -</div>
+                    <input type="file" id="fileInput" accept="image/*" class="text-sm cursor-pointer">
+                </div>
+            </div>
+
+            <!-- Slicing Config -->
+            <div class="bg-gray-800 p-4 rounded-lg shadow">
+                <h2 class="text-sm font-bold text-gray-400 mb-2 uppercase tracking-wide">Grid Slicing</h2>
+                <div class="grid grid-cols-2 gap-4 mb-2">
+                    <div>
+                        <label class="block text-xs text-gray-400">Columns</label>
+                        <input type="number" id="gridCols" value="2" min="1" class="w-full">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400">Rows</label>
+                        <input type="number" id="gridRows" value="4" min="1" class="w-full">
+                    </div>
+                </div>
+                <!-- Total Frames Detect -->
+                <div class="text-xs text-gray-400 mb-2" id="sliceInfo">W: - | H: -</div>
+                <button id="sliceBtn"
+                    class="w-full bg-purple-600 hover:bg-purple-500 text-white py-2 rounded font-bold shadow">Redetect &
+                    Slice frames</button>
+            </div>
+
+            <!-- Preview & Playback -->
+            <div class="bg-gray-800 p-4 rounded-lg shadow flex-1 flex flex-col">
+                <h2 class="text-sm font-bold text-gray-400 mb-2 uppercase tracking-wide">Preview</h2>
+                <div
+                    class="flex-1 flex justify-center items-center bg-black/20 rounded border border-gray-700 p-2 overflow-auto relative">
+                    <canvas id="previewCanvas" width="200" height="200" class="shadow-lg"></canvas>
+                </div>
+                <div class="mt-4 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <button id="playPauseBtn"
+                            class="bg-gray-600 w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-500">⏸</button>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs">Speed:</span>
+                            <input type="range" id="fpsRange" min="1" max="60" value="10" class="w-24">
+                            <span id="fpsVal" class="text-xs w-8">8fps</span>
+                        </div>
+                    </div>
+                    <div class="bg-gray-700 h-6 relative rounded overflow-hidden cursor-pointer" id="timeline">
+                        <div id="timelineBar"
+                            class="bg-blue-500 h-full w-0 absolute left-0 top-0 transition-all duration-75"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right: Frame Editor -->
+        <div class="flex-1 flex flex-col bg-gray-800 rounded-lg shadow overflow-hidden">
+            <div class="p-4 border-b border-gray-700 bg-gray-750">
+                <h2 class="text-sm font-bold text-gray-400 mb-2 uppercase tracking-wide">Animation Sequence</h2>
+                <div class="flex gap-2">
+                    <label class="text-xs self-center whitespace-nowrap">Order (Indices):</label>
+                    <input type="text" id="seqInput" class="flex-1 font-mono text-sm" placeholder="0, 1, 2, 3...">
+                    <button id="updateSeqBtn"
+                        class="bg-gray-600 px-3 py-1 text-xs rounded hover:bg-gray-500">Update</button>
+                </div>
+                <p class="text-[10px] text-gray-500 mt-1">Example: "0, 1, 2, 1" to loop back and forth. Leave empty to
+                    play all 0..Last.</p>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-4">
+                <h2 class="text-sm font-bold text-gray-400 mb-2 uppercase tracking-wide">Frame Adjustment</h2>
+                <div id="framesContainer" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                    <!-- Frame Cards Injected Here -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Hidden Output Canvas for GIF Gen -->
+    <canvas id="outputCanvas" style="display:none;"></canvas>
+
+    <script>
+        // --- State ---
+        let mainImage = new Image();
+        let frames = []; // { canvas, x, y, width, height, offsetX, offsetY, index }
+        let sequence = []; // [0, 1, 2...]
+        let currentFrameIdx = 0;
+        let isPlaying = true;
+        let fps = 8; // Default 8 FPS as requested
+        let lastTime = 0;
+        let timer = 0;
+        let workerBlobUrl = null;
+
+        // ...
+
+        // In sliceImage function (re-pasted for context, but I will only replace the relevant logic block if possible, or the whole function if easier to be safe)
+        // I'll target the State block first to set FPS.
+        // Then I will add the offset logic in sliceImage.
+
+        // Actually, let's just replace the sliceImage function's inner loop or post-loop to apply defaults.
+
+
+        // --- DOM Elements ---
+        const els = {
+            imgPath: document.getElementById('imgPath'),
+            loadPathBtn: document.getElementById('loadPathBtn'),
+            fileInput: document.getElementById('fileInput'),
+            gridCols: document.getElementById('gridCols'),
+            gridRows: document.getElementById('gridRows'),
+            sliceBtn: document.getElementById('sliceBtn'),
+            sliceInfo: document.getElementById('sliceInfo'),
+            previewCanvas: document.getElementById('previewCanvas'),
+            playPauseBtn: document.getElementById('playPauseBtn'),
+            fpsRange: document.getElementById('fpsRange'),
+            fpsVal: document.getElementById('fpsVal'),
+            timeline: document.getElementById('timeline'),
+            timelineBar: document.getElementById('timelineBar'),
+            seqInput: document.getElementById('seqInput'),
+            updateSeqBtn: document.getElementById('updateSeqBtn'),
+            framesContainer: document.getElementById('framesContainer'),
+            exportBtn: document.getElementById('exportBtn')
+        };
+        const ctx = els.previewCanvas.getContext('2d');
+
+        // --- Initialization ---
+        window.addEventListener('load', async () => {
+            // Prepare worker
+            await prepareWorker();
+            loadImage(els.imgPath.value);
+        });
+
+        async function prepareWorker() {
+            try {
+                const response = await fetch('https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js');
+                if (!response.ok) throw new Error('Network response was not ok');
+                const workerCode = await response.text();
+                const blob = new Blob([workerCode], { type: 'application/javascript' });
+                workerBlobUrl = URL.createObjectURL(blob);
+                console.log("Worker Blob created:", workerBlobUrl);
+            } catch (error) {
+                console.error("Failed to load worker script:", error);
+                alert("Warning: Failed to load GIF worker script. Export might fail.");
+            }
+        }
+
+        els.loadPathBtn.onclick = () => loadImage(els.imgPath.value);
+
+        els.fileInput.onchange = (e) => {
+            if (e.target.files && e.target.files[0]) {
+                const url = URL.createObjectURL(e.target.files[0]);
+                loadImage(url);
+            }
+        };
+
+        els.sliceBtn.onclick = sliceImage;
+        els.updateSeqBtn.onclick = parseSequence;
+
+        els.playPauseBtn.onclick = () => {
+            isPlaying = !isPlaying;
+            els.playPauseBtn.textContent = isPlaying ? "⏸" : "▶";
+        };
+
+        els.fpsRange.oninput = (e) => {
+            fps = parseInt(e.target.value);
+            els.fpsVal.textContent = fps + "fps";
+        };
+
+        // --- Logic ---
+
+        function loadImage(src) {
+            mainImage = new Image();
+            mainImage.onload = () => {
+                sliceImage();
+            };
+            mainImage.onerror = () => {
+                console.warn("Failed to load image at " + src);
+                // alert("Failed to load image: " + src);
+            };
+            // Prevent caching issues if reloading
+            mainImage.crossOrigin = "Anonymous";
+            mainImage.src = src;
+        }
+
+        function sliceImage() {
+            if (!mainImage.width) return;
+
+            const cols = parseInt(els.gridCols.value) || 1;
+            const rows = parseInt(els.gridRows.value) || 1;
+
+            const fw = Math.floor(mainImage.width / cols);
+            const fh = Math.floor(mainImage.height / rows);
+
+            els.sliceInfo.textContent = `Source: ${mainImage.width}x${mainImage.height} | Frame: ${fw}x${fh}`;
+
+            frames = [];
+
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    // Extract frame
+                    const fCanvas = document.createElement('canvas');
+                    fCanvas.width = fw;
+                    fCanvas.height = fh;
+                    const fCtx = fCanvas.getContext('2d');
+                    // Draw slice
+                    fCtx.drawImage(mainImage, c * fw, r * fh, fw, fh, 0, 0, fw, fh);
+
+                    const idx = frames.length;
+
+                    // Apply presets based on user request/screenshot
+                    let offX = 0;
+                    if (idx === 1) offX = 50;
+                    if (idx === 3) offX = 50;
+                    if (idx === 4) offX = -20;
+                    if (idx === 5) offX = 50;
+
+                    frames.push({
+                        index: idx,
+                        canvas: fCanvas,
+                        offsetX: offX,
+                        offsetY: 0,
+                        baseX: c * fw,
+                        baseY: r * fh,
+                        width: fw,
+                        height: fh
+                    });
+                }
+            }
+
+            // Reset Sequence if empty
+            if (els.seqInput.value.trim() === "") {
+                // Default specific sequence as requested
+                const defaultSeq = [0, 2, 1, 3, 4, 5];
+                // Only use if available
+                if (frames.length >= 6) {
+                    sequence = defaultSeq;
+                } else {
+                    sequence = frames.map(f => f.index);
+                }
+                els.seqInput.value = sequence.join(", ");
+            } else {
+                parseSequence(); // retain existing seq if possible
+            }
+
+            renderFrameEditor();
+
+            // Adjust canvas size
+            els.previewCanvas.width = fw;
+            els.previewCanvas.height = fh;
+        }
+
+        function renderFrameEditor() {
+            els.framesContainer.innerHTML = "";
+            frames.forEach((frame) => {
+                const card = document.createElement('div');
+                card.className = "frame-card p-2 rounded flex flex-col gap-2 text-xs relative";
+
+                // Header
+                const head = document.createElement('div');
+                head.className = "flex justify-between text-gray-400 font-mono";
+                head.innerText = `#${frame.index}`;
+                card.appendChild(head);
+
+                // Thumbnail
+                const thumb = document.createElement('img');
+                thumb.src = frame.canvas.toDataURL();
+                thumb.className = "w-full h-auto pixelated border border-gray-600 bg-white"; // White bg for thumb too?
+                thumb.style.imageRendering = "pixelated";
+                card.appendChild(thumb);
+
+                // Inputs
+                const grid = document.createElement('div');
+                grid.className = "grid grid-cols-2 gap-1";
+
+                const xIn = createNumInput("X", frame.offsetX, (v) => frame.offsetX = v);
+                const yIn = createNumInput("Y", frame.offsetY, (v) => frame.offsetY = v);
+
+                grid.appendChild(xIn);
+                grid.appendChild(yIn);
+                card.appendChild(grid);
+
+                els.framesContainer.appendChild(card);
+            });
+        }
+
+        function createNumInput(label, val, onChange) {
+            const wrap = document.createElement('div');
+            wrap.className = "flex items-center gap-1";
+            const lbl = document.createElement('span');
+            lbl.innerText = label;
+            lbl.className = "text-gray-500";
+            const inp = document.createElement('input');
+            inp.type = "number";
+            inp.value = val;
+            inp.className = "w-full bg-gray-900 border-gray-700 text-center";
+            inp.oninput = (e) => onChange(parseInt(e.target.value) || 0);
+            wrap.appendChild(lbl);
+            wrap.appendChild(inp);
+            return wrap;
+        }
+
+        function parseSequence() {
+            const raw = els.seqInput.value;
+            const parts = raw.split(/[\s,]+/).filter(s => s !== "");
+            const newSeq = parts.map(s => parseInt(s)).filter(n => !isNaN(n) && n >= 0 && n < frames.length);
+
+            if (newSeq.length > 0) {
+                sequence = newSeq;
+                currentFrameIdx = 0;
+            } else {
+                // Fallback: all frames
+                sequence = frames.map(f => f.index);
+            }
+        }
+
+        // --- Loop ---
+        function loop(timestamp) {
+            requestAnimationFrame(loop);
+
+            if (!lastTime) lastTime = timestamp;
+            const dt = timestamp - lastTime;
+            lastTime = timestamp;
+
+            if (isPlaying && sequence.length > 0) {
+                timer += dt;
+                const interval = 1000 / fps;
+                if (timer > interval) {
+                    timer = 0;
+                    currentFrameIdx = (currentFrameIdx + 1) % sequence.length;
+                }
+            }
+
+            draw();
+            updateUI();
+        }
+
+        function draw() {
+            // Clear
+            ctx.clearRect(0, 0, els.previewCanvas.width, els.previewCanvas.height);
+
+            if (sequence.length === 0) return;
+
+            const frameIdx = sequence[currentFrameIdx];
+            const frame = frames[frameIdx];
+
+            if (frame) {
+                ctx.drawImage(frame.canvas, frame.offsetX, frame.offsetY);
+            }
+        }
+
+        function updateUI() {
+            // Highlight active frame card
+            const cards = els.framesContainer.children;
+            const activeIdx = sequence[currentFrameIdx];
+
+            // Ideally we highlight based on index in sequence, but user might have same frame multiple times.
+            // Just highlight the frame card corresponding to the current frame index.
+
+            for (let i = 0; i < cards.length; i++) {
+                // Header text is #ID
+                const idText = cards[i].querySelector('div').innerText;
+                const id = parseInt(idText.substring(1));
+                if (id === activeIdx) {
+                    cards[i].classList.add('active');
+                } else {
+                    cards[i].classList.remove('active');
+                }
+            }
+
+            // Timeline
+            if (sequence.length > 0) {
+                const pct = ((currentFrameIdx) / sequence.length) * 100;
+                els.timelineBar.style.width = pct + "%";
+            }
+        }
+
+        // --- Export ---
+        els.exportBtn.onclick = () => {
+            if (sequence.length === 0) return;
+            if (!workerBlobUrl) {
+                alert("Worker not ready yet. Please wait a moment or check console.");
+                return;
+            }
+
+            const gif = new GIF({
+                workers: 2,
+                quality: 10,
+                width: els.previewCanvas.width,
+                height: els.previewCanvas.height,
+                workerScript: workerBlobUrl, // Use the Blob URL
+                transparent: 0x000000 // Attempt to set transparent color (usually null works for canvas RGBA)
+            });
+
+            // Add frames
+            sequence.forEach(idx => {
+                const frame = frames[idx];
+                // Create a temp canvas
+                const tCan = document.createElement('canvas');
+                tCan.width = els.previewCanvas.width;
+                tCan.height = els.previewCanvas.height;
+                const tCtx = tCan.getContext('2d');
+
+                // Clear and make sure it's transparent
+                tCtx.clearRect(0, 0, tCan.width, tCan.height);
+                tCtx.drawImage(frame.canvas, frame.offsetX, frame.offsetY);
+
+                // For GIF transparency, we pass the canvas which relies on RGBA.
+                // gif.js handles transparency with the 'transparent' option or automatic detection if passed canvas data?
+                // Actually gif.js needs specific transparent color code sometimes, but canvas context copy usually works.
+                gif.addFrame(tCan, { delay: 1000 / fps, copy: true });
+            });
+
+            gif.on('finished', function (blob) {
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'frieren_animation.gif';
+                link.click();
+                els.exportBtn.textContent = "Generate GIF";
+            });
+
+            els.exportBtn.textContent = "Rendering...";
+
+            try {
+                gif.render();
+            } catch (e) {
+                alert("Error rendering GIF: " + e.message);
+                els.exportBtn.textContent = "Generate GIF";
+            }
+        };
+
+        requestAnimationFrame(loop);
+
+    </script>
+</body>
+
+</html>
