@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>芬利牌登顶策略验算</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+        /* 淡入动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+
+        /* 开关样式 */
+        .switch { position: relative; display: inline-block; width: 48px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+                  background-color: #cbd5e1; transition: .3s; border-radius: 26px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px;
+                         background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: #0ea5e9; }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        /* 卡片悬停效果 */
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 40px -10px rgba(0,0,0,0.15); }
+        .dark .card-hover:hover { box-shadow: 0 10px 40px -10px rgba(0,0,0,0.4); }
+
+        /* 按钮悬停效果 */
+        .btn-hover { transition: all 0.2s ease; }
+        .btn-hover:hover { transform: scale(1.02); }
+        .btn-hover:active { transform: scale(0.98); }
+
+        /* 结果表格 */
+        .result-table { font-family: 'Consolas', 'Monaco', monospace; font-size: 0.75rem; }
+        .result-table th, .result-table td { padding: 6px 8px; white-space: nowrap; }
+
+        /* 加载动画 */
+        .loading-spinner {
+            border: 3px solid #e2e8f0;
+            border-top: 3px solid #0ea5e9;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* 图片放大弹窗 */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.9);
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .lightbox.active { display: flex; }
+        .lightbox img {
+            max-width: 90vw;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 0.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            transition: background 0.2s;
+        }
+        .lightbox-close:hover { background: rgba(255,255,255,0.2); }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen transition-colors duration-300">
+    <!-- 导航栏 -->
+    <nav class="sticky top-0 z-50 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 sm:px-6">
+            <div class="flex justify-between items-center h-14">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-calculator text-primary-500 text-lg"></i>
+                    <span class="font-semibold text-base sm:text-lg">芬利牌登顶策略验算</span>
+                </div>
+                <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-sun text-yellow-500 dark:hidden"></i>
+                    <i class="fas fa-moon text-blue-400 hidden dark:inline"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 py-6">
+        <!-- 标题区域 -->
+        <section class="text-center mb-10 fade-in">
+            <h1 class="text-3xl sm:text-4xl font-bold mb-4 bg-gradient-to-r from-primary-500 to-blue-600 bg-clip-text text-transparent">
+                像奇异博士一样从千万中可能中找到最优的策略
+            </h1>
+            <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                通过动态规划算法，计算芬利牌游戏中磁力锁定的最佳时机与策略分配
+            </p>
+        </section>
+
+        <!-- 移动端快速导航 -->
+        <div class="lg:hidden text-center mb-6">
+            <a href="#toolSection" class="inline-flex items-center px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg shadow transition-colors">
+                <i class="fas fa-tools mr-2"></i>直接使用工具
+            </a>
+        </div>
+
+        <!-- 双栏布局容器 -->
+        <div class="lg:flex lg:gap-8">
+            <!-- 左栏: 心得与技巧 -->
+            <aside class="lg:w-2/5 2xl:w-[520px] lg:flex-shrink-0 space-y-6 mb-8 lg:mb-0">
+
+        <!-- 心得体会区域 -->
+        <section class="fade-in" style="animation-delay: 0.3s;">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 card-hover">
+                <h2 class="text-xl font-semibold mb-6 flex items-center">
+                    <i class="fas fa-comment-dots text-primary-500 mr-3"></i>
+                    心得体会
+                </h2>
+
+                <div class="space-y-6">
+                    <!-- 成就 -->
+                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                        <div class="flex items-center space-x-4">
+                            <i class="fas fa-trophy text-primary-500 text-2xl"></i>
+                            <p class="text-gray-700 dark:text-gray-300">
+                                芬利牌登顶 <span class="font-bold text-xl text-primary-600 dark:text-primary-400">3.79e12</span> 把工具和心得沉淀一下。
+                            </p>
+                        </div>
+                        <a href="https://www.bilibili.com/video/BV1mkfRBEErh/" target="_blank" class="inline-flex items-center px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg transition-colors whitespace-nowrap">
+                            <i class="fas fa-play-circle mr-2"></i>登顶录像
+                        </a>
+                    </div>
+
+                    <!-- 极限开局策略 -->
+                    <div class="p-5 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                        <h3 class="font-semibold mb-4 flex items-center">
+                            <i class="fas fa-chess text-primary-500 mr-2"></i>
+                            极限开局策略
+                        </h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">考虑到钱、发育节奏和BOSS顺序的赏脸：</p>
+                        <ul class="space-y-3 text-gray-700 dark:text-gray-300">
+                            <li class="flex items-start">
+                                <span class="font-medium text-primary-600 dark:text-primary-400 mr-2 min-w-[4rem]">第1场后</span>
+                                <span>拿9金买<b>黄金残片</b>和<b>电磁装置</b>，剩2~3金</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="font-medium text-primary-600 dark:text-primary-400 mr-2 min-w-[4rem]">第2场后</span>
+                                <span>拿10+15金，买<b>芬利头盔</b>、<b>铁炉堡锻砧</b>，剩10~12金（刷1-2次）<br>如果还能买<b>全能辅食</b>就天胡了，剩1~3金，比普通开局高20%以上</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="font-medium text-primary-600 dark:text-primary-400 mr-2 min-w-[4rem]">第3场后</span>
+                                <span>拿<b>回收标签</b>和<b>黄金吊坠</b>；如果这回合才拿到铁砧且都凑齐，应该还可以登顶</span>
+                            </li>
+                        </ul>
+                        <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">
+                            打完第4场再凑齐的话可以考虑重开，或者试试手气与熟练度。更晚就不用想了。所以前期会快很多！
+                        </p>
+                    </div>
+
+                    <!-- 分享初衷 -->
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <p class="text-gray-600 dark:text-gray-400 italic">
+                            之所以会分享这个，其实是因为我期待的不只是在游戏，而是现实生活中也能用AI像奇异博士一样从千万种可能中找到最优的策略。
+                        </p>
+                    </div>
+
+                    <!-- 健康提示 -->
+                    <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                        <div class="flex items-start space-x-3">
+                            <div class="relative group cursor-pointer flex-shrink-0" onclick="openLightbox('image/aidiet.jpg')">
+                                <img src="image/aidiet.jpg" alt="AI Diet减重成果" class="w-24 h-24 object-cover rounded-xl shadow-lg transition-transform group-hover:scale-105">
+                                <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-search-plus text-white text-lg"></i>
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-gray-700 dark:text-gray-300 text-sm mb-2">
+                                    <i class="fas fa-heartbeat text-primary-500 mr-1"></i>
+                                    今年以来在AI辅助下已<span class="font-semibold">轻了5kg</span>，产品还在自用自测中，打磨好了和大伙见面~
+                                </p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">用健康的身体活到AGI的美好时代才是最大的收益噢！</p>
+                                <a href="https://space.bilibili.com/82205" target="_blank" class="inline-flex items-center px-2.5 py-1 bg-pink-500 hover:bg-pink-600 text-white text-xs rounded-lg transition-colors">
+                                    <i class="fab fa-bilibili mr-1.5"></i>关注了解进展
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 核心技巧与算法说明 -->
+        <section class="fade-in" style="animation-delay: 0.4s;">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 card-hover">
+                <!-- 核心技巧 -->
+                <h2 class="text-xl font-semibold mb-6 flex items-center">
+                    <i class="fas fa-lightbulb text-primary-500 mr-2"></i>
+                    核心技巧
+                </h2>
+                <ul class="space-y-3 text-gray-700 dark:text-gray-300 mb-8">
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-primary-500 mr-2 mt-1"></i>
+                        <span>最后几回合占总输出的<b>99%以上</b>，登顶关键是养成而不是提前打伤害。</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-primary-500 mr-2 mt-1"></i>
+                        <span>没考虑全能辅食，这个总之就是多打，目标<b>12以上</b>。</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-primary-500 mr-2 mt-1"></i>
+                        <span>黄金吊坠效果为战斗结束拿到BOSS奖励后再乘以1.2，每轮结算一次。</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-primary-500 mr-2 mt-1"></i>
+                        <span>移除电磁装置后没机械，<b>黄金残片也要移除</b>；最后移除黄金吊坠时再换<b>针织鱼人</b>。</span>
+                    </li>
+                </ul>
+
+                <!-- 算法说明 -->
+                <div class="pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <h2 class="text-xl font-semibold mb-6 flex items-center">
+                        <i class="fas fa-code text-primary-500 mr-2"></i>
+                        算法说明
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                            <h4 class="font-medium mb-2 flex items-center">
+                                <i class="fas fa-cogs text-gray-500 mr-2"></i>
+                                动态规划
+                            </h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                通过前向DP遍历所有可能的状态组合，寻找累计伤害最大的决策路径。<br>
+                                状态空间包含攻击值、铁炉堡和回收标签倍率、金钱等维度。
+                            </p>
+                        </div>
+                        <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                            <h4 class="font-medium mb-2 flex items-center">
+                                <i class="fas fa-lock text-gray-500 mr-2"></i>
+                                磁力饰品替换
+                            </h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                磁力饰品移除替换成强能魔镜后获得额外倍率，但铁砧倍率停止增长。<br>
+                                最佳替换时机是算法的核心输出之一。
+                            </p>
+                        </div>
+                        <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                            <h4 class="font-medium mb-2 flex items-center">
+                                <i class="fas fa-coins text-gray-500 mr-2"></i>
+                                金钱增长
+                            </h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                金钱攻击体系下，钱×2=额外攻击力。<br>
+                                黄金吊坠不能拿太早，不然严重影响成长。
+                            </p>
+                        </div>
+                        <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                            <h4 class="font-medium mb-2 flex items-center">
+                                <i class="fas fa-paw text-gray-500 mr-2"></i>
+                                弃牌分配
+                            </h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                每轮需要分配野兽弃牌和鱼人弃牌的张数，<br>
+                                算法会找出每轮的最优分配方案。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+            </aside>
+            <!-- 右栏: 工具区 -->
+            <div class="lg:w-3/5 2xl:flex-1 space-y-6">
+
+        <!-- 参数配置区域 -->
+        <section id="toolSection" class="fade-in" style="animation-delay: 0.1s;">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 card-hover">
+                <h2 class="text-xl font-semibold mb-2 flex items-center">
+                    <i class="fas fa-sliders-h text-primary-500 mr-3"></i>
+                    参数配置
+                </h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">根据当前对局更改参数，获得实时策略推算</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- 基础参数 -->
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">基础参数</h3>
+
+                        <div>
+                            <label class="block text-sm font-medium mb-2">已击败数量</label>
+                            <input type="number" id="startRounds" value="3" min="1" max="19"
+                                   class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                                          bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-primary-500
+                                          focus:border-transparent transition-all">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">已击败的BOSS数量，下一个BOSS的序号为N+1</p>
+                        </div>
+
+                        <!-- 金钱模式：初始金币 -->
+                        <div id="initialMoneyDiv">
+                            <label class="block text-sm font-medium mb-2">持有金币</label>
+                            <input type="number" id="initialMoney" value="20" min="0" step="1"
+                                   class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                                          bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-primary-500
+                                          focus:border-transparent transition-all">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">当前的金币数量</p>
+                        </div>
+
+                        <!-- 野兽模式：幸运猫咪加攻 -->
+                        <div id="initialCatAttackDiv" class="hidden">
+                            <label class="block text-sm font-medium mb-2">幸运猫咪加攻</label>
+                            <input type="number" id="initialCatAttack" value="0" min="0" step="2"
+                                   class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                                          bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-primary-500
+                                          focus:border-transparent transition-all">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">单野兽攻击力加成</p>
+                        </div>
+                    </div>
+
+                    <!-- 系数参数 -->
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">系数参数</h3>
+
+                        <div>
+                            <label class="block text-sm font-medium mb-2">回收标签系数</label>
+                            <input type="number" id="initialMultA" value="1" min="1" step="0.1"
+                                   class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                                          bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-primary-500
+                                          focus:border-transparent transition-all">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">倍率初始值</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium mb-2">铁炉堡锻砧系数</label>
+                            <input type="number" id="initialMultB" value="1" min="1" step="0.5"
+                                   class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                                          bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-primary-500
+                                          focus:border-transparent transition-all">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">倍率初始值</p>
+                        </div>
+                    </div>
+
+                    <!-- 战斗参数 -->
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">战斗参数</h3>
+
+                        <div>
+                            <label class="block text-sm font-medium mb-2">角色选择</label>
+                            <select id="characterSelect"
+                                    class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                                           bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-primary-500
+                                           focus:border-transparent transition-all">
+                                <option value="rafaam" selected>拉法姆 (生命15 / 法力3)</option>
+                                <option value="finley">芬利 (生命20 / 法力4)</option>
+                                <option value="brann">铜须 (生命20 / 法力3)</option>
+                                <option value="reno">雷诺 (生命25 / 法力3)</option>
+                            </select>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">不同角色有不同的生命值和法力值</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 p-3 bg-gray-100 dark:bg-gray-700/30 rounded-lg">
+                            <div class="text-center">
+                                <p class="text-xs text-gray-500 dark:text-gray-400">生命值</p>
+                                <p id="lifepointDisplay" class="text-lg font-bold text-primary-600 dark:text-primary-400">15</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">(<span id="attackTimesDisplay">3</span>次攻击)</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-xs text-gray-500 dark:text-gray-400">法力值</p>
+                                <p id="manaDisplay" class="text-lg font-bold text-purple-600 dark:text-purple-400">3</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">(<span id="cTotalDisplay">15</span>张总弃牌数)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 策略开关 -->
+                <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-4">策略体系开关</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- 攻击体系二选一 -->
+                        <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                            <span class="font-medium block mb-3">攻击力来源</span>
+                            <div class="flex items-center justify-between bg-gray-200 dark:bg-gray-600 rounded-lg p-1">
+                                <button type="button" id="atkModeCat"
+                                        class="flex-1 py-2 px-3 rounded-md text-sm font-medium transition-all
+                                               text-gray-500 dark:text-gray-400">
+                                    幸运猫咪(野兽)
+                                </button>
+                                <button type="button" id="atkModeMoney"
+                                        class="flex-1 py-2 px-3 rounded-md text-sm font-medium transition-all
+                                               bg-white dark:bg-gray-800 text-primary-600 dark:text-primary-400 shadow">
+                                    镀金船锚(金钱)
+                                </button>
+                            </div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                <span id="atkModeDesc">金钱×2=攻击力</span>
+                            </p>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                            <div>
+                                <span class="font-medium">回收标签(野兽)</span>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">野兽弃牌倍率</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="bCatDrop" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                            <div>
+                                <span class="font-medium">铁炉堡锻砧(金属)</span>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">额外金属获得倍率</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="bMagnet" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 计算按钮 -->
+                <div class="mt-8 flex justify-center space-x-4">
+                    <button id="resetBtn"
+                            class="px-6 py-3 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600
+                                   text-gray-700 dark:text-gray-300 font-semibold rounded-xl btn-hover
+                                   flex items-center space-x-2 hidden">
+                        <i class="fas fa-undo"></i>
+                        <span>还原默认值</span>
+                    </button>
+                    <button id="calculateBtn"
+                            class="px-8 py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold
+                                   rounded-xl shadow-lg shadow-primary-500/30 btn-hover flex items-center space-x-2">
+                        <i class="fas fa-play"></i>
+                        <span>开始计算</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 计算结果区域 -->
+        <section id="resultsSection" class="mb-10 hidden fade-in" style="animation-delay: 0.2s;">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 card-hover">
+                <h2 class="text-xl font-semibold mb-6 flex items-center">
+                    <i class="fas fa-chart-line text-green-500 mr-3"></i>
+                    计算结果
+                </h2>
+
+                <!-- 加载状态 -->
+                <div id="loadingState" class="flex flex-col items-center justify-center py-12 hidden">
+                    <div class="loading-spinner mb-4"></div>
+                    <p class="text-gray-500 dark:text-gray-400">正在计算最优策略...</p>
+                    <p id="loadingProgress" class="text-sm text-gray-400 dark:text-gray-500 mt-2"></p>
+                </div>
+
+                <!-- 结果内容 -->
+                <div id="resultContent" class="hidden">
+                    <!-- 策略要点 -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                            策略要点
+                        </h3>
+                        <ul id="strategyPoints" class="space-y-3">
+                            <!-- 动态填充 -->
+                        </ul>
+                    </div>
+
+                    <!-- 最终状态 -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fas fa-flag-checkered text-purple-500 mr-2"></i>
+                            最终状态
+                        </h3>
+                        <div id="finalState" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                            <!-- 动态填充 -->
+                        </div>
+                    </div>
+
+                    <!-- 详细执行表格 -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4 flex items-center flex-wrap">
+                            <i class="fas fa-table text-blue-500 mr-2"></i>
+                            每场战斗数据明细
+                            <span class="ml-2 text-xs text-gray-400 font-normal md:hidden">
+                                <i class="fas fa-arrows-alt-h mr-1"></i>左右滑动查看
+                            </span>
+                        </h3>
+                        <div class="overflow-x-auto -mx-6 px-6">
+                            <table class="result-table w-full text-left border-collapse min-w-[1100px]">
+                                <thead>
+                                    <tr class="border-b-2 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400">
+                                        <th class="font-medium py-3">BOSS序号</th>
+                                        <th class="font-medium py-3">弃牌分配</th>
+                                        <th class="font-medium py-3">基础倍率(芬利头盔)</th>
+                                        <th class="font-medium py-3">回收标签</th>
+                                        <th class="font-medium py-3">铁炉堡锻砧</th>
+                                        <th class="font-medium py-3">额外倍率</th>
+                                        <th id="colMoneyOrCat" class="font-medium py-3">金币</th>
+                                        <th class="font-medium py-3">攻击力</th>
+                                        <th class="font-medium py-3">本轮伤害参考</th>
+                                        <th class="font-medium py-3">占比</th>
+                                        <th class="font-medium py-3">备注/操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="resultTableBody" class="divide-y divide-gray-100 dark:divide-gray-700/50">
+                                    <!-- 动态填充 -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 text-right">
+                            <span class="text-sm text-gray-500 dark:text-gray-400">总输出参考（未计算全能辅食，不影响结果）: </span>
+                            <span id="totalCheck" class="font-semibold text-primary-600 dark:text-primary-400"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="border-t border-gray-200 dark:border-gray-700 mt-12">
+        <div class="max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 py-6">
+            <!-- 致谢 -->
+            <div class="text-center mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                    <i class="fas fa-heart text-red-400 mr-1"></i> 特别感谢
+                </p>
+                <a href="https://space.bilibili.com/474101374" target="_blank"
+                   class="inline-flex items-center px-3 py-1 rounded-full bg-pink-50 dark:bg-pink-900/20
+                          text-pink-600 dark:text-pink-400 hover:bg-pink-100 dark:hover:bg-pink-900/40 transition-colors">
+                    <i class="fab fa-bilibili mr-2"></i>
+                    <span>苏雨欣晨</span>
+                </a>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                <div class="text-gray-600 dark:text-gray-400 text-sm text-center md:text-left">
+                    <div class="mb-1">
+                        <span>作者: Izumi.屈源</span>
+                        <span class="mx-2">|</span>
+                        <span class="text-amber-600 dark:text-amber-400">
+                            <i class="fas fa-gamepad mr-1"></i>Lifeator#5571
+                        </span>
+                    </div>
+                    <div>
+                        <span>&copy; 2025 All Rights Reserved</span>
+                    </div>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="https://otokonoizumi.github.io" target="_blank"
+                       class="text-gray-800 dark:text-white hover:opacity-70 transition-opacity">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                    <a href="https://space.bilibili.com/82205" target="_blank"
+                       class="hover:opacity-70 transition-opacity" style="color: #FB7299;">
+                        <i class="fab fa-bilibili text-xl"></i>
+                    </a>
+                    <a href="https://x.com/Fisheam" target="_blank"
+                       class="hover:opacity-70 transition-opacity" style="color: #1DA1F2;">
+                        <i class="fab fa-twitter text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 主题切换脚本 -->
+    <script>
+        // 主题初始化
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+        });
+    </script>
+
+    <!-- 参数联动脚本 -->
+    <script>
+        // 角色数据
+        const CHARACTER_DATA = {
+            rafaam: { lifepoint: 15, mana: 3, name: '拉法姆' },
+            finley: { lifepoint: 20, mana: 4, name: '芬利' },
+            brann: { lifepoint: 20, mana: 3, name: '铜须' },
+            reno: { lifepoint: 25, mana: 3, name: '雷诺' }
+        };
+
+        // 默认参数值
+        const DEFAULT_PARAMS = {
+            startRounds: 3,
+            initialMoney: 20,
+            initialCatAttack: 0,
+            initialMultA: 1,
+            initialMultB: 1,
+            character: 'rafaam',
+            atkMode: 'money', // 'cat' or 'money'
+            bCatDrop: true,
+            bMagnet: true
+        };
+
+        // 角色选择联动
+        document.getElementById('characterSelect').addEventListener('change', function() {
+            const char = CHARACTER_DATA[this.value];
+            document.getElementById('lifepointDisplay').textContent = char.lifepoint;
+            document.getElementById('attackTimesDisplay').textContent = char.lifepoint / 5;
+            document.getElementById('manaDisplay').textContent = char.mana;
+            document.getElementById('cTotalDisplay').textContent = char.mana * 5;
+            checkParamsChanged();
+        });
+
+        // 攻击模式切换
+        const atkModeCat = document.getElementById('atkModeCat');
+        const atkModeMoney = document.getElementById('atkModeMoney');
+        const atkModeDesc = document.getElementById('atkModeDesc');
+
+        function setAtkMode(mode) {
+            const initialMoneyDiv = document.getElementById('initialMoneyDiv');
+            const initialCatAttackDiv = document.getElementById('initialCatAttackDiv');
+            if (mode === 'cat') {
+                atkModeCat.className = 'flex-1 py-2 px-3 rounded-md text-sm font-medium transition-all bg-white dark:bg-gray-800 text-primary-600 dark:text-primary-400 shadow';
+                atkModeMoney.className = 'flex-1 py-2 px-3 rounded-md text-sm font-medium transition-all text-gray-500 dark:text-gray-400';
+                atkModeDesc.textContent = '基础攻击力累加';
+                // 切换输入框显示
+                initialMoneyDiv.classList.add('hidden');
+                initialCatAttackDiv.classList.remove('hidden');
+            } else {
+                atkModeMoney.className = 'flex-1 py-2 px-3 rounded-md text-sm font-medium transition-all bg-white dark:bg-gray-800 text-primary-600 dark:text-primary-400 shadow';
+                atkModeCat.className = 'flex-1 py-2 px-3 rounded-md text-sm font-medium transition-all text-gray-500 dark:text-gray-400';
+                atkModeDesc.textContent = '金钱×2=攻击力';
+                // 切换输入框显示
+                initialMoneyDiv.classList.remove('hidden');
+                initialCatAttackDiv.classList.add('hidden');
+            }
+            checkParamsChanged();
+        }
+
+        atkModeCat.addEventListener('click', () => setAtkMode('cat'));
+        atkModeMoney.addEventListener('click', () => setAtkMode('money'));
+
+        // 获取当前攻击模式
+        function getAtkMode() {
+            return atkModeMoney.classList.contains('shadow') ? 'money' : 'cat';
+        }
+
+        // 检查参数是否改变，显示/隐藏还原按钮
+        function checkParamsChanged() {
+            const current = {
+                startRounds: parseInt(document.getElementById('startRounds').value),
+                initialMoney: parseFloat(document.getElementById('initialMoney').value),
+                initialCatAttack: parseFloat(document.getElementById('initialCatAttack').value),
+                initialMultA: parseFloat(document.getElementById('initialMultA').value),
+                initialMultB: parseFloat(document.getElementById('initialMultB').value),
+                character: document.getElementById('characterSelect').value,
+                atkMode: getAtkMode(),
+                bCatDrop: document.getElementById('bCatDrop').checked,
+                bMagnet: document.getElementById('bMagnet').checked
+            };
+
+            const changed = Object.keys(DEFAULT_PARAMS).some(key => current[key] !== DEFAULT_PARAMS[key]);
+            document.getElementById('resetBtn').classList.toggle('hidden', !changed);
+        }
+
+        // 还原默认值
+        document.getElementById('resetBtn').addEventListener('click', function() {
+            document.getElementById('startRounds').value = DEFAULT_PARAMS.startRounds;
+            document.getElementById('initialMoney').value = DEFAULT_PARAMS.initialMoney;
+            document.getElementById('initialCatAttack').value = DEFAULT_PARAMS.initialCatAttack;
+            document.getElementById('initialMultA').value = DEFAULT_PARAMS.initialMultA;
+            document.getElementById('initialMultB').value = DEFAULT_PARAMS.initialMultB;
+            document.getElementById('characterSelect').value = DEFAULT_PARAMS.character;
+            document.getElementById('bCatDrop').checked = DEFAULT_PARAMS.bCatDrop;
+            document.getElementById('bMagnet').checked = DEFAULT_PARAMS.bMagnet;
+            setAtkMode(DEFAULT_PARAMS.atkMode);
+            // 触发角色选择更新
+            document.getElementById('characterSelect').dispatchEvent(new Event('change'));
+            this.classList.add('hidden');
+        });
+
+        // 监听所有输入变化
+        ['startRounds', 'initialMoney', 'initialCatAttack', 'initialMultA', 'initialMultB'].forEach(id => {
+            document.getElementById(id).addEventListener('input', checkParamsChanged);
+        });
+        ['bCatDrop', 'bMagnet'].forEach(id => {
+            document.getElementById(id).addEventListener('change', checkParamsChanged);
+        });
+    </script>
+
+    <!-- 核心计算逻辑 -->
+    <script>
+        // 常量定义
+        const ATTACK_PER_POINT = 2;
+        const MULT_A_PER_POINT = 0.1;
+        const FIXED_C_PER_POINT = 20;
+        const INITIAL_FIXED_C = 3;
+        const LOCK_BONUS = 10;
+        const MONEY_VICTORY_BASE = 5;
+        const MONEY_ATTACK_PER = 5;
+        const MONEY_REFRESH = -2;
+        const MONEY_PURCHASE = -3;
+        const MONEY_GROWTH_RATE = 0.2;
+        const MONEY_TO_ATTACK = 2;
+        const MONEY_ATTACK_DISPLAY_DIV = 135;
+        const ATTACK_BASE_ADD = 135;
+        const CAT_COUNT = 5;  // 野兽数量
+        const ATTACK_BASE_PER_CAT = ATTACK_BASE_ADD / CAT_COUNT;  // 每个野兽的基础攻击力 = 27
+        const MONEY_EXTRA_12X = 12;
+        const MONEY_EXTRA_10X = 10;
+        // 野兽模式额外倍率：移除磁力后15，切换鱼人弃牌后150
+        const CAT_EXTRA_15X = 15;
+        const CAT_EXTRA_10X = 10;
+        const MONEY_KEY_SCALE = 50;
+        const FINAL_ROUND_MULTIPLIER = 2;
+
+        // 获取参数
+        function getParams() {
+            const charKey = document.getElementById('characterSelect').value;
+            const char = CHARACTER_DATA[charKey];
+            const lifepoint = char.lifepoint;
+            const mana = char.mana;
+            const atkMode = getAtkMode();
+            return {
+                START_ROUNDS: parseInt(document.getElementById('startRounds').value) || 3,
+                INITIAL_MULT_A: parseFloat(document.getElementById('initialMultA').value) || 1,
+                INITIAL_MULT_B: parseFloat(document.getElementById('initialMultB').value) || 1,
+                INITIAL_MONEY: parseFloat(document.getElementById('initialMoney').value) || 20,
+                INITIAL_CAT_ATTACK: parseFloat(document.getElementById('initialCatAttack').value) || 0,
+                LIFEPOINT: lifepoint,
+                MANA: mana,
+                ATTACK_TIMES: lifepoint / 5,
+                C_TOTAL: mana * 5,
+                B_CAT_ATK: atkMode === 'cat',
+                B_MONEY_ATK: atkMode === 'money',
+                B_CAT_DROP: document.getElementById('bCatDrop').checked,
+                B_MAGNET: document.getElementById('bMagnet').checked
+            };
+        }
+
+        // 计算衍生参数
+        function getDerivedParams(p) {
+            const MULT_B_PER_ROUND = 4 + (2.5 * (p.ATTACK_TIMES - 1));
+            return {
+                MULT_B_PER_ROUND,
+                // 野兽模式：输入的是实际攻击力值，需要转换成系数（除以ATTACK_BASE_PER_CAT）
+                // 金钱模式：攻击力初始为0
+                EFFECTIVE_INITIAL_ATTACK: p.B_CAT_ATK ? (p.INITIAL_CAT_ATTACK / ATTACK_BASE_PER_CAT) : 0,
+                EFFECTIVE_INITIAL_MULT_A: p.B_CAT_DROP ? p.INITIAL_MULT_A : 1,
+                EFFECTIVE_INITIAL_MULT_B: p.B_MAGNET ? p.INITIAL_MULT_B : 1,
+                EFFECTIVE_ATTACK_PER_POINT: p.B_CAT_ATK ? ATTACK_PER_POINT : 0,
+                EFFECTIVE_MULT_A_PER_POINT: p.B_CAT_DROP ? MULT_A_PER_POINT : 0,
+                EFFECTIVE_MULT_B_PER_ROUND: p.B_MAGNET ? MULT_B_PER_ROUND : 0,
+                EFFECTIVE_LOCK_BONUS: p.B_MAGNET ? LOCK_BONUS : 1,
+                ROUNDS: 20 - p.START_ROUNDS
+            };
+        }
+
+        // 状态键函数
+        function toKey(attack, multA, multB, money, bMoneyAtk) {
+            const base = [Math.round(attack * 1000), Math.round(multA * 10), Math.round(multB * 10)];
+            if (bMoneyAtk && money !== undefined) {
+                base.push(Math.round(money / MONEY_KEY_SCALE));
+            }
+            return base.join(',');
+        }
+
+        function fromKey(key, bMoneyAtk) {
+            const parts = key.split(',').map(Number);
+            if (bMoneyAtk && parts.length === 4) {
+                return [parts[0] / 1000, parts[1] / 10, parts[2] / 10, parts[3] * MONEY_KEY_SCALE];
+            }
+            return [parts[0] / 1000, parts[1] / 10, parts[2] / 10];
+        }
+
+        // 额外倍率计算
+        // 金钱模式：1 → 12（移除磁力）→ 120（再移除0.2增长）
+        // 野兽模式：1 → 15（移除磁力）→ 150（切换鱼人弃牌）
+        function getExtraMultMoney(locked, moneyFrozen, switched, bMoneyAtk, bCatAtk) {
+            if (bMoneyAtk) {
+                // 金钱模式
+                if (moneyFrozen) return MONEY_EXTRA_12X * MONEY_EXTRA_10X;  // 120
+                if (locked) return MONEY_EXTRA_12X;  // 12
+                return 1;
+            }
+            if (bCatAtk) {
+                // 野兽模式
+                if (switched) return CAT_EXTRA_15X * CAT_EXTRA_10X;  // 150
+                if (locked) return CAT_EXTRA_15X;  // 15
+                return 1;
+            }
+            // 无攻击模式
+            return 1;
+        }
+
+        // 金钱更新
+        function applyMoneyUpdate(money, roundNum, locked, moneyFrozen, p, d) {
+            const r = p.START_ROUNDS + roundNum + 1;
+            let income = r + MONEY_VICTORY_BASE + MONEY_REFRESH + MONEY_PURCHASE;
+            if (!locked) {
+                income += p.ATTACK_TIMES * MONEY_ATTACK_PER;
+            }
+            const totalMoneyBase = money + income;
+            if (moneyFrozen) return totalMoneyBase;
+            return totalMoneyBase * (1 + MONEY_GROWTH_RATE);
+        }
+
+        // 伤害计算
+        // switched: 是否已切换到鱼人弃牌（野兽模式专用）
+        function calculateD(attack, multA, multB, fixedC, locked, roundNum, money, moneyFrozen, switched, isFinal, p, d) {
+            // 野兽模式：(attack + 27) * 5 = attack * 5 + 135
+            // 金钱模式：money * 2 + 135
+            let effAttack;
+            if (p.B_CAT_ATK) {
+                effAttack = (attack*ATTACK_BASE_PER_CAT + ATTACK_BASE_PER_CAT) * CAT_COUNT;  // (攻击加成 + 27) × 5
+            } else if (p.B_MONEY_ATK) {
+                effAttack = money * MONEY_TO_ATTACK + ATTACK_BASE_ADD;  // 金币×2 + 135
+            } else {
+                effAttack = ATTACK_BASE_ADD;  // 无攻击模式
+            }
+            const effMultA = p.B_CAT_DROP ? multA : 1;
+            const effMultB = p.B_MAGNET ? multB : 1;
+            const extraMult = getExtraMultMoney(locked, moneyFrozen, switched, p.B_MONEY_ATK, p.B_CAT_ATK);
+            const finalMult = isFinal ? FINAL_ROUND_MULTIPLIER : 1;
+            return effAttack * effMultA * effMultB * fixedC * extraMult * finalMult;
+        }
+
+        // 应用分配
+        function applyAllocation(attack, multA, multB, path1, path2, locked, d) {
+            const newAttack = attack + path1 * d.EFFECTIVE_ATTACK_PER_POINT / ATTACK_BASE_PER_CAT;
+            const newMultA = multA + path1 * d.EFFECTIVE_MULT_A_PER_POINT;
+            const newMultB = multB + (locked ? 0 : d.EFFECTIVE_MULT_B_PER_ROUND);
+            const newFixedC = INITIAL_FIXED_C + path2 * FIXED_C_PER_POINT;
+            return [newAttack, newMultA, newMultB, newFixedC];
+        }
+
+        // 主计算函数
+        async function calculate() {
+            const p = getParams();
+            const d = getDerivedParams(p);
+
+            const resultsSection = document.getElementById('resultsSection');
+            const loadingState = document.getElementById('loadingState');
+            const resultContent = document.getElementById('resultContent');
+            const loadingProgress = document.getElementById('loadingProgress');
+
+            resultsSection.classList.remove('hidden');
+            loadingState.classList.remove('hidden');
+            resultContent.classList.add('hidden');
+
+            // 使用 setTimeout 让UI更新
+            await new Promise(resolve => setTimeout(resolve, 50));
+
+            let currentDp, bestValue, bestDecisions, bestFinalState;
+
+            if (p.B_MONEY_ATK) {
+                // 金钱模式DP
+                const initialKey = toKey(d.EFFECTIVE_INITIAL_ATTACK, d.EFFECTIVE_INITIAL_MULT_A, d.EFFECTIVE_INITIAL_MULT_B, p.INITIAL_MONEY, true);
+                currentDp = {
+                    'FF': { [initialKey]: [0, []] },
+                    'TF': {},
+                    'TT': {}
+                };
+
+                for (let roundNum = 0; roundNum < d.ROUNDS; roundNum++) {
+                    loadingProgress.textContent = `轮次 ${roundNum + 1 + p.START_ROUNDS}/${20}`;
+                    await new Promise(resolve => setTimeout(resolve, 0));
+
+                    const nextDp = { 'FF': {}, 'TF': {}, 'TT': {} };
+                    const isFinal = (roundNum === d.ROUNDS - 1);
+
+                    // 封装固定参数的伤害计算辅助函数
+                    const calcDmg = (state, isLocked, isFrozen) => calculateD(
+                        state.attack, state.multA, state.multB, state.fixedC,
+                        isLocked, roundNum, state.money, isFrozen, false, isFinal, p, d
+                    );
+
+                    // 封装状态更新辅助函数
+                    const updateDp = (targetBucket, newState, newMoney, dec, cumValue, dmg) => {
+                        const newKey = toKey(newState.attack, newState.multA, newState.multB, newMoney, true);
+                        const newCum = cumValue + dmg;
+                        if (!nextDp[targetBucket][newKey] || nextDp[targetBucket][newKey][0] < newCum) {
+                            nextDp[targetBucket][newKey] = [newCum, dec];
+                        }
+                    };
+
+                    for (const [bkKey, bucket] of Object.entries(currentDp)) {
+                        const locked = bkKey[0] === 'T';
+                        const moneyFrozen = bkKey[1] === 'T';
+
+                        for (const [stateKey, [cumValue, decisions]] of Object.entries(bucket)) {
+                            const [attack, multA, multB, money] = fromKey(stateKey, true);
+
+                            if (!locked) {
+                                // 未锁定：可以选择不锁或锁
+                                for (let path1 = 0; path1 < 5; path1++) {
+                                    for (let path2 = 0; path2 < 5 - path1; path2++) {
+                                        const path3 = p.C_TOTAL - path1 - path2;
+                                        const [newAttack, newMultA, newMultB, newFixedC] = applyAllocation(attack, multA, multB, path1, path2, false, d);
+                                        const newState = { attack: newAttack, multA: newMultA, multB: newMultB, fixedC: newFixedC, money };
+                                        const dmg = calcDmg(newState, false, false);
+                                        const newMoney = applyMoneyUpdate(money, roundNum, false, false, p, d);
+                                        const newDec = [...decisions, [false, false, path1, path2, path3]];
+                                        updateDp('FF', newState, newMoney, newDec, cumValue, dmg);
+                                    }
+                                }
+                                // 锁定
+                                if (p.B_MAGNET) {
+                                    for (let path1 = 0; path1 <= p.C_TOTAL; path1++) {
+                                        const path2 = p.C_TOTAL - path1;
+                                        const [newAttack, newMultA, newMultB, newFixedC] = applyAllocation(attack, multA, multB, path1, path2, true, d);
+                                        const newState = { attack: newAttack, multA: newMultA, multB: newMultB, fixedC: newFixedC, money };
+                                        const dmg = calcDmg(newState, true, false);
+                                        const newMoney = applyMoneyUpdate(money, roundNum, true, false, p, d);
+                                        const newDec = [...decisions, [true, false, path1, path2, 0]];
+                                        updateDp('TF', newState, newMoney, newDec, cumValue, dmg);
+                                    }
+                                }
+                            } else if (!moneyFrozen) {
+                                // 已锁定，未冻结：可选择是否冻结金钱
+                                for (let path1 = 0; path1 <= p.C_TOTAL; path1++) {
+                                    const path2 = p.C_TOTAL - path1;
+                                    const [newAttack, newMultA, newMultB, newFixedC] = applyAllocation(attack, multA, multB, path1, path2, true, d);
+                                    const newState = { attack: newAttack, multA: newMultA, multB: newMultB, fixedC: newFixedC, money };
+                                    for (const doFreeze of [false, true]) {
+                                        const dmg = calcDmg(newState, true, doFreeze);
+                                        const newMoney = applyMoneyUpdate(money, roundNum, true, doFreeze, p, d);
+                                        const targetBucket = doFreeze ? 'TT' : 'TF';
+                                        const newDec = [...decisions, [true, doFreeze, path1, path2, 0]];
+                                        updateDp(targetBucket, newState, newMoney, newDec, cumValue, dmg);
+                                    }
+                                }
+                            } else {
+                                // 已锁定，已冻结：保持冻结状态
+                                for (let path1 = 0; path1 <= p.C_TOTAL; path1++) {
+                                    const path2 = p.C_TOTAL - path1;
+                                    const [newAttack, newMultA, newMultB, newFixedC] = applyAllocation(attack, multA, multB, path1, path2, true, d);
+                                    const newState = { attack: newAttack, multA: newMultA, multB: newMultB, fixedC: newFixedC, money };
+                                    const dmg = calcDmg(newState, true, true);
+                                    const newMoney = applyMoneyUpdate(money, roundNum, true, true, p, d);
+                                    const newDec = [...decisions, [true, true, path1, path2, 0]];
+                                    updateDp('TT', newState, newMoney, newDec, cumValue, dmg);
+                                }
+                            }
+                        }
+                    }
+                    currentDp = nextDp;
+                }
+
+                // 找最优解
+                bestValue = -1;
+                for (const bk of ['FF', 'TF', 'TT']) {
+                    for (const [stateKey, [cumValue, decisions]] of Object.entries(currentDp[bk])) {
+                        if (cumValue > bestValue) {
+                            bestValue = cumValue;
+                            bestDecisions = decisions;
+                            bestFinalState = fromKey(stateKey, true);
+                        }
+                    }
+                }
+            } else {
+                // 非金钱模式DP
+                // 状态: FF(未锁定未切换), FT(未锁定已切换), TF(已锁定未切换), TT(已锁定已切换)
+                const initialKey = toKey(d.EFFECTIVE_INITIAL_ATTACK, d.EFFECTIVE_INITIAL_MULT_A, d.EFFECTIVE_INITIAL_MULT_B, undefined, false);
+                currentDp = {
+                    'FF': { [initialKey]: [0, []] },
+                    'FT': {},
+                    'TF': {},
+                    'TT': {}
+                };
+
+                for (let roundNum = 0; roundNum < d.ROUNDS; roundNum++) {
+                    loadingProgress.textContent = `轮次 ${roundNum + 1 + p.START_ROUNDS}/${20}`;
+                    await new Promise(resolve => setTimeout(resolve, 0));
+
+                    const nextDp = { 'FF': {}, 'FT': {}, 'TF': {}, 'TT': {} };
+                    const isFinal = (roundNum === d.ROUNDS - 1);
+
+                    // 封装伤害计算辅助函数（野兽模式：无money，有switched）
+                    const calcDmg = (state, isLocked, isSwitched) => calculateD(
+                        state.attack, state.multA, state.multB, state.fixedC,
+                        isLocked, roundNum, 0, false, isSwitched, isFinal, p, d
+                    );
+
+                    // 封装状态更新辅助函数
+                    const updateDp = (targetBucket, newState, dec, cumValue, dmg) => {
+                        const newKey = toKey(newState.attack, newState.multA, newState.multB, undefined, false);
+                        const newCum = cumValue + dmg;
+                        if (!nextDp[targetBucket][newKey] || nextDp[targetBucket][newKey][0] < newCum) {
+                            nextDp[targetBucket][newKey] = [newCum, dec];
+                        }
+                    };
+
+                    // 处理每个状态桶的通用逻辑
+                    const processBucket = (bucketKey, alreadySwitched) => {
+                        const isLocked = bucketKey[0] === 'T';
+                        for (const [stateKey, [cumValue, decisions]] of Object.entries(currentDp[bucketKey])) {
+                            const [attack, multA, multB] = fromKey(stateKey, false);
+
+                            if (!isLocked) {
+                                // 未锁定：可以选择不锁或锁
+                                for (let path1 = 0; path1 < 5; path1++) {
+                                    for (let path2 = 0; path2 < 5 - path1; path2++) {
+                                        const path3 = p.C_TOTAL - path1 - path2;
+                                        const willSwitch = !alreadySwitched && path2 > path1;
+                                        const isSwitched = alreadySwitched || willSwitch;
+                                        const [newAttack, newMultA, newMultB, newFixedC] = applyAllocation(attack, multA, multB, path1, path2, false, d);
+                                        const newState = { attack: newAttack, multA: newMultA, multB: newMultB, fixedC: newFixedC };
+                                        const dmg = calcDmg(newState, false, isSwitched);
+                                        const targetBucket = isSwitched ? 'FT' : 'FF';
+                                        const newDec = [...decisions, [false, path1, path2, path3]];
+                                        updateDp(targetBucket, newState, newDec, cumValue, dmg);
+                                    }
+                                }
+                                // 锁定
+                                if (p.B_MAGNET) {
+                                    for (let path1 = 0; path1 <= p.C_TOTAL; path1++) {
+                                        const path2 = p.C_TOTAL - path1;
+                                        const willSwitch = !alreadySwitched && path2 > path1;
+                                        const isSwitched = alreadySwitched || willSwitch;
+                                        const [newAttack, newMultA, newMultB, newFixedC] = applyAllocation(attack, multA, multB, path1, path2, true, d);
+                                        const newState = { attack: newAttack, multA: newMultA, multB: newMultB, fixedC: newFixedC };
+                                        const dmg = calcDmg(newState, true, isSwitched);
+                                        const targetBucket = isSwitched ? 'TT' : 'TF';
+                                        const newDec = [...decisions, [true, path1, path2, 0]];
+                                        updateDp(targetBucket, newState, newDec, cumValue, dmg);
+                                    }
+                                }
+                            } else {
+                                // 已锁定：保持锁定
+                                for (let path1 = 0; path1 <= p.C_TOTAL; path1++) {
+                                    const path2 = p.C_TOTAL - path1;
+                                    const willSwitch = !alreadySwitched && path2 > path1;
+                                    const isSwitched = alreadySwitched || willSwitch;
+                                    const [newAttack, newMultA, newMultB, newFixedC] = applyAllocation(attack, multA, multB, path1, path2, true, d);
+                                    const newState = { attack: newAttack, multA: newMultA, multB: newMultB, fixedC: newFixedC };
+                                    const dmg = calcDmg(newState, true, isSwitched);
+                                    const targetBucket = isSwitched ? 'TT' : 'TF';
+                                    const newDec = [...decisions, [true, path1, path2, 0]];
+                                    updateDp(targetBucket, newState, newDec, cumValue, dmg);
+                                }
+                            }
+                        }
+                    };
+
+                    // 处理四种状态桶
+                    processBucket('FF', false);  // 未锁定，未切换
+                    processBucket('FT', true);   // 未锁定，已切换
+                    if (p.B_MAGNET) {
+                        processBucket('TF', false);  // 已锁定，未切换
+                        processBucket('TT', true);   // 已锁定，已切换
+                    }
+
+                    currentDp = nextDp;
+                }
+
+                // 找最优解
+                bestValue = -1;
+                const candidates = p.B_MAGNET ? ['FF', 'FT', 'TF', 'TT'] : ['FF', 'FT'];
+                for (const state of candidates) {
+                    for (const [stateKey, [cumValue, decisions]] of Object.entries(currentDp[state])) {
+                        if (cumValue > bestValue) {
+                            bestValue = cumValue;
+                            bestDecisions = decisions;
+                            bestFinalState = fromKey(stateKey, false);
+                        }
+                    }
+                }
+            }
+
+            // 显示结果
+            displayResults(bestValue, bestDecisions, bestFinalState, p, d);
+
+            loadingState.classList.add('hidden');
+            resultContent.classList.remove('hidden');
+        }
+
+        // 格式化大数字
+        function formatNumber(num) {
+            if (num >= 1e12) return (num / 1e12).toFixed(2) + 'e12';
+            if (num >= 1e9) return (num / 1e9).toFixed(2) + 'e9';
+            if (num >= 1e6) return (num / 1e6).toFixed(2) + 'e6';
+            if (num >= 1e3) return num.toLocaleString('zh-CN', { maximumFractionDigits: 0 });
+            return num.toFixed(2);
+        }
+
+        // 显示结果
+        function displayResults(bestValue, bestDecisions, bestFinalState, p, d) {
+            // 总伤害
+            // 策略要点
+            const strategyPoints = document.getElementById('strategyPoints');
+            strategyPoints.innerHTML = '';
+
+            let lockRound = null, freezeRound = null, switchRound = null;
+            for (let i = 0; i < bestDecisions.length; i++) {
+                const dec = bestDecisions[i];
+                const lockAction = dec[0];
+                const moneyFrozen = p.B_MONEY_ATK ? dec[1] : false;
+                const path1 = p.B_MONEY_ATK ? dec[2] : dec[1];
+                const path2 = p.B_MONEY_ATK ? dec[3] : dec[2];
+
+                if (lockAction && lockRound === null) lockRound = i + 1;
+                if (p.B_MONEY_ATK && moneyFrozen && freezeRound === null) freezeRound = i + 1;
+                if (switchRound === null && path2 > path1) switchRound = i + 1;
+            }
+
+            const addPoint = (icon, color, text) => {
+                const li = document.createElement('li');
+                li.className = 'flex items-start space-x-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg';
+                li.innerHTML = `<i class="fas ${icon} ${color} mt-1"></i><span>${text}</span>`;
+                strategyPoints.appendChild(li);
+            };
+
+            if (p.B_MAGNET && lockRound !== null) {
+                const bossBeforeLock = lockRound + p.START_ROUNDS - 1;  // 移除前击败的BOSS数
+                const bAtLock = d.EFFECTIVE_INITIAL_MULT_B + (lockRound - 1) * d.EFFECTIVE_MULT_B_PER_ROUND;
+                const extraMultDesc = p.B_MONEY_ATK ? '1→12' : '1→15';
+                addPoint('fa-lock', 'text-red-500', `击败第 <b>${bossBeforeLock}</b> 个BOSS后移除电磁装置（额外倍率 ${extraMultDesc}，未必一定要拿，优先保证出手次数，铁炉堡锻砧倍率: ${bAtLock.toFixed(1)}）`);
+            } else if (p.B_MAGNET) {
+                const finalB = d.EFFECTIVE_INITIAL_MULT_B + d.ROUNDS * d.EFFECTIVE_MULT_B_PER_ROUND;
+                addPoint('fa-magnet', 'text-blue-500', `全程不移除电磁装置（最终铁炉堡锻砧倍率: ${finalB.toFixed(1)}）`);
+            }
+
+            if (p.B_MONEY_ATK && freezeRound !== null) {
+                const bossBeforeFreeze = freezeRound + p.START_ROUNDS - 1;  // 移除前击败的BOSS数
+                addPoint('fa-snowflake', 'text-cyan-500', `击败第 <b>${bossBeforeFreeze}</b> 个BOSS后移除黄金吊坠（额外倍率 12→120）`);
+            }
+
+            if (switchRound !== null) {
+                const switchNote = p.B_MONEY_ATK
+                    ? '（手牌全鱼人，所以从野兽过渡到鱼人要再早点）'
+                    : '（额外倍率 15→150，手牌剩5个野兽，用于接受幸运猫咪的攻击力加成）';
+                addPoint('fa-exchange-alt', 'text-green-500', `在第 <b>${switchRound + p.START_ROUNDS}</b> 轮开始切换野兽弃牌为鱼人弃牌${switchNote}`);
+            }
+
+            // 最终状态
+            const finalStateDiv = document.getElementById('finalState');
+            finalStateDiv.innerHTML = '';
+
+            const addStatCard = (label, value, icon, color) => {
+                const div = document.createElement('div');
+                div.className = 'p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl text-center';
+                div.innerHTML = `
+                    <i class="fas ${icon} ${color} text-lg mb-2"></i>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">${label}</p>
+                    <p class="text-lg font-bold">${value}</p>
+                `;
+                finalStateDiv.appendChild(div);
+            };
+
+            if (p.B_MONEY_ATK) {
+                // 重放计算最终金钱
+                let a = d.EFFECTIVE_INITIAL_ATTACK, ma = d.EFFECTIVE_INITIAL_MULT_A, mb = d.EFFECTIVE_INITIAL_MULT_B;
+                let locked = false, moneyFrozen = false, money = p.INITIAL_MONEY;
+                for (const dec of bestDecisions) {
+                    const lockAct = dec[0];
+                    const mf = dec[1];
+                    const pt1 = dec[2];
+                    const pt2 = dec[3];
+                    [a, ma, mb] = applyAllocation(a, ma, mb, pt1, pt2, lockAct, d).slice(0, 3);
+                    locked = lockAct;
+                    moneyFrozen = mf;
+                    money = applyMoneyUpdate(money, bestDecisions.indexOf(dec), locked, moneyFrozen, p, d);
+                }
+                const moneyAttack = money * MONEY_TO_ATTACK;
+                const finalAttackPower = moneyAttack + ATTACK_BASE_ADD;
+                addStatCard('攻击力', formatNumber(finalAttackPower), 'fa-fist-raised', 'text-red-500');
+                addStatCard('攻击倍率', (moneyAttack / MONEY_ATTACK_DISPLAY_DIV).toFixed(2), 'fa-chart-line', 'text-orange-500');
+                addStatCard('回收标签倍率', ma.toFixed(1), 'fa-paw', 'text-amber-500');
+                addStatCard('铁炉堡锻砧倍率', mb.toFixed(1), 'fa-hammer', 'text-blue-500');
+                addStatCard('最终金币', money.toFixed(0), 'fa-coins', 'text-yellow-500');
+            } else {
+                // 野兽模式：攻击力 = (攻击加成 + 27) × 5
+                const finalAttackPower = (bestFinalState[0]*ATTACK_BASE_PER_CAT + ATTACK_BASE_PER_CAT) * CAT_COUNT;
+                addStatCard('攻击力(5个野兽)', finalAttackPower.toFixed(2), 'fa-fist-raised', 'text-red-500');
+                addStatCard('攻击倍率', (bestFinalState[0]+1).toFixed(3), 'fa-chart-line', 'text-orange-500');
+                addStatCard('回收标签倍率', bestFinalState[1].toFixed(1), 'fa-paw', 'text-amber-500');
+                addStatCard('铁炉堡锻砧倍率', bestFinalState[2].toFixed(1), 'fa-hammer', 'text-blue-500');
+            }
+
+            // 表格 - 先收集所有数据计算总伤害，再生成表格
+            const tbody = document.getElementById('resultTableBody');
+            tbody.innerHTML = '';
+
+            // 根据模式修改表头
+            const colMoneyOrCat = document.getElementById('colMoneyOrCat');
+            colMoneyOrCat.textContent = p.B_MONEY_ATK ? '金币' : '猫咪加攻(单)';
+
+            // 第一轮：收集所有行数据和计算总伤害
+            let attack = d.EFFECTIVE_INITIAL_ATTACK;
+            let multA = d.EFFECTIVE_INITIAL_MULT_A;
+            let multB = d.EFFECTIVE_INITIAL_MULT_B;
+            let locked = false, moneyFrozen = false;
+            let money = p.B_MONEY_ATK ? p.INITIAL_MONEY : 0;
+            let totalCheck = 0;
+            let switched = false;
+            const rowsData = [];
+
+            for (let i = 0; i < bestDecisions.length; i++) {
+                const dec = bestDecisions[i];
+                const lockAction = dec[0];
+                const moneyFrozenThis = p.B_MONEY_ATK ? dec[1] : false;
+                const path1 = p.B_MONEY_ATK ? dec[2] : dec[1];
+                const path2 = p.B_MONEY_ATK ? dec[3] : dec[2];
+                const path3 = p.B_MONEY_ATK ? dec[4] : dec[3];
+
+                const r = i + 1 + p.START_ROUNDS;
+                const justLocked = lockAction && !locked;
+                const justFrozen = moneyFrozenThis && !moneyFrozen;
+                locked = lockAction;
+                moneyFrozen = moneyFrozenThis;
+                const justSwitched = !switched && path2 > path1;
+                if (justSwitched) switched = true;
+
+                const moneyThis = money;
+                const multABefore = multA;
+                const multBBefore = multB;
+                const extraMult = getExtraMultMoney(locked, moneyFrozen, switched, p.B_MONEY_ATK, p.B_CAT_ATK);
+                const [newAttack, newMultA, newMultB, newFixedC] = applyAllocation(attack, multA, multB, path1, path2, locked, d);
+                const isFinal = (i === bestDecisions.length - 1);
+
+                let newMoney = money;
+                let dmg;
+                if (p.B_MONEY_ATK) {
+                    newMoney = applyMoneyUpdate(money, i, locked, moneyFrozen, p, d);
+                    dmg = calculateD(newAttack, newMultA, newMultB, newFixedC, locked, i, newMoney, moneyFrozen, false, isFinal, p, d);
+                } else {
+                    dmg = calculateD(newAttack, newMultA, newMultB, newFixedC, locked, i, 0, false, switched, isFinal, p, d);
+                }
+                totalCheck += dmg;
+
+                rowsData.push({
+                    r, path1, path2, path3, justLocked, justFrozen, justSwitched, isFinal,
+                    multABefore, newMultA, multBBefore, newMultB, moneyThis, newMoney, extraMult, dmg, newFixedC, newAttack
+                });
+
+                attack = newAttack;
+                multA = newMultA;
+                multB = newMultB;
+                money = newMoney;
+            }
+
+            // 第二轮：生成表格（带占比）
+            // 先标记哪些行需要显示"此轮后移除"提示
+            const lockRemoveAtRow = rowsData.findIndex(r => r.justLocked);
+            const freezeRemoveAtRow = rowsData.findIndex(r => r.justFrozen);
+
+            for (let idx = 0; idx < rowsData.length; idx++) {
+                const row = rowsData[idx];
+                let marks = [];
+                // 在前一轮显示"此轮后移除"提示
+                if (lockRemoveAtRow > 0 && idx === lockRemoveAtRow - 1) {
+                    marks.push('<span class="text-red-500 font-medium">[此轮后移除电磁装置]</span>');
+                }
+                if (freezeRemoveAtRow > 0 && idx === freezeRemoveAtRow - 1) {
+                    marks.push('<span class="text-cyan-500 font-medium">[此轮后移除黄金吊坠]</span>');
+                }
+                if (row.justSwitched) marks.push('<span class="text-green-500 font-medium">[切换鱼人弃牌]</span>');
+                if (row.isFinal) marks.push(`<span class="text-purple-500 font-medium">[最终BOSS×${FINAL_ROUND_MULTIPLIER}]</span>`);
+
+                const tr = document.createElement('tr');
+                tr.className = (row.isFinal ? 'bg-purple-50 dark:bg-purple-900/20' : (row.justLocked ? 'bg-red-50 dark:bg-red-900/20' : '')) + ' group relative hover:bg-gray-50 dark:hover:bg-gray-700/30';
+
+                // 保存回合结束后的数据（根据模式保存不同的攻击力来源）
+                // 野兽模式：row.newAttack 是系数，需要转换成实际攻击力值（乘以 ATTACK_BASE_PER_CAT）
+                const useData = {
+                    startRounds: row.r,
+                    initialMoney: row.newMoney,
+                    initialCatAttack: row.newAttack * ATTACK_BASE_PER_CAT,  // 系数转实际值
+                    initialMultA: row.newMultA,
+                    initialMultB: row.newMultB,
+                    isMoneyMode: p.B_MONEY_ATK
+                };
+
+                const useRowBtn = `<button class="use-row-btn opacity-0 group-hover:opacity-100 ml-2
+                                           px-2 py-1 text-xs bg-primary-500 hover:bg-primary-600 text-white rounded
+                                           transition-all duration-200 shadow whitespace-nowrap"
+                                           data-row='${JSON.stringify(useData)}'>
+                                    <i class="fas fa-arrow-up mr-1"></i>使用此轮数据
+                                  </button>`;
+
+                // 弃牌分配显示
+                const discardInfo = `<span class="text-amber-600 dark:text-amber-400">野兽${row.path1}</span> ` +
+                                    `<span class="text-blue-600 dark:text-blue-400">鱼${row.path2}</span> ` +
+                                    `<span class="text-gray-500">金属${row.path3}</span>`;
+
+                // 智能显示变化：值不变时不显示箭头
+                const arrow = '<span class="text-gray-400 mx-1">→</span>';
+                const showChange = (before, after, decimal = 1) => {
+                    const b = decimal === 0 ? Math.round(before) : parseFloat(before.toFixed(decimal));
+                    const a = decimal === 0 ? Math.round(after) : parseFloat(after.toFixed(decimal));
+                    if (b === a) {
+                        return `<span class="font-medium">${decimal === 0 ? a : a.toFixed(decimal)}</span>`;
+                    }
+                    return `${decimal === 0 ? b : b.toFixed(decimal)}${arrow}<span class="font-medium">${decimal === 0 ? a : a.toFixed(decimal)}</span>`;
+                };
+
+                // 计算占比 - 智能格式化，确保小数字也能看出来
+                const ratio = row.dmg / totalCheck;
+                let percentStr;
+                if (ratio >= 0.01) {
+                    percentStr = (ratio * 100).toFixed(1) + '%';
+                } else if (ratio >= 0.0001) {
+                    percentStr = (ratio * 100).toFixed(3) + '%';
+                } else {
+                    // 极小值用科学计数
+                    percentStr = (ratio * 100).toExponential(1) + '%';
+                }
+
+                // 攻击力计算 - 根据模式不同计算
+                // 金钱模式：金币×2 + 135
+                // 野兽模式：(攻击加成 + 27) × 5
+                let effectiveAtk;
+                if (p.B_MONEY_ATK) {
+                    effectiveAtk = Math.round(row.newMoney * MONEY_TO_ATTACK + ATTACK_BASE_ADD);
+                } else if (p.B_CAT_ATK) {
+                    effectiveAtk = ((row.newAttack*ATTACK_BASE_PER_CAT + ATTACK_BASE_PER_CAT) * CAT_COUNT).toFixed(2);
+                } else {
+                    effectiveAtk = ATTACK_BASE_ADD;
+                }
+
+                if (p.B_MONEY_ATK) {
+                    tr.innerHTML = `
+                        <td class="font-bold text-lg">${row.r}</td>
+                        <td>${discardInfo}</td>
+                        <td class="font-medium">${row.newFixedC}</td>
+                        <td>${showChange(row.multABefore, row.newMultA, 1)}</td>
+                        <td>${showChange(row.multBBefore, row.newMultB, 0)}</td>
+                        <td class="font-medium">${row.extraMult}×</td>
+                        <td>${showChange(row.moneyThis, row.newMoney, 0)}</td>
+                        <td class="font-medium">${effectiveAtk}</td>
+                        <td class="font-bold text-primary-600 dark:text-primary-400">${formatNumber(row.dmg)}</td>
+                        <td class="text-gray-500">${percentStr}</td>
+                        <td class="text-xs">${marks.join(' ')}${useRowBtn}</td>
+                    `;
+                } else {
+                    // 野兽模式：显示幸运猫咪加攻（单野兽）= attack * ATTACK_BASE_PER_CAT
+                    const catAttackBonus = (row.newAttack * ATTACK_BASE_PER_CAT).toFixed(2);
+                    tr.innerHTML = `
+                        <td class="font-bold text-lg">${row.r}</td>
+                        <td>${discardInfo}</td>
+                        <td class="font-medium">${row.newFixedC}</td>
+                        <td>${showChange(row.multABefore, row.newMultA, 1)}</td>
+                        <td>${showChange(row.multBBefore, row.newMultB, 0)}</td>
+                        <td class="font-medium">${row.extraMult}×</td>
+                        <td class="font-medium">${catAttackBonus}</td>
+                        <td class="font-medium">${effectiveAtk}</td>
+                        <td class="font-bold text-primary-600 dark:text-primary-400">${formatNumber(row.dmg)}</td>
+                        <td class="text-gray-500">${percentStr}</td>
+                        <td class="text-xs">${marks.join(' ')}${useRowBtn}</td>
+                    `;
+                }
+                tbody.appendChild(tr);
+            }
+
+            document.getElementById('totalCheck').textContent = formatNumber(totalCheck);
+
+            // 绑定"使用当前轮次"按钮事件
+            tbody.querySelectorAll('.use-row-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const data = JSON.parse(this.dataset.row);
+                    document.getElementById('startRounds').value = data.startRounds;
+                    document.getElementById('initialMultA').value = data.initialMultA.toFixed(1);
+                    document.getElementById('initialMultB').value = data.initialMultB.toFixed(1);
+
+                    // 根据模式填充对应的攻击力来源
+                    let atkSourceDesc;
+                    if (data.isMoneyMode) {
+                        document.getElementById('initialMoney').value = Math.round(data.initialMoney);
+                        atkSourceDesc = `金币${Math.round(data.initialMoney)}`;
+                    } else {
+                        document.getElementById('initialCatAttack').value = data.initialCatAttack.toFixed(2);
+                        atkSourceDesc = `猫咪加攻${data.initialCatAttack.toFixed(2)}`;
+                    }
+
+                    // 滚动到参数区域
+                    document.querySelector('section.mb-10').scrollIntoView({ behavior: 'smooth' });
+                    // 检查参数变化
+                    checkParamsChanged();
+                    // 提示用户
+                    const toast = document.createElement('div');
+                    toast.className = 'fixed top-20 left-1/2 -translate-x-1/2 px-4 py-2 bg-green-500 text-white rounded-lg shadow-lg z-50';
+                    toast.innerHTML = `<i class="fas fa-check mr-2"></i>已填充第${data.startRounds}轮结束数据：已击败${data.startRounds}个，${atkSourceDesc}，回收标签倍率${data.initialMultA.toFixed(1)}，铁炉堡锻砧倍率${data.initialMultB.toFixed(0)}`;
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 4000);
+                });
+            });
+        }
+
+        // 绑定计算按钮
+        document.getElementById('calculateBtn').addEventListener('click', calculate);
+    </script>
+
+    <!-- 图片放大弹窗 -->
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <span class="lightbox-close"><i class="fas fa-times"></i></span>
+        <img id="lightboxImg" src="" alt="放大查看" onclick="event.stopPropagation()">
+    </div>
+    <script>
+        function openLightbox(src) {
+            document.getElementById('lightboxImg').src = src;
+            document.getElementById('lightbox').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+    </script>
+</body>
+</html>
