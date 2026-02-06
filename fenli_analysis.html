@@ -249,11 +249,19 @@
                 <ul class="space-y-3 text-gray-700 dark:text-gray-300 mb-8">
                     <li class="flex items-start">
                         <i class="fas fa-check-circle text-primary-500 mr-2 mt-1"></i>
+                        <span>饰品按照入手顺序生效<b>芬利的头盔</b>必须在其他养成倍率饰品之前获取，这对游戏影响太大了，或许应该优化机制改成永远先算加法。</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-primary-500 mr-2 mt-1"></i>
+                        <span>蛇眼的技能是固定移走最先顶端的2个饰品，所以如果芬利头盔不在前2，且养成阶段到了，可以硬吃蛇眼不用浪费钱搜诈骗犯肖像</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-primary-500 mr-2 mt-1"></i>
                         <span>最后几回合占总输出的<b>99%以上</b>，登顶关键是养成而不是提前打伤害。</span>
                     </li>
                     <li class="flex items-start">
                         <i class="fas fa-check-circle text-primary-500 mr-2 mt-1"></i>
-                        <span>没考虑全能辅食，这个总之就是多打，目标<b>12以上</b>。</span>
+                        <span>没考虑全能辅食的养成过程，这个总之就是多打，目标<b>12以上</b>。</span>
                     </li>
                     <li class="flex items-start">
                         <i class="fas fa-check-circle text-primary-500 mr-2 mt-1"></i>
@@ -363,6 +371,15 @@
                                           focus:border-transparent transition-all">
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">单野兽攻击力加成</p>
                         </div>
+
+                        <div>
+                            <label class="block text-sm font-medium mb-2">前期每轮野兽弃牌上限</label>
+                            <input type="number" id="maxCatDrop" value="3" min="0" max="10" step="1"
+                                   class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                                          bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-primary-500
+                                          focus:border-transparent transition-all">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">移除电磁装置前每轮野兽弃牌最大张数</p>
+                        </div>
                     </div>
 
                     <!-- 系数参数 -->
@@ -385,6 +402,15 @@
                                           bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-primary-500
                                           focus:border-transparent transition-all">
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">倍率初始值</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium mb-2">全能辅食系数</label>
+                            <input type="number" id="foodMultiplier" value="12" min="1" step="0.1"
+                                   class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                                          bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-primary-500
+                                          focus:border-transparent transition-all">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">填最终值，不做求解，仅在伤害轮次修正最终伤害值</p>
                         </div>
                     </div>
 
@@ -559,7 +585,7 @@
                             </table>
                         </div>
                         <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 text-right">
-                            <span class="text-sm text-gray-500 dark:text-gray-400">总输出参考（未计算全能辅食，不影响结果）: </span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400">总输出参考（含全能辅食补丁）: </span>
                             <span id="totalCheck" class="font-semibold text-primary-600 dark:text-primary-400"></span>
                         </div>
                     </div>
@@ -645,8 +671,10 @@
             startRounds: 3,
             initialMoney: 20,
             initialCatAttack: 0,
+            maxCatDrop: 3,
             initialMultA: 1,
             initialMultB: 1,
+            foodMultiplier: 12,
             character: 'rafaam',
             atkMode: 'money', // 'cat' or 'money'
             bCatDrop: true,
@@ -703,8 +731,10 @@
                 startRounds: parseInt(document.getElementById('startRounds').value),
                 initialMoney: parseFloat(document.getElementById('initialMoney').value),
                 initialCatAttack: parseFloat(document.getElementById('initialCatAttack').value),
+                maxCatDrop: parseInt(document.getElementById('maxCatDrop').value),
                 initialMultA: parseFloat(document.getElementById('initialMultA').value),
                 initialMultB: parseFloat(document.getElementById('initialMultB').value),
+                foodMultiplier: parseFloat(document.getElementById('foodMultiplier').value),
                 character: document.getElementById('characterSelect').value,
                 atkMode: getAtkMode(),
                 bCatDrop: document.getElementById('bCatDrop').checked,
@@ -720,8 +750,10 @@
             document.getElementById('startRounds').value = DEFAULT_PARAMS.startRounds;
             document.getElementById('initialMoney').value = DEFAULT_PARAMS.initialMoney;
             document.getElementById('initialCatAttack').value = DEFAULT_PARAMS.initialCatAttack;
+            document.getElementById('maxCatDrop').value = DEFAULT_PARAMS.maxCatDrop;
             document.getElementById('initialMultA').value = DEFAULT_PARAMS.initialMultA;
             document.getElementById('initialMultB').value = DEFAULT_PARAMS.initialMultB;
+            document.getElementById('foodMultiplier').value = DEFAULT_PARAMS.foodMultiplier;
             document.getElementById('characterSelect').value = DEFAULT_PARAMS.character;
             document.getElementById('bCatDrop').checked = DEFAULT_PARAMS.bCatDrop;
             document.getElementById('bMagnet').checked = DEFAULT_PARAMS.bMagnet;
@@ -732,7 +764,7 @@
         });
 
         // 监听所有输入变化
-        ['startRounds', 'initialMoney', 'initialCatAttack', 'initialMultA', 'initialMultB'].forEach(id => {
+        ['startRounds', 'initialMoney', 'initialCatAttack', 'maxCatDrop', 'initialMultA', 'initialMultB', 'foodMultiplier'].forEach(id => {
             document.getElementById(id).addEventListener('input', checkParamsChanged);
         });
         ['bCatDrop', 'bMagnet'].forEach(id => {
@@ -779,6 +811,7 @@
                 INITIAL_MULT_B: parseFloat(document.getElementById('initialMultB').value) || 1,
                 INITIAL_MONEY: parseFloat(document.getElementById('initialMoney').value) || 20,
                 INITIAL_CAT_ATTACK: parseFloat(document.getElementById('initialCatAttack').value) || 0,
+                MAX_CAT_DROP: parseInt(document.getElementById('maxCatDrop').value) || 3,
                 LIFEPOINT: lifepoint,
                 MANA: mana,
                 ATTACK_TIMES: lifepoint / 5,
@@ -945,8 +978,9 @@
 
                             if (!locked) {
                                 // 未锁定：可以选择不锁或锁
-                                for (let path1 = 0; path1 < 5; path1++) {
-                                    for (let path2 = 0; path2 < 5 - path1; path2++) {
+                                // path1(野兽)上限由参数控制，path1+path2(非金属)上限保持5
+                                for (let path1 = 0; path1 <= p.MAX_CAT_DROP; path1++) {
+                                    for (let path2 = 0; path1 + path2 <= 5; path2++) {
                                         const path3 = p.C_TOTAL - path1 - path2;
                                         const [newAttack, newMultA, newMultB, newFixedC] = applyAllocation(attack, multA, multB, path1, path2, false, d);
                                         const newState = { attack: newAttack, multA: newMultA, multB: newMultB, fixedC: newFixedC, money };
@@ -1051,8 +1085,9 @@
 
                             if (!isLocked) {
                                 // 未锁定：可以选择不锁或锁
-                                for (let path1 = 0; path1 < 5; path1++) {
-                                    for (let path2 = 0; path2 < 5 - path1; path2++) {
+                                // path1(野兽)上限由参数控制，path1+path2(非金属)上限保持5
+                                for (let path1 = 0; path1 <= p.MAX_CAT_DROP; path1++) {
+                                    for (let path2 = 0; path1 + path2 <= 5; path2++) {
                                         const path3 = p.C_TOTAL - path1 - path2;
                                         const willSwitch = !alreadySwitched && path2 > path1;
                                         const isSwitched = alreadySwitched || willSwitch;
@@ -1129,7 +1164,12 @@
 
         // 格式化大数字
         function formatNumber(num) {
+            if (num >= 1e15) return (num / 1e15).toFixed(2) + 'e15';
+            if (num >= 1e14) return (num / 1e14).toFixed(2) + 'e14';
+            if (num >= 1e13) return (num / 1e13).toFixed(2) + 'e13';
             if (num >= 1e12) return (num / 1e12).toFixed(2) + 'e12';
+            if (num >= 1e11) return (num / 1e11).toFixed(2) + 'e11';
+            if (num >= 1e10) return (num / 1e10).toFixed(2) + 'e10';
             if (num >= 1e9) return (num / 1e9).toFixed(2) + 'e9';
             if (num >= 1e6) return (num / 1e6).toFixed(2) + 'e6';
             if (num >= 1e3) return num.toLocaleString('zh-CN', { maximumFractionDigits: 0 });
@@ -1179,10 +1219,16 @@
             }
 
             if (switchRound !== null) {
+                // 全能辅食系数提示
+                const foodMult = parseFloat(document.getElementById('foodMultiplier').value) || 12;
+                if (switchRound > 1) {
+                    addPoint('fa-drumstick-bite', 'text-orange-500', `在第 <b>${switchRound + p.START_ROUNDS - 1}</b> 个BOSS引入全能辅食终局系数 ×${foodMult}`);
+                }
                 const switchNote = p.B_MONEY_ATK
                     ? '（手牌全鱼人，所以从野兽过渡到鱼人要再早点）'
                     : '（额外倍率 15→150，手牌剩5个野兽，用于接受幸运猫咪的攻击力加成）';
-                addPoint('fa-exchange-alt', 'text-green-500', `在第 <b>${switchRound + p.START_ROUNDS}</b> 轮开始切换野兽弃牌为鱼人弃牌${switchNote}`);
+                addPoint('fa-exchange-alt', 'text-green-500', `在第 <b>${switchRound + p.START_ROUNDS}</b> 个BOSS开始切换野兽弃牌为鱼人弃牌${switchNote}`);
+
             }
 
             // 最终状态
@@ -1261,7 +1307,7 @@
                 const justFrozen = moneyFrozenThis && !moneyFrozen;
                 locked = lockAction;
                 moneyFrozen = moneyFrozenThis;
-                const justSwitched = !switched && path2 > path1;
+                const justSwitched = !switched && path2 > path1 && path2 > 5;
                 if (justSwitched) switched = true;
 
                 const moneyThis = money;
@@ -1296,6 +1342,31 @@
             // 先标记哪些行需要显示"此轮后移除"提示
             const lockRemoveAtRow = rowsData.findIndex(r => r.justLocked);
             const freezeRemoveAtRow = rowsData.findIndex(r => r.justFrozen);
+            const switchAtRow = rowsData.findIndex(r => r.justSwitched);
+
+            // 获取全能辅食系数
+            const foodMultiplier = parseFloat(document.getElementById('foodMultiplier').value) || 12;
+
+            // 应用全能辅食补丁：从切换鱼人弃牌前一回合开始，之后每回合都生效
+            // 重新计算总伤害（含补丁）
+            let totalCheckWithFood = 0;
+            const foodStartRow = switchAtRow > 0 ? switchAtRow - 1 : -1;  // 从切换前一回合开始
+            for (let idx = 0; idx < rowsData.length; idx++) {
+                const row = rowsData[idx];
+                // 从切换前一回合开始，之后每回合都应用全能辅食系数
+                if (foodStartRow >= 0 && idx >= foodStartRow) {
+                    row.foodApplied = true;
+                    row.foodStarted = (idx === foodStartRow);  // 标记是否是开始应用的那一回合
+                    row.extraMultWithFood = row.extraMult * foodMultiplier;
+                    row.dmgWithFood = row.dmg * foodMultiplier;
+                } else {
+                    row.foodApplied = false;
+                    row.foodStarted = false;
+                    row.extraMultWithFood = row.extraMult;
+                    row.dmgWithFood = row.dmg;
+                }
+                totalCheckWithFood += row.dmgWithFood;
+            }
 
             for (let idx = 0; idx < rowsData.length; idx++) {
                 const row = rowsData[idx];
@@ -1307,8 +1378,9 @@
                 if (freezeRemoveAtRow > 0 && idx === freezeRemoveAtRow - 1) {
                     marks.push('<span class="text-cyan-500 font-medium">[此轮后移除黄金吊坠]</span>');
                 }
+                if (row.foodStarted) marks.push(`<span class="text-orange-500 font-medium">[引入全能辅食×${foodMultiplier}]</span>`);
                 if (row.justSwitched) marks.push('<span class="text-green-500 font-medium">[切换鱼人弃牌]</span>');
-                if (row.isFinal) marks.push(`<span class="text-purple-500 font-medium">[最终BOSS×${FINAL_ROUND_MULTIPLIER}]</span>`);
+                if (row.isFinal) marks.push(`<span class="text-purple-500 font-medium">[最终BOSS面板结算×${FINAL_ROUND_MULTIPLIER}]</span>`);
 
                 const tr = document.createElement('tr');
                 tr.className = (row.isFinal ? 'bg-purple-50 dark:bg-purple-900/20' : (row.justLocked ? 'bg-red-50 dark:bg-red-900/20' : '')) + ' group relative hover:bg-gray-50 dark:hover:bg-gray-700/30';
@@ -1347,8 +1419,8 @@
                     return `${decimal === 0 ? b : b.toFixed(decimal)}${arrow}<span class="font-medium">${decimal === 0 ? a : a.toFixed(decimal)}</span>`;
                 };
 
-                // 计算占比 - 智能格式化，确保小数字也能看出来
-                const ratio = row.dmg / totalCheck;
+                // 计算占比 - 智能格式化，确保小数字也能看出来（使用补丁后的伤害）
+                const ratio = row.dmgWithFood / totalCheckWithFood;
                 let percentStr;
                 if (ratio >= 0.01) {
                     percentStr = (ratio * 100).toFixed(1) + '%';
@@ -1371,6 +1443,11 @@
                     effectiveAtk = ATTACK_BASE_ADD;
                 }
 
+                // 额外倍率显示（含全能辅食补丁）
+                const extraMultDisplay = row.foodApplied
+                    ? `<span class="text-orange-600 dark:text-orange-400">${row.extraMultWithFood}×</span>`
+                    : `${row.extraMult}×`;
+
                 if (p.B_MONEY_ATK) {
                     tr.innerHTML = `
                         <td class="font-bold text-lg">${row.r}</td>
@@ -1378,10 +1455,10 @@
                         <td class="font-medium">${row.newFixedC}</td>
                         <td>${showChange(row.multABefore, row.newMultA, 1)}</td>
                         <td>${showChange(row.multBBefore, row.newMultB, 0)}</td>
-                        <td class="font-medium">${row.extraMult}×</td>
+                        <td class="font-medium">${extraMultDisplay}</td>
                         <td>${showChange(row.moneyThis, row.newMoney, 0)}</td>
                         <td class="font-medium">${effectiveAtk}</td>
-                        <td class="font-bold text-primary-600 dark:text-primary-400">${formatNumber(row.dmg)}</td>
+                        <td class="font-bold text-primary-600 dark:text-primary-400">${formatNumber(row.dmgWithFood)}</td>
                         <td class="text-gray-500">${percentStr}</td>
                         <td class="text-xs">${marks.join(' ')}${useRowBtn}</td>
                     `;
@@ -1394,10 +1471,10 @@
                         <td class="font-medium">${row.newFixedC}</td>
                         <td>${showChange(row.multABefore, row.newMultA, 1)}</td>
                         <td>${showChange(row.multBBefore, row.newMultB, 0)}</td>
-                        <td class="font-medium">${row.extraMult}×</td>
+                        <td class="font-medium">${extraMultDisplay}</td>
                         <td class="font-medium">${catAttackBonus}</td>
                         <td class="font-medium">${effectiveAtk}</td>
-                        <td class="font-bold text-primary-600 dark:text-primary-400">${formatNumber(row.dmg)}</td>
+                        <td class="font-bold text-primary-600 dark:text-primary-400">${formatNumber(row.dmgWithFood)}</td>
                         <td class="text-gray-500">${percentStr}</td>
                         <td class="text-xs">${marks.join(' ')}${useRowBtn}</td>
                     `;
@@ -1405,7 +1482,7 @@
                 tbody.appendChild(tr);
             }
 
-            document.getElementById('totalCheck').textContent = formatNumber(totalCheck);
+            document.getElementById('totalCheck').textContent = formatNumber(totalCheckWithFood);
 
             // 绑定"使用当前轮次"按钮事件
             tbody.querySelectorAll('.use-row-btn').forEach(btn => {
