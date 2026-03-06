@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>南山创赛 AI BP辅助评审 - 商业报价提案</title>
+    <!-- For modern browsers and tab icons -->
+    <link rel="icon" href="nscs.png" type="image/png">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Lora', 'serif'],
+                    },
+                    colors: {
+                        dark: {
+                            bg: '#0a0a0b',
+                            card: '#121214',
+                            border: '#27272a'
+                        },
+                        gold: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-out forwards',
+                        'slide-up': 'slideUp 0.6s ease-out forwards',
+                        'glow': 'glow 3s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 10px rgba(245, 158, 11, 0.2)' },
+                            '100%': { boxShadow: '0 0 20px rgba(245, 158, 11, 0.6)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --page-bg: #09090b;
+            --page-bg-soft: #111114;
+            --panel-bg: rgba(18, 18, 22, 0.72);
+            --panel-bg-strong: rgba(12, 12, 15, 0.86);
+            --panel-border: rgba(255, 255, 255, 0.08);
+            --panel-border-strong: rgba(245, 158, 11, 0.18);
+            --text-main: #f5f5f5;
+            --text-subtle: #a1a1aa;
+            --gold-main: #f59e0b;
+            --gold-soft: rgba(245, 158, 11, 0.16);
+            --shadow-soft: 0 18px 50px rgba(0, 0, 0, 0.34);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            color: var(--text-main);
+            background:
+                radial-gradient(circle at 12% 12%, rgba(245, 158, 11, 0.10), transparent 0, transparent 26%),
+                radial-gradient(circle at 88% 20%, rgba(251, 191, 36, 0.08), transparent 0, transparent 20%),
+                radial-gradient(circle at 50% 100%, rgba(120, 53, 15, 0.16), transparent 0, transparent 26%),
+                linear-gradient(180deg, #060607 0%, #09090b 38%, #0c0d10 100%);
+        }
+
+        .glass-panel {
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0)),
+                var(--panel-bg);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid var(--panel-border);
+            box-shadow: var(--shadow-soft);
+            position: relative;
+        }
+
+        .glass-panel::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            pointer-events: none;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.06), transparent 38%, transparent 62%, rgba(255, 255, 255, 0.03));
+            opacity: 0.9;
+        }
+
+        .gold-text-gradient {
+            background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 28px rgba(245, 158, 11, 0.18);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.42);
+            border-color: rgba(245, 158, 11, 0.28);
+        }
+
+        .bg-grid-pattern {
+            background-image: linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* 隐藏滚动条但保留滚动功能 */
+        .hide-scrollbar {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none; /* Chrome, Safari and Opera */
+        }
+
+        /* 锁屏遮罩 */
+        #auth-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                radial-gradient(circle at top, rgba(245, 158, 11, 0.08), transparent 30%),
+                rgba(7, 7, 9, 0.88);
+            backdrop-filter: blur(20px);
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        #main-content {
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            filter: blur(8px);
+            overflow-x: clip;
+        }
+
+        .unlocked #auth-overlay {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .unlocked #main-content {
+            opacity: 1;
+            filter: blur(0);
+        }
+
+        /* 呼吸效果的背景光晕 */
+        .ambient-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(217, 119, 6, 0.08) 0%, rgba(10, 10, 11, 0) 70%);
+            pointer-events: none;
+            z-index: -1;
+            border-radius: 50%;
+        }
+
+        .hero-shell {
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.018), rgba(255, 255, 255, 0)),
+                rgba(255, 255, 255, 0.015);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+        }
+
+        .stat-panel {
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent),
+                rgba(15, 15, 19, 0.88);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.34);
+        }
+
+        .pricing-card-emphasis {
+            background:
+                radial-gradient(circle at top, rgba(245, 158, 11, 0.10), transparent 42%),
+                linear-gradient(180deg, rgba(245, 158, 11, 0.05), transparent 22%),
+                var(--panel-bg);
+            border-color: rgba(245, 158, 11, 0.34);
+            box-shadow: 0 22px 54px rgba(245, 158, 11, 0.10), 0 24px 60px rgba(0, 0, 0, 0.36);
+        }
+
+        .subtle-divider {
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .muted-copy {
+            color: var(--text-subtle);
+        }
+
+        .section-lead {
+            color: #d4d4d8;
+        }
+
+        .top-nav {
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0)),
+                rgba(10, 10, 12, 0.72);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.22);
+        }
+
+        .content-shell {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 权益对比表 */
+        .compare-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        .compare-table th,
+        .compare-table td {
+            padding: 10px 14px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 0.82rem;
+        }
+        .compare-table th {
+            background: rgba(255, 255, 255, 0.03);
+            color: #e4e4e7;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        .compare-table th:first-child,
+        .compare-table td:first-child {
+            text-align: left;
+            color: #a1a1aa;
+            min-width: 180px;
+        }
+        .compare-table td {
+            color: #d4d4d8;
+        }
+        .compare-table .val-yes { color: #34d399; }
+        .compare-table .val-no { color: #52525b; }
+        .compare-table .val-num { color: #fbbf24; font-variant-numeric: tabular-nums; }
+        .compare-table .row-sep td {
+            border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+            background: linear-gradient(90deg, rgba(245, 158, 11, 0.08), transparent);
+            padding: 12px 14px 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #fbbf24;
+            text-align: left;
+        }
+        .compare-toggle {
+            cursor: pointer;
+            list-style: none;
+            user-select: none;
+        }
+        .compare-toggle::-webkit-details-marker { display: none; }
+        .compare-toggle .chevron {
+            transition: transform 0.25s ease;
+        }
+        details[open] .compare-toggle .chevron {
+            transform: rotate(180deg);
+        }
+
+        @media (max-width: 768px) {
+            .ambient-glow {
+                width: 360px;
+                height: 360px;
+            }
+            .compare-table th,
+            .compare-table td {
+                padding: 8px 8px;
+                font-size: 0.75rem;
+            }
+            .compare-table th:first-child,
+            .compare-table td:first-child {
+                min-width: 120px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-gold-500 selection:text-white">
+
+    <!-- 鉴权遮罩层 -->
+    <div id="auth-overlay">
+        <div class="glass-panel p-8 md:p-12 rounded-2xl w-full max-w-md mx-4 text-center border-t border-t-white/10 shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gold-500 to-transparent"></div>
+
+            <div class="w-16 h-16 bg-dark-bg rounded-full flex items-center justify-center mx-auto mb-6 border border-white/5 shadow-inner">
+                <i class="fa-solid fa-lock text-2xl text-gold-400"></i>
+            </div>
+
+            <h2 class="text-2xl font-serif text-white mb-2 tracking-wide">启封</h2>
+            <p class="text-zinc-400 text-sm mb-8 leading-relaxed">本内容属于商业沟通机密<br>请输入访问密码以查阅完整内容。</p>
+
+            <form id="auth-form" class="space-y-4">
+                <div class="relative">
+                    <input type="password" id="password-input"
+                           class="w-full bg-dark-bg border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-gold-500/50 focus:ring-1 focus:ring-gold-500/50 transition duration-200"
+                           placeholder="请输入访问密码" autocomplete="off">
+                    <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 text-gold-500 hover:text-gold-400 p-2">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+                <p id="auth-error" class="text-red-400 text-xs text-left hidden opacity-0 transition-opacity">密码错误或已失效，请联系对接人</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- 主体内容区 -->
+    <main id="main-content" class="relative min-h-screen">
+        <div class="bg-grid-pattern absolute inset-0 opacity-40 pointer-events-none z-[-1]"></div>
+
+        <!-- 背景光晕 -->
+        <div class="ambient-glow top-0 left-0 -translate-x-1/4 -translate-y-1/4"></div>
+        <div class="ambient-glow bottom-0 right-0 translate-x-1/4 translate-y-1/4"></div>
+
+        <!-- 顶部导航 -->
+        <header class="top-nav sticky top-0 z-40 border-b border-white/5 py-4 px-6 md:px-12 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center text-dark-bg font-bold font-serif shadow-lg shadow-gold-500/20">
+                    AI
+                </div>
+                <span class="font-serif font-semibold text-lg tracking-wide text-white">系统开发方案</span>
+            </div>
+            <div>
+                <span class="text-xs font-mono text-zinc-500 py-1 px-3 rounded-full border border-zinc-800">CONFIDENTIAL</span>
+            </div>
+        </header>
+
+        <div class="content-shell max-w-7xl mx-auto px-6 md:px-12 py-16 space-y-24">
+
+            <!-- Hero 首屏概览 -->
+            <section class="hero-shell opacity-0 motion-safe:animate-slide-up rounded-[32px] px-6 py-10 text-center lg:text-left flex flex-col lg:flex-row items-center min-h-[85vh] md:min-h-0 justify-center gap-12 pt-8 md:px-8">
+                <div class="flex-1 space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-500/10 border border-gold-500/20 text-gold-400 text-sm font-medium">
+                        <i class="fa-solid fa-bolt text-xs"></i>
+                        <span>南山创赛 · AI BP辅助评审项目</span>
+                    </div>
+                    <h1 class="text-2xl md:text-5xl lg:text-6xl font-serif font-bold leading-tight text-white">
+                        提升BP评审能力<br>
+                        <span class="gold-text-gradient">识别更优质项目</span>
+                    </h1>
+                    <p class="section-lead text-sm md:text-lg leading-relaxed tracking-wide text-justify md:text-center lg:text-left mx-auto lg:mx-0">
+                        面向南山创赛，提供 AI 辅助评审能力的规划方案。依托赛事连续 18 届积累与即将到来的第 19 届需求，帮助主办方在更短时间内完成项目初筛、风险识别、评审辅助与诊断输出，为评委提供更高质量的参考依据。
+                    </p>
+                    <div class="pt-4 flex flex-wrap gap-4 justify-center lg:justify-start">
+                        <a href="#pricing" class="px-8 py-3 rounded-full bg-white text-dark-bg font-medium hover:bg-zinc-200 transition-colors shadow-lg hover:shadow-xl">
+                            查阅报价方案
+                        </a>
+                        <a href="#features" class="px-8 py-3 rounded-full glass-panel text-white hover:bg-white/5 transition-colors border border-white/10">
+                            了解AI解决的痛点
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 核心价值点 Features -->
+            <section id="features" class="opacity-0 motion-safe:animate-slide-up" style="animation-delay: 0.2s;">
+                <div class="text-center mb-12">
+                    <h2 class="text-2xl md:text-3xl font-serif font-bold text-white mb-4">核心应用场景</h2>
+                    <p class="section-lead text-sm md:text-base tracking-wide text-justify md:text-center px-2 md:px-0 mx-auto">围绕主办方、评委在评审过程中的典型痛点，形成从资料处理、风险识别到多轮辅助判断的解决方案。</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="glass-panel p-6 rounded-xl border border-white/5 card-hover transition-all duration-300">
+                        <div class="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center mb-4 text-lg">
+                            <i class="fa-solid fa-microscope"></i>
+                        </div>
+                        <h3 class="text-xl font-medium text-white mb-2">海量项目资料初筛</h3>
+                        <p class="text-sm text-zinc-400 leading-relaxed">在集中申报阶段，对大量项目资料进行结构化读取、评分参考输出与重点问题标注，缓解初筛压力。</p>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-xl border border-white/5 card-hover transition-all duration-300">
+                        <div class="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mb-4 text-lg">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <h3 class="text-xl font-medium text-white mb-2">风险识别</h3>
+                        <p class="text-sm text-zinc-400 leading-relaxed">对恶意信息、伪装的BP讲手等高风险项目和明显异常材料形成更稳定的提示能力。</p>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-xl border border-white/5 card-hover transition-all duration-300">
+                        <div class="w-10 h-10 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center mb-4 text-lg">
+                            <i class="fa-solid fa-video"></i>
+                        </div>
+                        <h3 class="text-xl font-medium text-white mb-2">多轮评价与多模态扩展</h3>
+                        <p class="text-sm text-zinc-400 leading-relaxed">可覆盖路演视频评审与多轮比赛评价整合。</p>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-xl border border-white/5 card-hover transition-all duration-300 lg:col-span-2 relative overflow-hidden">
+                        <div class="absolute right-0 bottom-0 opacity-10 pointer-events-none -mb-8 -mr-8">
+                            <i class="fa-solid fa-plug text-9xl"></i>
+                        </div>
+                        <div class="w-10 h-10 rounded-lg bg-gold-500/10 border border-gold-500/20 text-gold-400 flex items-center justify-center mb-4 text-lg">
+                            <i class="fa-solid fa-puzzle-piece"></i>
+                        </div>
+                        <h3 class="text-xl font-medium text-white mb-2">评委流程与资料链路整合</h3>
+                        <p class="text-sm text-zinc-400 leading-relaxed max-w-xl">支持围绕评委报名、项目资料、BP 附件和外部系统链路做整合，减少评审过程中信息分散、重复整理与人工切换的成本。</p>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-xl border border-white/5 card-hover transition-all duration-300 flex flex-col justify-center">
+                        <div class="border-l-2 border-gold-500 pl-4">
+                            <h4 class="text-white font-medium mb-1">后续扩展与维护</h4>
+                            <p class="text-xs text-zinc-400 mb-3">能力可逐步扩展，便于持续演进</p>
+                            <p class="text-sm text-zinc-300 leading-relaxed">架构支持后续技术人员按模块扩展技能能力，便于逐步接入项目查重、背调与更多外部业务场景。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pricing & Milestones -->
+            <section id="pricing" class="opacity-0 motion-safe:animate-slide-up pt-8" style="animation-delay: 0.4s;">
+                <div class="text-center mb-8 lg:mb-16">
+                    <h2 class="text-2xl md:text-3xl font-serif font-bold text-white mb-2">合作方案与交付范围</h2>
+                    <p class="section-lead text-sm md:text-base mx-auto px-2 md:px-0 lg:mb-0">根据开发覆盖范围和协同周期，提供三档合作方案供您决策。可做一次前期评估对齐后再做最终确认。</p>
+                    <div class="inline-flex items-center justify-center gap-2 px-4 py-2 mt-4 rounded-full bg-white/5 border border-white/10 text-zinc-400 text-xs lg:hidden motion-safe:animate-pulse">
+                        <i class="fa-solid fa-arrows-left-right text-gold-500/80"></i>
+                        <span>左右滑动对比更多方案</span>
+                    </div>
+                </div>
+
+                <div class="flex overflow-x-auto lg:overflow-visible snap-x snap-mandatory gap-6 pb-8 pt-6 px-6 -mx-6 md:px-12 md:-mx-12 lg:px-0 lg:-mx-0 lg:pb-0 lg:pt-0 lg:grid lg:grid-cols-3 mb-12 hide-scrollbar">
+                    <div class="glass-panel rounded-2xl flex flex-col border border-white/10 hover:border-gold-500/30 transition-colors relative w-[80vw] max-w-[320px] md:w-[380px] md:max-w-none lg:w-auto snap-center shrink-0">
+                        <div class="p-6 md:p-8 flex-1">
+                            <h3 class="text-xl font-serif font-medium text-white mb-1">MVP 原型系统版</h3>
+                            <p class="text-sm text-zinc-400 mb-4 font-mono">5 个工作日交付 / 周期不可拆分</p>
+                            <div class="mb-6 space-y-1">
+                                <div class="text-zinc-500 line-through text-sm">指导价 ¥120,000</div>
+                                <div class="text-3xl font-semibold text-white">¥<span class="text-4xl">60,000</span></div>
+                                <div class="text-xs text-emerald-400 font-medium">5.0 折</div>
+                            </div>
+                            <ul class="space-y-3 text-sm text-zinc-300">
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-gold-500 mt-1"></i><span><strong class="text-white">可用系统：</strong>交付可运行的原型项目，满足基础资料输入与AI的多提示词智能路由输出。</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-gold-500 mt-1"></i><span><strong class="text-white">部署方式：</strong>提供基于逆向代理的本地部署方案，交互以满足使用为主。</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-gold-500 mt-1"></i><span><strong class="text-white">能力边界：</strong>聚焦文本资料分析、打分、风险提示与评审参考。不含路演视频评审</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-gift text-purple-400 mt-1"></i><span><strong class="text-white">额外支持：</strong>赠送最多 2 个工作日的前期调研评估。</span></li>
+                            </ul>
+                        </div>
+                        <div class="p-6 bg-black/40 rounded-b-2xl border-t subtle-divider text-xs text-zinc-400 space-y-2">
+                            <div class="flex justify-between"><span>前期款 (50%)</span> <span class="text-white font-mono">¥30,000</span></div>
+                            <div class="flex justify-between"><span>尾款 (50%)</span> <span class="text-white font-mono">¥30,000</span></div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel pricing-card-emphasis rounded-2xl flex flex-col relative transform lg:-translate-y-4 z-10 w-[80vw] max-w-[320px] md:w-[380px] md:max-w-none lg:w-auto snap-center shrink-0">
+                        <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gold-500 text-dark-bg text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap">
+                            推荐方案
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-b from-gold-500/5 to-transparent rounded-2xl pointer-events-none"></div>
+                        <div class="p-6 md:p-8 flex-1">
+                            <h3 class="text-xl font-serif font-medium text-gold-400 mb-1">标准应用系统版</h3>
+                            <p class="text-sm text-zinc-400 mb-4 font-mono">10 个工作日 / 可拆分为 2 个独立阶段</p>
+                            <div class="mb-6 space-y-1">
+                                <div class="text-zinc-500 line-through text-sm">指导价 ¥288,000</div>
+                                <div class="text-3xl font-semibold text-white">¥<span class="text-4xl">120,000</span></div>
+                                <div class="text-xs text-emerald-400 font-medium">约 4.1 折</div>
+                            </div>
+                            <ul class="space-y-3 text-sm text-zinc-300">
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-gold-500 mt-1"></i><span><strong class="text-white">AI深度调优：</strong>支持更多行业与项目类型，对更多历史数据做回归与调试。</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-gold-500 mt-1"></i><span><strong class="text-white">评审机制：</strong>支持多轮比赛评审内容整合，以及 AI 评委会决议参考体系。</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-gold-500 mt-1"></i><span><strong class="text-white">系统衔接：</strong>最多支持 2 个外部可访问系统链路打通。</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-gift text-purple-400 mt-1"></i><span><strong class="text-white">能力支持：</strong>提供数据清洗维护辅导，帮助 1-2 人掌握清理能力，降低后续开支。</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-gift text-purple-400 mt-1"></i><span><strong class="text-white">验收调试：</strong>赠送独立验收与调试支持，最多 2 个工作日。</span></li>
+                            </ul>
+                            <div class="mt-4 text-xs text-zinc-500">系统架构支持后续技术人员按模块扩展能力，便于后续继续拔插技能模块。</div>
+                        </div>
+                        <div class="p-6 bg-gold-900/10 rounded-b-2xl border-t border-gold-500/20 text-xs text-zinc-400 space-y-2">
+                            <div class="flex justify-between"><span>前期款 (40%)</span> <span class="text-white font-mono">¥48,000</span></div>
+                            <div class="flex justify-between"><span>中期款 (40%)</span> <span class="text-white font-mono">¥48,000</span></div>
+                            <div class="flex justify-between"><span>尾款 (20%)</span> <span class="text-white font-mono">¥24,000</span></div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl flex flex-col border border-white/10 hover:border-gold-500/30 transition-colors relative overflow-hidden group w-[80vw] max-w-[320px] md:w-[380px] md:max-w-none lg:w-auto snap-center shrink-0">
+                        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiPjwvcmVjdD4KPHBhdGggZD0iTTAgMEw4IDhaTTAgOEw4IDBaIiBzdHJva2U9IiMzMzMiIHN0cm9rZS1vcGFjaXR5PSIwLjIyIiBzdHJva2Utd2lkdGg9IjEiPjwvcGF0aD4KPC9zdmc+')] opacity-20"></div>
+                        <div class="p-6 md:p-8 flex-1 relative z-10">
+                            <h3 class="text-xl font-serif font-medium gold-text-gradient mb-1">完整保障交付版</h3>
+                            <p class="text-sm text-zinc-400 mb-4 font-mono">30 个工作日 / 可拆分为 4 个独立阶段</p>
+                            <div class="mb-6 space-y-1">
+                                <div class="text-zinc-500 line-through text-sm">指导价 ¥840,000</div>
+                                <div class="text-3xl font-semibold text-white">¥<span class="text-4xl">350,000</span></div>
+                                <div class="text-xs text-emerald-400 font-medium">约 4.1 折</div>
+                            </div>
+                            <ul class="space-y-3 text-sm text-zinc-300">
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-gold-500 mt-1"></i><span><strong class="text-white">完整能力范围：</strong>覆盖已沟通的全部核心范围，包括路演视频评审、评委辅助与实时提问增强等能力。</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-gold-500 mt-1"></i><span><strong class="text-white">集成与调优：</strong>支持完整链路整合、持续迭代优化，并支持对选定国产模型进行二次调整。</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-gold-500 mt-1"></i><span><strong class="text-white">交付保障：</strong>包含项目美化定制、技术与开发文档全面交付，以及投入使用期间最多 3 个工作日的开发调优支持。</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-gold-500 mt-1"></i><span><strong class="text-white">组织支持：</strong>可覆盖专项小组项目管理、必要的外部汇报演示材料准备。</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-gift text-purple-400 mt-1"></i><span><strong class="text-white">能力支持：</strong>可额外提供 1 次实操开发公开课，支持后续自主开发与维护。</span></li>
+                            </ul>
+                        </div>
+                        <div class="p-6 bg-black/40 rounded-b-2xl border-t subtle-divider text-xs text-zinc-400 space-y-2 relative z-10">
+                            <div class="flex justify-between"><span>前期款 (30%)</span> <span class="text-white font-mono">¥105,000</span></div>
+                            <div class="flex justify-between"><span>中期款 (30%)</span> <span class="text-white font-mono">¥105,000</span></div>
+                            <div class="flex justify-between"><span>尾款 (40%)</span> <span class="text-white font-mono">¥140,000</span></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 方案权益对比 -->
+            <details class="opacity-0 motion-safe:animate-slide-up" style="animation-delay: 0.5s;">
+                <summary class="compare-toggle glass-panel rounded-2xl px-6 py-4 flex items-center justify-center gap-3 text-sm text-zinc-300 hover:text-white transition-colors border border-white/10">
+                    <i class="fa-solid fa-table-columns text-gold-500"></i>
+                    <span>展开方案权益对比</span>
+                    <i class="fa-solid fa-chevron-down text-xs chevron"></i>
+                </summary>
+                <div class="glass-panel rounded-2xl mt-4 overflow-x-auto border border-white/10">
+                    <table class="compare-table">
+                        <thead>
+                            <tr>
+                                <th>能力维度</th>
+                                <th>MVP 原型版</th>
+                                <th>标准应用版</th>
+                                <th>完整保障版</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="row-sep"><td colspan="4">基础能力</td></tr>
+                            <tr>
+                                <td>可运行系统交付</td>
+                                <td class="val-yes">✓</td>
+                                <td class="val-yes">✓</td>
+                                <td class="val-yes">✓</td>
+                            </tr>
+                            <tr>
+                                <td>项目评分与风险提示</td>
+                                <td class="val-yes">✓</td>
+                                <td class="val-yes">✓</td>
+                                <td class="val-yes">✓</td>
+                            </tr>
+                            <tr>
+                                <td>评审辅助参考输出</td>
+                                <td class="val-yes">✓</td>
+                                <td class="val-yes">✓</td>
+                                <td class="val-yes">✓</td>
+                            </tr>
+                            <tr>
+                                <td>本地部署（逆向代理）</td>
+                                <td class="val-yes">✓</td>
+                                <td class="val-yes">✓</td>
+                                <td class="val-yes">✓</td>
+                            </tr>
+                            <tr>
+                                <td>前期调研评估（赠送）</td>
+                                <td class="val-num">最多 2 天</td>
+                                <td class="val-num">最多 2 天</td>
+                                <td class="val-num">最多 3 天</td>
+                            </tr>
+
+                            <tr class="row-sep"><td colspan="4">进阶能力（标准版起）</td></tr>
+                            <tr>
+                                <td>多行业深度调优</td>
+                                <td class="val-no">—</td>
+                                <td class="val-yes">✓</td>
+                                <td class="val-yes">✓</td>
+                            </tr>
+                            <tr>
+                                <td>多轮比赛评价整合</td>
+                                <td class="val-no">—</td>
+                                <td class="val-yes">✓</td>
+                                <td class="val-yes">✓</td>
+                            </tr>
+                            <tr>
+                                <td>AI 评委会决议体系</td>
+                                <td class="val-no">—</td>
+                                <td class="val-yes">✓</td>
+                                <td class="val-yes">✓</td>
+                            </tr>
+                            <tr>
+                                <td>数据清洗能力辅导</td>
+                                <td class="val-no">—</td>
+                                <td class="val-num">辅导 1~2 人</td>
+                                <td class="val-num">辅导 1~3 人</td>
+                            </tr>
+                            <tr>
+                                <td>外部系统链路打通</td>
+                                <td class="val-no">—</td>
+                                <td class="val-num">最多 2 条</td>
+                                <td class="val-num">完整链路，最多 5 条</td>
+                            </tr>
+                            <tr>
+                                <td>可拔插 Skill 扩展架构</td>
+                                <td class="val-no">—</td>
+                                <td class="val-yes">✓</td>
+                                <td class="val-yes">✓</td>
+                            </tr>
+                            <tr>
+                                <td>独立验收调试（赠送）</td>
+                                <td class="val-no">—</td>
+                                <td class="val-num">最多 2 天</td>
+                                <td class="val-num">最多 4 天</td>
+                            </tr>
+
+                            <tr class="row-sep"><td colspan="4">完整版专属</td></tr>
+                            <tr>
+                                <td>路演视频评审</td>
+                                <td class="val-no">—</td>
+                                <td class="val-no">—</td>
+                                <td class="val-yes">✓</td>
+                            </tr>
+                            <tr>
+                                <td>评委辅助与实时提问增强</td>
+                                <td class="val-no">—</td>
+                                <td class="val-no">—</td>
+                                <td class="val-yes">✓</td>
+                            </tr>
+                            <tr>
+                                <td>国产模型二次调整</td>
+                                <td class="val-no">—</td>
+                                <td class="val-no">—</td>
+                                <td class="val-yes">✓</td>
+                            </tr>
+                            <tr>
+                                <td>项目美化定制</td>
+                                <td class="val-no">—</td>
+                                <td class="val-no">—</td>
+                                <td class="val-yes">✓</td>
+                            </tr>
+                            <tr>
+                                <td>技术与开发文档完整交付</td>
+                                <td class="val-no">—</td>
+                                <td class="val-no">—</td>
+                                <td class="val-yes">✓</td>
+                            </tr>
+                            <tr>
+                                <td>上线后调优支持（赠送）</td>
+                                <td class="val-no">—</td>
+                                <td class="val-no">—</td>
+                                <td class="val-num">最多 3 天</td>
+                            </tr>
+                            <tr>
+                                <td>专项小组与汇报材料支持</td>
+                                <td class="val-no">—</td>
+                                <td class="val-no">—</td>
+                                <td class="val-yes">✓</td>
+                            </tr>
+                            <tr>
+                                <td>实操开发公开课（赠送）</td>
+                                <td class="val-no">—</td>
+                                <td class="val-no">—</td>
+                                <td class="val-num">1 次</td>
+                            </tr>
+
+                            <tr class="row-sep"><td colspan="4">服务周期</td></tr>
+                            <tr>
+                                <td>交付工作日</td>
+                                <td class="val-num">5 天</td>
+                                <td class="val-num">10 天</td>
+                                <td class="val-num">30 天</td>
+                            </tr>
+                            <tr>
+                                <td>可拆分阶段</td>
+                                <td class="val-no">不可拆分</td>
+                                <td class="val-num">2 段</td>
+                                <td class="val-num">4 段</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </details>
+
+            <!-- 附加协议与备注 -->
+            <section class="glass-panel opacity-0 motion-safe:animate-slide-up rounded-2xl p-6 md:p-8 text-sm" style="animation-delay: 0.6s;">
+                <h3 class="text-gold-400 text-lg font-serif font-medium mb-5 flex items-center gap-2">
+                    <i class="fa-solid fa-gavel"></i> 合作说明
+                </h3>
+                <div class="grid md:grid-cols-2 gap-8 text-zinc-400">
+                    <div>
+                        <h4 class="text-white mb-2 font-medium">产权与费用边界</h4>
+                        <ul class="space-y-3">
+                            <li class="pl-4 border-l-2 border-zinc-700">交付完成后的系统代码与项目资产最终归属于<strong class="text-white">甲方</strong>。</li>
+                            <li class="pl-4 border-l-2 border-zinc-700">本方案为一次性交付合作，<strong class="text-white">无订阅年费</strong>；交付后一年内的后续开发、升级与维护可享优惠。</li>
+                            <li class="pl-4 border-l-2 border-zinc-700">全部报价默认不含长期部署、网络、设备成本与第三方模型或接口费用；可提供一定协助，如需统一代办，可另行协商。</li>
+                            <li class="pl-4 border-l-2 border-zinc-700">数据清洗建议采用协同方式推进：我方提供规则与方法，甲方安排业务人员参与，可更好控制时间与预算。</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-white mb-2 font-medium">从过往项目中沉淀的协作建议</h4>
+                        <ul class="space-y-3">
+                            <li class="pl-4 border-l-2 border-gold-500/50">在以往定制开发中，由单一对接人统筹需求确认与资料协调的项目，交付效率明显更高，建议提前安排到位。</li>
+                            <li class="pl-4 border-l-2 border-gold-500/50">资料与接口的到位节奏，直接影响开发排期。历史经验表明，资料、人力延迟是拖慢交付的首要原因，双方提前对齐资料清单有助于规避这一风险。</li>
+                            <li class="pl-4 border-l-2 border-gold-500/50">正式开发周期通常从首笔款项到账与基础资料到位后开始计算，提前准备可以帮助项目尽早进入实质推进阶段。</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer 作者信息区 -->
+    <footer class="mt-12 py-6 border-t border-white/10 bg-black/60 backdrop-blur-md">
+            <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="text-zinc-500 text-sm">
+                    &copy; <span id="current-year"></span> 南山创赛 AI BP辅助评审 - 商业报价提案.
+                    <span class="text-xs text-red-500/80 ml-2 font-bold">机密文件，请勿随意传播</span>
+                </div>
+                <div class="flex items-center gap-4 text-sm text-zinc-400">
+                    <span class="font-serif">Architected by <span class="text-white font-medium">Izumi.屈源</span></span>
+                    <div class="w-px h-4 bg-zinc-700"></div>
+                    <a href="https://otokonoizumi.github.io" target="_blank" class="hover:text-gold-400 transition-colors"><i class="fa-brands fa-github text-lg"></i></a>
+                </div>
+            </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 设置当前年份
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+
+            // 鉴权逻辑
+            const authForm = document.getElementById('auth-form');
+            const passwordInput = document.getElementById('password-input');
+            const authError = document.getElementById('auth-error');
+
+            const CACHE_KEY = 'bp_proposal_auth_time';
+            const CACHE_HOURS = 48;
+
+            // 检查缓存
+            const lastAuthTime = localStorage.getItem(CACHE_KEY);
+            if (lastAuthTime) {
+                const now = new Date().getTime();
+                if (now - parseInt(lastAuthTime) < CACHE_HOURS * 60 * 60 * 1000) {
+                    // 已验证且在有效期内，直接解锁
+                    document.body.classList.add('unlocked');
+                    setTimeout(() => {
+                        const overlay = document.getElementById('auth-overlay');
+                        if (overlay) overlay.style.display = 'none';
+                        document.querySelectorAll('.motion-safe\\:animate-slide-up').forEach((el) => {
+                            if(el) el.style.animationPlayState = 'running';
+                        });
+                    }, 50);
+                }
+            }
+
+            authForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const pwd = passwordInput.value.trim();
+
+                // 校验密码
+                if (pwd === 'ai2026') {
+                    // 记录成功验证的时间戳 (48小时有效)
+                    localStorage.setItem(CACHE_KEY, new Date().getTime().toString());
+
+                    // 解锁动画
+                    document.body.classList.add('unlocked');
+
+                    // 触发展现动画
+                    setTimeout(() => {
+                        authForm.closest('#auth-overlay').style.display = 'none';
+                        // 添加平滑进入效果
+                        document.querySelectorAll('.motion-safe\\:animate-slide-up').forEach((el, index) => {
+                            el.style.animationPlayState = 'running';
+                        });
+                    }, 500);
+                } else {
+                    // 密码错误动画
+                    authError.classList.remove('hidden');
+                    authError.classList.remove('opacity-0');
+                    authError.classList.add('opacity-100');
+                    passwordInput.classList.add('border-red-500');
+
+                    // 震动效果
+                    const panel = document.querySelector('#auth-overlay .glass-panel');
+                    panel.style.transform = 'translateX(-10px)';
+                    setTimeout(() => panel.style.transform = 'translateX(10px)', 50);
+                    setTimeout(() => panel.style.transform = 'translateX(-10px)', 100);
+                    setTimeout(() => panel.style.transform = 'translateX(10px)', 150);
+                    setTimeout(() => panel.style.transform = 'translateX(0)', 200);
+
+                    setTimeout(() => {
+                        authError.classList.remove('opacity-100');
+                        authError.classList.add('opacity-0');
+                        passwordInput.classList.remove('border-red-500');
+                        setTimeout(() => authError.classList.add('hidden'), 300);
+                    }, 3000);
+                }
+            });
+
+            // 初始时暂停所有滚动入场动画，解锁后播放
+            document.querySelectorAll('.motion-safe\\:animate-slide-up').forEach(el => {
+                el.style.animationPlayState = 'paused';
+            });
+        });
+    </script>
+</body>
+</html>
