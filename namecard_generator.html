@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI智能体落地与应用 - 名卡生成系统</title>
+    <!-- 引入高级字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;500;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- 引入工具库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+    <style>
+        :root {
+            /* 物理标准 300DPI: 58x89mm (含2mm出血) -> 686x1052 px */
+            --canvas-w: 686px;
+            --canvas-h: 1052px;
+            --bleed: 24px;
+
+            /* 色彩体系 */
+            --paper-light: #F9F8F6;
+            --paper-dark: #1A1C20;
+
+            --lobster-red: #C03A2B;
+            --warm-gold: #C9A84C;
+            --staff-orange: rgb(217, 119, 87);
+
+            --text-main: #1D2129;
+            --text-muted: #86909C;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body { font-family: 'Noto Sans SC', sans-serif; background: #EAE8E3; color: var(--text-main); padding: 40px; }
+
+        .dashboard { max-width: 900px; margin: 0 auto 40px auto; background: #fff; padding: 30px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        h1 { font-family: 'Noto Serif SC', serif; font-size: 24px; margin-bottom: 8px; }
+        .hint { color: var(--text-muted); font-size: 13px; margin-bottom: 24px; }
+
+        textarea { width: 100%; height: 120px; padding: 16px; border: 1px solid #ddd; border-radius: 4px; font-family: monospace; font-size: 14px; background: #fafafa; margin-bottom: 20px; outline: none; }
+        textarea:focus { border-color: var(--warm-gold); }
+
+        .btn { background: var(--text-main); color: #fff; border: none; padding: 12px 28px; font-size: 14px; cursor: pointer; letter-spacing: 1px; transition: 0.3s; }
+        .btn:hover { background: var(--warm-gold); }
+        .btn.outline { background: transparent; color: var(--text-main); border: 1px solid var(--text-main); margin-left: 12px; }
+
+        .input-field { width: 100%; padding: 10px 16px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; background: #fafafa; outline: none; transition: 0.3s; }
+        .input-field:focus { border-color: var(--warm-gold); background: #fff; }
+
+        /* ====== 卡片渲染区 (缩放版预览) ====== */
+        .preview-grid { display: flex; flex-wrap: wrap; gap: 40px; justify-content: center; }
+
+        .card-wrapper {
+            position: relative; width: 274px; height: 421px; /* 缩放40%以适应屏幕 */
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .card {
+            width: var(--canvas-w); height: var(--canvas-h);
+            position: absolute; top: 0; left: 0; transform-origin: top left; transform: scale(0.4);
+            background: var(--paper-light); overflow: hidden;
+        }
+
+        /* 根据角色注入原版 SVG 的渐变色变量 */
+        .card.lecturer-card {
+            --logo-gradient-start: #FF7B6B;
+            --logo-gradient-end: #C03A2B;
+            --coral-bright: #FF8B7D;
+        }
+        .card.staff-card {
+            --logo-gradient-start: #FF9A7B;
+            --logo-gradient-end: #D97757;
+            --coral-bright: #FFA88D;
+        }
+        .card.student-card {
+            --logo-gradient-start: #F5E9C8;
+            --logo-gradient-end: #C9A84C;
+            --coral-bright: #E8C97A;
+        }
+
+        .card.back { background: var(--paper-dark); color: #fff; }
+
+        /* ====== insight 严格等比例双线边框复刻 ====== */
+        .insight-frame {
+            position: absolute;
+            inset: var(--bleed);
+            z-index: 10;
+            pointer-events: none;
+            border: 1px solid rgba(201,168,76,0.5);
+            box-sizing: border-box;
+        }
+        .inner-frame {
+            position: absolute;
+            inset: 3px;
+            border: 1px solid rgba(201,168,76,0.3);
+            box-sizing: border-box;
+        }
+        .corner-box {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--paper-light);
+            border: 1px solid rgba(201,168,76,0.6);
+            z-index: 11;
+            box-sizing: border-box;
+        }
+        .card.back .corner-box { background: var(--paper-dark); }
+        /* 顶点相交：方块移出自身大小，刚好共用 1px 顶点 (8px 规格) */
+        .corner-box.tl { top: -8px; left: -8px; }
+        .corner-box.tr { top: -8px; right: -8px; }
+        .corner-box.bl { bottom: -8px; left: -8px; }
+        .corner-box.br { bottom: -8px; right: -8px; }
+
+        /* 水印与背景 */
+        .card-back-pattern { position: absolute; inset: 0; z-index: 1; pointer-events: none; width: 100%; height: 100%; }
+        .card-watermark { position: absolute; right: -40px; top: 50%; transform: translateY(-50%); opacity: 0.06; width: 480px; height: 480px; z-index: 2; pointer-events: none; }
+        .card-watermark svg { filter: grayscale(100%) brightness(0.8); } /* 水印单色化处理显得更高级 */
+
+        /* ====== 内部排版安全区 ====== */
+        .card-safe-area { position: absolute; inset: calc(var(--bleed) + 20px); display: flex; flex-direction: column; padding: 40px; z-index: 5; }
+
+        /* 正面 */
+        .card-top { display: flex; justify-content: space-between; align-items: center; height: 80px; margin-bottom: 20px; }
+        .event-eyebrow { font-family: 'Cormorant Garamond', serif; font-size: 28px; letter-spacing: 6px; color: var(--warm-gold); text-transform: uppercase; }
+        .top-logo { width: 64px; height: 64px; }
+        .top-logo svg { width: 100%; height: 100%; }
+
+        .card-divider { display: flex; align-items: center; gap: 16px; margin: 40px 0; }
+        .divider-line { flex: 1; height: 1.5px; background: var(--warm-gold); opacity: 0.35; }
+        .divider-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--warm-gold); }
+
+        .card-body { flex: 1; display: flex; flex-direction: column; justify-content: center; position: relative; z-index: 5; }
+
+        /* 名称严格控制不换行 */
+        .name {
+            font-family: 'Noto Serif SC', serif; font-size: 110px; font-weight: 900; line-height: 1.2;
+            letter-spacing: 12px; color: var(--text-main); margin-bottom: 30px;
+            white-space: nowrap; /* 绝对不换行 */
+            overflow: visible; /* 允许下沉字母(y, g, j)完整显示 */
+        }
+
+        .role-badge { display: inline-flex; align-items: center; gap: 12px; padding: 16px 32px; font-size: 32px; font-weight: 700; letter-spacing: 6px; border-radius: 4px; }
+        .badge-dot { width: 12px; height: 12px; border-radius: 50%; background: currentColor; opacity: 0.8; }
+
+        .role-badge {
+            display: inline-flex; align-items: center; gap: 12px;
+            padding: 16px 36px; font-size: 32px; font-weight: 700;
+            letter-spacing: 6px; border-radius: 6px;
+            color: #fff; overflow: hidden; /* 防止渲染时的亚像素溢出 */
+        }
+        .badge-dot { width: 12px; height: 12px; border-radius: 50%; background: #fff; opacity: 0.9; }
+
+        /* 使用硬编码色值，防止 Canvas 导出时 CSS 变量解析抖动导致的横纹 */
+        .lecturer-theme .role-badge { background: #C03A2B; }
+        .staff-theme .role-badge { background: #D97757; }
+        .student-theme .role-badge { background: #C9A84C; }
+
+        .card-footer { margin-top: auto; border-top: 2px solid rgba(0,0,0,0.08); padding-top: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .footer-event { font-family: 'Cormorant Garamond', serif; font-size: 24px; letter-spacing: 4px; color: var(--text-muted); line-height: 1.5; text-transform: uppercase; }
+        .footer-year { font-family: 'Cormorant Garamond', serif; font-size: 48px; font-weight: 300; color: #ccc; line-height: 1; }
+
+        /* 背面 */
+        .back-top { display: flex; justify-content: space-between; align-items: center; height: 80px; margin-bottom: 40px; }
+        /* 背面统一采用工作人员橙 (#D97757) 配色 */
+        .back-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; letter-spacing: 8px; color: rgba(217,119,87,0.8); text-transform: uppercase; }
+        .back-subtitle { font-family: 'Noto Sans SC', sans-serif; font-size: 22px; color: rgba(255,255,255,0.4); margin-top: 12px; letter-spacing: 4px; }
+
+        .back-qr-section { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 40px; z-index: 5; }
+
+        .qr-wrapper { position: relative; padding: 24px; background: rgba(255,255,255,0.02); border: 2px solid rgba(217,119,87,0.3); }
+        .qr-wrapper::before, .qr-wrapper::after { content: ''; position: absolute; width: 30px; height: 30px; border-color: #D97757; border-style: solid; }
+        .qr-wrapper::before { top: -2px; left: -2px; border-width: 4px 0 0 4px; }
+        .qr-wrapper::after { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; }
+        .qr-canvas { display: block; background: #fff; padding: 16px; }
+
+        .scan-hint { font-size: 32px; font-weight: 700; color: #D97757; letter-spacing: 4px; text-align: center; }
+
+        .privacy-note { margin-top: auto; padding-top: 20px; border-top: 1.5px solid rgba(217,119,87,0.15); font-size: 22px; color: rgba(255,255,255,0.3); line-height: 1.6; text-align: justify; z-index: 5; }
+        .privacy-note strong { color: rgba(217,119,87,0.8); font-weight: normal; }
+        .back-holder-info { font-family: 'Noto Sans SC', sans-serif; font-size: 26px; color: rgba(255,255,255,0.7); letter-spacing: 2px; }
+        .back-holder-info b { color: #D97757; margin-left: 10px; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <h1>AI智能体落地与应用</h1>
+        <div class="hint">物理尺寸 85x55mm (含2mm出血)。遵循 Insight 精致视觉规范，双线顶点相交框。</div>
+
+        <div style="margin-bottom: 24px;">
+            <label style="font-size: 13px; font-weight: bold; margin-bottom: 8px; display: block;">1. 参与者名单 (格式: 姓名, 类别[1-讲师, 2-工作人员, 3-学员], UserID, Password)</label>
+            <textarea id="dataInput">小西校长, 1, 11, 22
+屈源, 2, 22, 33
+荣誉学员, 3, 33, 44
+</textarea>
+        </div>
+
+        <div style="margin-bottom: 24px; display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+            <div>
+                <label style="font-size: 13px; font-weight: bold; margin-bottom: 8px; display: block;">2. 二维码跳转基准网址 (自动拼接 UserID / PD)</label>
+                <input type="text" id="baseUrlInput" class="input-field" value="https://otokonoizumi.github.io/Diary/ai_best_practice">
+            </div>
+            <div style="display: flex; align-items: flex-end;">
+                <label style="font-size: 13px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 8px; padding-bottom: 12px; user-select: none;">
+                    <input type="checkbox" id="useFolders" checked style="width: 16px; height: 16px; cursor: pointer;">
+                    按正反面目录打包 (.zip)
+                </label>
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center;">
+            <button class="btn" onclick="renderCards()">3. 开始渲染名片高清预览图</button>
+            <button class="btn outline" id="exportBtn" onclick="exportZip()" style="display: none;">4. 打包下载印刷成品包</button>
+        </div>
+    </div>
+
+    <div class="preview-grid" id="renderArea"></div>
+
+    <script>
+        // 你最初提供的原汁原味龙虾 SVG，未做任何删改！（通过正则在渲染时分配独立ID，防止多个渐变冲突）
+        const RAW_LOBSTER_SVG = `
+        <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M60 10 C30 10 15 35 15 55 C15 75 30 95 45 100 L45 110 L55 110 L55 100 C55 100 60 102 65 100 L65 110 L75 110 L75 100 C90 95 105 75 105 55 C105 35 90 10 60 10Z" fill="url(#GRADIENT_ID)" class="claw-body"></path>
+            <path d="M20 45 C5 40 0 50 5 60 C10 70 20 65 25 55 C28 48 25 45 20 45Z" fill="url(#GRADIENT_ID)" class="claw-left"></path>
+            <path d="M100 45 C115 40 120 50 115 60 C110 70 100 65 95 55 C92 48 95 45 100 45Z" fill="url(#GRADIENT_ID)" class="claw-right"></path>
+            <path d="M45 15 Q35 5 30 8" stroke="var(--coral-bright)" stroke-width="2" stroke-linecap="round" class="antenna"></path>
+            <path d="M75 15 Q85 5 90 8" stroke="var(--coral-bright)" stroke-width="2" stroke-linecap="round" class="antenna"></path>
+            <circle cx="45" cy="35" r="6" fill="#050810" class="eye"></circle>
+            <circle cx="75" cy="35" r="6" fill="#050810" class="eye"></circle>
+            <circle cx="46" cy="34" r="2" fill="rgba(255,255,255,0.8)" class="eye-glow"></circle>
+            <circle cx="76" cy="34" r="2" fill="rgba(255,255,255,0.8)" class="eye-glow"></circle>
+            <defs>
+                <linearGradient id="GRADIENT_ID" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="var(--logo-gradient-start)"></stop>
+                    <stop offset="100%" stop-color="var(--logo-gradient-end)"></stop>
+                </linearGradient>
+            </defs>
+        </svg>`;
+
+        const FRAME_HTML = `
+            <div class="insight-frame">
+                <div class="inner-frame"></div>
+                <div class="corner-box tl"></div>
+                <div class="corner-box tr"></div>
+                <div class="corner-box bl"></div>
+                <div class="corner-box br"></div>
+            </div>
+        `;
+
+        // ==========================================
+        // 配置区：您可以直接修改下方的文字标签来同步所有名卡
+        // ==========================================
+        const ROLE_MAPPING = {
+            '1': { label: '特邀讲师', theme: 'lecturer-theme', type: 'lecturer-card' },
+            '2': { label: '工作人员', theme: 'staff-theme', type: 'staff-card' },
+            '3': { label: '学员', theme: 'student-theme', type: 'student-card' }
+        };
+
+        function renderCards() {
+            const rawData = document.getElementById('dataInput').value.trim();
+            const baseUrl = document.getElementById('baseUrlInput').value.trim();
+            const renderArea = document.getElementById('renderArea');
+            renderArea.innerHTML = '';
+
+            if (!rawData) return alert('请输入名单数据');
+
+            const lines = rawData.split('\n');
+            const cardTitle = "AI智能体落地与应用 2026";
+
+            lines.forEach((line, index) => {
+                const parts = line.split(',').map(s => s.trim());
+                if (parts.length < 4) return;
+
+                const[name, roleEnum, user, pass] = parts;
+                const config = ROLE_MAPPING[roleEnum] || ROLE_MAPPING['3']; // 缺省按照学员处理
+
+                const themeClass = config.theme;
+                const cardTypeClass = config.type;
+                const roleLabel = config.label;
+
+                // 解决 SVG 同一页面多个相同 ID 导致渐变串色的问题
+                const localSvgFront = RAW_LOBSTER_SVG.replace(/GRADIENT_ID/g, `lobster-grad-front-${index}`);
+                const localSvgWatermark = RAW_LOBSTER_SVG.replace(/GRADIENT_ID/g, `lobster-grad-wm-${index}`);
+                const localSvgBack = RAW_LOBSTER_SVG.replace(/GRADIENT_ID/g, `lobster-grad-back-${index}`);
+
+                // 正面
+                const frontWrapper = document.createElement('div');
+                frontWrapper.className = 'card-wrapper';
+                frontWrapper.innerHTML = `
+                    <div class="card front ${cardTypeClass}" id="card-front-${index}">
+                        ${FRAME_HTML}
+                        <div class="card-watermark">${localSvgWatermark}</div>
+
+                        <div class="card-safe-area ${themeClass}">
+                            <div class="card-top">
+                                <div class="event-eyebrow">AI智能体落地与应用 2026</div>
+                                <div class="top-logo">${localSvgFront}</div>
+                            </div>
+
+                            <div class="card-divider">
+                                <div class="divider-line"></div>
+                                <div class="divider-dot"></div>
+                                <div class="divider-line"></div>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="name">${name}</div>
+                                <div class="role-badge">
+                                    <div class="badge-dot" style="background: #fff;"></div>
+                                    <span>${roleLabel}</span>
+                                </div>
+                            </div>
+
+                            <div class="card-footer">
+                                <div class="footer-event">AI AGENT<br>APPLICATION WORKSHOP</div>
+                                <div class="footer-year">2026</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // 背面
+                const backWrapper = document.createElement('div');
+                backWrapper.className = 'card-wrapper';
+                backWrapper.innerHTML = `
+                    <div class="card back ${cardTypeClass}" id="card-back-${index}">
+                        <svg class="card-back-pattern" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <pattern id="diag_${index}" patternUnits="userSpaceOnUse" width="28.28" height="28.28" patternTransform="rotate(-45)">
+                                    <line x1="0" y1="0" x2="0" y2="28.28" stroke="white" stroke-width="2" opacity="0.1" />
+                                </pattern>
+                            </defs>
+                            <rect width="100%" height="100%" fill="url(#diag_${index})" />
+                        </svg>
+                        ${FRAME_HTML}
+
+                        <div class="card-safe-area">
+                            <div class="back-top">
+                                <div>
+                                    <div class="back-title">Verification</div>
+                                    <div class="back-subtitle">AI智能体落地与应用 2026</div>
+                                </div>
+                                <div class="top-logo" style="opacity:0.3; filter: grayscale(100%) brightness(2);">${localSvgBack}</div>
+                            </div>
+
+                            <div class="back-qr-section">
+                                <div class="back-holder-info">持卡人 · <b>${name}</b></div>
+                                <div class="qr-wrapper">
+                                    <div class="qr-canvas" id="qrcode-${index}"></div>
+                                </div>
+                                <div class="scan-hint">扫码访问周六下午课件<br><span style="font-size:20px; color:rgba(255,255,255,0.5); font-weight:450; margin-top:12px; display:block;">推荐把链接分享到电脑上访问</span></div>
+                            </div>
+
+                            <div class="privacy-note">
+                                <strong>隐私说明：</strong>背页含您的专属校验凭证，请勿公开展示或分享。本链接仅周六下午课件开放时段可访问。
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                renderArea.appendChild(frontWrapper);
+                renderArea.appendChild(backWrapper);
+
+                const url = `${baseUrl}?user=${encodeURIComponent(user)}&pd=${encodeURIComponent(pass)}`;
+                setTimeout(() => {
+                    new QRCode(document.getElementById(`qrcode-${index}`), {
+                        text: url, width: 380, height: 380, colorDark: "#1A1C20", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M
+                    });
+                }, 100);
+            });
+
+            document.getElementById('exportBtn').style.display = 'block';
+        }
+
+        async function exportZip() {
+            const btn = document.getElementById('exportBtn');
+            const useFolders = document.getElementById('useFolders').checked;
+
+            btn.innerText = "正在调用 300DPI 渲染引擎，请耐心等待...";
+            btn.disabled = true;
+
+            const zip = new JSZip();
+            const frontFolder = useFolders ? zip.folder("01_正面_发给打印店") : zip;
+            const backFolder = useFolders ? zip.folder("02_背面_发给打印店") : zip;
+
+            const cards = document.querySelectorAll('.card');
+
+            for (let i = 0; i < cards.length; i++) {
+                const card = cards[i];
+                card.style.transform = 'scale(1)';
+                const canvas = await html2canvas(card, { scale: 1, useCORS: true, backgroundColor: null, logging: false });
+                card.style.transform = 'scale(0.4)';
+
+                const imgData = canvas.toDataURL("image/png").split(',')[1];
+                const isFront = card.classList.contains('front');
+                const fileIndex = String(Math.floor(i / 2) + 1).padStart(2, '0');
+                const fileName = `名卡_${fileIndex}_${isFront ? '正面' : '背面'}.png`;
+
+                if (isFront) {
+                    frontFolder.file(fileName, imgData, {base64: true});
+                } else {
+                    backFolder.file(fileName, imgData, {base64: true});
+                }
+            }
+
+            zip.generateAsync({type: "blob"}).then(function(content) {
+                saveAs(content, "OpenClaw_名片_印刷标准带出血.zip");
+                btn.innerText = "4. 打包下载印刷成品包";
+                btn.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>
