@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>名卡正面 · 讲师配色 · 静态示例素材</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;500;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --canvas-w: 686px;
+            --canvas-h: 1052px;
+            --bleed: 24px;
+            --preview-scale: 0.8;
+
+            --paper-light: #F9F8F6;
+            --text-main: #1D2129;
+            --text-muted: #86909C;
+            --warm-gold: #C9A84C;
+
+            /* 讲师主题（与 namecard_generator 中 .lecturer-card 一致） */
+            --logo-gradient-start: #FF7B6B;
+            --logo-gradient-end: #C03A2B;
+            --coral-bright: #FF8B7D;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: #EAE8E3;
+            color: var(--text-main);
+            padding: 40px 24px;
+        }
+
+        .preview-wrap {
+            display: flex;
+            justify-content: center;
+        }
+
+        .card-wrapper {
+            position: relative;
+            width: calc(var(--canvas-w) * var(--preview-scale));
+            height: calc(var(--canvas-h) * var(--preview-scale));
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .card {
+            width: var(--canvas-w);
+            height: var(--canvas-h);
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: top left;
+            transform: scale(var(--preview-scale));
+            background: var(--paper-light);
+            overflow: hidden;
+        }
+
+        .insight-frame {
+            position: absolute;
+            inset: var(--bleed);
+            z-index: 10;
+            pointer-events: none;
+            border: 1px solid rgba(201,168,76,0.5);
+            box-sizing: border-box;
+        }
+        .inner-frame {
+            position: absolute;
+            inset: 3px;
+            border: 1px solid rgba(201,168,76,0.3);
+            box-sizing: border-box;
+        }
+        .corner-box {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--paper-light);
+            border: 1px solid rgba(201,168,76,0.6);
+            z-index: 11;
+            box-sizing: border-box;
+        }
+        .corner-box.tl { top: -8px; left: -8px; }
+        .corner-box.tr { top: -8px; right: -8px; }
+        .corner-box.bl { bottom: -8px; left: -8px; }
+        .corner-box.br { bottom: -8px; right: -8px; }
+
+        .card-watermark {
+            position: absolute;
+            right: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.06;
+            width: 480px;
+            height: 480px;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .card-watermark svg { filter: grayscale(100%) brightness(0.8); }
+
+        .card-safe-area {
+            position: absolute;
+            inset: calc(var(--bleed) + 20px);
+            display: flex;
+            flex-direction: column;
+            padding: 40px;
+            z-index: 5;
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+            margin-bottom: 20px;
+        }
+        .event-eyebrow {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px;
+            letter-spacing: 6px;
+            color: var(--warm-gold);
+            text-transform: uppercase;
+        }
+        .top-logo { width: 64px; height: 64px; }
+        .top-logo svg { width: 100%; height: 100%; }
+
+        .card-divider {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 40px 0;
+        }
+        .divider-line {
+            flex: 1;
+            height: 1.5px;
+            background: var(--warm-gold);
+            opacity: 0.35;
+        }
+        .divider-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--warm-gold);
+        }
+
+        .card-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            z-index: 5;
+        }
+
+        .name {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 110px;
+            font-weight: 900;
+            line-height: 1.2;
+            letter-spacing: 12px;
+            color: var(--text-main);
+            margin-bottom: 30px;
+            white-space: nowrap;
+            overflow: visible;
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 36px;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 6px;
+            border-radius: 6px;
+            color: #fff;
+            overflow: hidden;
+            background: #C03A2B;
+        }
+        .badge-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #fff;
+            opacity: 0.9;
+        }
+
+        .card-footer {
+            margin-top: auto;
+            border-top: 2px solid rgba(0,0,0,0.08);
+            padding-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .footer-event {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 24px;
+            letter-spacing: 4px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            text-transform: uppercase;
+        }
+        .footer-year {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 48px;
+            font-weight: 300;
+            color: #ccc;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="preview-wrap">
+        <div class="card-wrapper">
+            <div class="card">
+                <div class="insight-frame">
+                    <div class="inner-frame"></div>
+                    <div class="corner-box tl"></div>
+                    <div class="corner-box tr"></div>
+                    <div class="corner-box bl"></div>
+                    <div class="corner-box br"></div>
+                </div>
+
+                <div class="card-watermark">
+                    <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M60 10 C30 10 15 35 15 55 C15 75 30 95 45 100 L45 110 L55 110 L55 100 C55 100 60 102 65 100 L65 110 L75 110 L75 100 C90 95 105 75 105 55 C105 35 90 10 60 10Z" fill="url(#lobster-grad-wm)"></path>
+                        <path d="M20 45 C5 40 0 50 5 60 C10 70 20 65 25 55 C28 48 25 45 20 45Z" fill="url(#lobster-grad-wm)"></path>
+                        <path d="M100 45 C115 40 120 50 115 60 C110 70 100 65 95 55 C92 48 95 45 100 45Z" fill="url(#lobster-grad-wm)"></path>
+                        <path d="M45 15 Q35 5 30 8" stroke="var(--coral-bright)" stroke-width="2" stroke-linecap="round"></path>
+                        <path d="M75 15 Q85 5 90 8" stroke="var(--coral-bright)" stroke-width="2" stroke-linecap="round"></path>
+                        <circle cx="45" cy="35" r="6" fill="#050810"></circle>
+                        <circle cx="75" cy="35" r="6" fill="#050810"></circle>
+                        <circle cx="46" cy="34" r="2" fill="rgba(255,255,255,0.8)"></circle>
+                        <circle cx="76" cy="34" r="2" fill="rgba(255,255,255,0.8)"></circle>
+                        <defs>
+                            <linearGradient id="lobster-grad-wm" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="var(--logo-gradient-start)"></stop>
+                                <stop offset="100%" stop-color="var(--logo-gradient-end)"></stop>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+
+                <div class="card-safe-area">
+                    <div class="card-top">
+                        <div class="event-eyebrow">AI智能体落地与应用 2026</div>
+                        <div class="top-logo">
+                            <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M60 10 C30 10 15 35 15 55 C15 75 30 95 45 100 L45 110 L55 110 L55 100 C55 100 60 102 65 100 L65 110 L75 110 L75 100 C90 95 105 75 105 55 C105 35 90 10 60 10Z" fill="url(#lobster-grad-front)"></path>
+                                <path d="M20 45 C5 40 0 50 5 60 C10 70 20 65 25 55 C28 48 25 45 20 45Z" fill="url(#lobster-grad-front)"></path>
+                                <path d="M100 45 C115 40 120 50 115 60 C110 70 100 65 95 55 C92 48 95 45 100 45Z" fill="url(#lobster-grad-front)"></path>
+                                <path d="M45 15 Q35 5 30 8" stroke="var(--coral-bright)" stroke-width="2" stroke-linecap="round"></path>
+                                <path d="M75 15 Q85 5 90 8" stroke="var(--coral-bright)" stroke-width="2" stroke-linecap="round"></path>
+                                <circle cx="45" cy="35" r="6" fill="#050810"></circle>
+                                <circle cx="75" cy="35" r="6" fill="#050810"></circle>
+                                <circle cx="46" cy="34" r="2" fill="rgba(255,255,255,0.8)"></circle>
+                                <circle cx="76" cy="34" r="2" fill="rgba(255,255,255,0.8)"></circle>
+                                <defs>
+                                    <linearGradient id="lobster-grad-front" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="var(--logo-gradient-start)"></stop>
+                                        <stop offset="100%" stop-color="var(--logo-gradient-end)"></stop>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="card-divider">
+                        <div class="divider-line"></div>
+                        <div class="divider-dot"></div>
+                        <div class="divider-line"></div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="name">示例讲师</div>
+                        <div class="role-badge">
+                            <div class="badge-dot"></div>
+                            <span>特邀讲师</span>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="footer-event">AI AGENT<br>APPLICATION WORKSHOP</div>
+                        <div class="footer-year">2026</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
