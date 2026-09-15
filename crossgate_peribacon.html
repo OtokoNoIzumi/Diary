@@ -268,7 +268,7 @@
     </div>
 
     <div class="item-card">
-      <div class="icon"><img src="http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/5LiH6IO96LCD5w==_5V6eugtluIg6.gif" alt="" onerror="this.parentElement.innerHTML='🔸'"></div>
+      <div class="icon"><img src="image/crossgate/lv01_ring_cookset_万能调理组.gif" alt="" onerror="this.parentElement.innerHTML='🔸'"></div>
       <div>
         <h4>万能调理组 <span class="reward-badge high">装备 · 戒指</span></h4>
         <p>等级 1　耐久 0067/0067　种类 戒指　装备起来做料理时魔力消耗值会减少。不管谁来用，都能轻松煮出好吃的料理的调理道具。</p>
@@ -325,7 +325,7 @@
   <div class="wrap">
     <p>中文数据整理自「噬生神殿」论坛帖子《分支帝·特殊NPC对话收录》：<a href="http://lifeator.xclub.tw/viewthread.php?tid=56&extra=page%3D1" target="_blank" rel="noopener">lifeator.xclub.tw/viewthread.php?tid=56</a></p>
     <p>日服考据整理自「クロスゲートクエストBBS」2002/03/28 帖《王宮食堂クエスト》的 Wayback Machine 存档：<a href="https://web.archive.org/web/20030930085203/http://www.ge-myu.net/game/crossgate/bbs/float.cgi?bbs=quest&thread=20328150421&last=50" target="_blank" rel="noopener">http://www.ge-myu.net/game/crossgate/bbs</a></p>
-    <p>图标沿用原帖 2013 年的图片外链（部分来自已停用的老论坛主机），如果显示不出来，是老图床年久失修，不是本页的问题。此页面仅作个人整理与前端呈现演示，不新增或修改原帖记录内容。</p>
+    <p>图标已镜像到本仓库 image/crossgate（按等级·回复魔力·名称命名）；个别原论坛外链失效的条目改用本地补档。此页面仅作个人整理与前端呈现演示，不新增或修改原帖记录内容。</p>
   </div>
 </footer>
 
@@ -333,94 +333,94 @@
 /* ---------------- DATA ---------------- */
 
 const DAILY = [
-  {id:'cheese', name:'好像很好吃的起司', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_7/6LW35Y+4_gyw27mt0CjCn.gif', level:1, cat:'食物', flavor:'高格调高品质的起司', ask:'喔！那是「好像很好吃的起司」吗？要给我吃吗？', react:'真好吃啊！如果能配上一杯美酒就更好了。'},
-  {id:'travelration', name:'旅行干粮', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/5bmy57Ku_LNhiDsmCsyHN.gif', level:1, cat:'食物', flavor:'伊尔自古以来传下来的面包，魔法力可回复15左右', ask:'那是「旅行干粮」吗？要给我吃吗？', react:'嗯！真是好吃！', jpNote:'日服版更带点自嘲："把非常食在非非常时期吃掉，别有一番风味呢"——本质上也是正面评价。'},
-  {id:'spicycurry', name:'超辣咖喱', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/5ZKW5ZOp_F9dh5jit7987.gif', level:1, cat:'食物', flavor:'特制的超辣咖哩', ask:'那是「超辣咖喱饭」吗？要给我吃吗？', react:'虽然很辣可是一点也不好吃···'},
-  {id:'plumcandy', name:'梅子糖', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/57OW_eajTARFCeqQT.gif', level:1, cat:'食物', flavor:'里面有很多酸梅的冰棒', ask:'那是有放酸梅的「酸梅糖果」吗？要给我吃吗？', react:'这个糖果真的很不错，很好吃唷！'},
-  {id:'whitelover', name:'白色恋人', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/5Yaw5r+A5YeM_Bp2RHo6WN4qK.gif', level:1, cat:'食物', flavor:'亚留特名产的冰零嘴，里面有巧克力，很甜（其实是圣拉鲁卡的特产）', ask:'那是圣拉鲁卡的名产「白色恋人」吗？要给我吃吗？', react:'嗯！不愧是名产，真好吃啊！'},
-  {id:'taoubread', name:'陶欧食品店精制面包', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_7/6Z2i5YyF_NTQDRgeebcvt.gif', level:1, cat:'不明', flavor:'陶欧食品店特制的面包，很好吃', ask:'那是「陶欧食品店特制面包」吗？要给我吃吗？', react:'蛮好吃的嘛！', jpNote:'日服评价意思相近："业务用的东西意外地好吃嘛"。另有一条趣闻：喂过这个面包后如果去找某个忍者任务的NPC搭话，忍者任务会被打断，提示"调查出现重大障碍"——大概率是任务变量冲突的小彩蛋，与称号无关。'},
-  {id:'alcorsnack', name:'亚尔科尔的点心', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/54K55b+D_f2yCUbdpVAkr.gif', level:1, cat:'不明', flavor:'亚尔科尔为心美做的点心', ask:'那是什么点心啊？要给我吃吗？', react:'给我吃真的没关系吗？', jpNote:'日服台词几乎一字不差，也是"这真的是可以给我吃的东西吗？"。'},
-  {id:'wildstrawberry', name:'野草莓', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/6YeO6I2J6I6T_5o7tYhbNaclE.gif', level:1, cat:'食物', flavor:'在寒冷的冬天依然能活下去的野草莓', ask:'那是「野草莓」吗？要给我吃吗？', react:'好吃！可是份量好少喔···'},
-  {id:'fruittomato', name:'水果番茄', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/55Wq6IyE_V1MT7KmXBlXo.gif', level:1, cat:'不明', flavor:'又甜又新鲜的番茄', ask:'那是水果番茄吗？要给我吃吗？', react:'给我吃真的没关系吗？', jpNote:'日服同款句式："这真的可以给我吃吗？"，和亚尔科尔的点心是同一条系统台词。'},
-  {id:'yakisobalunch', name:'炒面面包便当', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/54KS6Z2i6Z2i5Q==_VCXzohCU1eBl.gif', level:1, cat:'食物', flavor:'矿工毕夫鲁的便当', ask:'那是炒面面包便当吗？要给我吃吗？', react:'给我吃真的没关系吗？'},
-  {id:'tomato', name:'番茄', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/55Wq6IyE_V1MT7KmXBlXo.gif', level:1, cat:'蔬菜', flavor:'新鲜的番茄', ask:'那是番茄吗？要给我吃吗？', react:'番茄对身体不错唷！'},
-  {id:'premiumtomato', name:'高级番茄', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/55Wq6IyE_V1MT7KmXBlXo.gif', level:1, cat:'蔬菜', flavor:'颜色鲜艳的新鲜番茄', ask:'那是高级番茄吗？要给我吃吗？', react:'真好吃···番茄很有营养的。', jpNote:'日服评价大意一致："好吃，不过光吃番茄总觉得差点意思"。'},
-  {id:'evanbiscuit', name:'艾文的饼干', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/5bmy57Ku_LNhiDsmCsyHN.gif', level:1, cat:'不明', flavor:'送给樵夫弗伦的饼干', ask:'那是饼干吗？要给我吃吗？', react:'给我吃真的没关系吗？', jpNote:'关联条目（非同一物品）：日服帖里有人喂"排队买来的手工饼干"，被念叨"这么珍贵的东西真的要给我？不是要留给重要的人吗"。台词对不上艾文的饼干，但明显是同一套"这食物本来要送别人"的系统模板，谨慎标注为关联而非合并。'},
-  {id:'ujikintoki', name:'宇治金时', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/5a6H5rK76YeR5g==_WRHjMApAvmL1.gif', level:5, cat:'料理', flavor:'以沉睡在永久冻土里的冰做成的刨冰，非常好吃', ask:'那不是「宇治金时」吗？要给我吃吗？', react:'呜···好冰···', jpNote:'日服反应是"脑袋一阵刺痛"，纯粹的生理吐槽，和中文版"呜···好冰···"是同一种被冰到的调调。另有玩家试过喂番茄酱、"鬼酒"给他，两样都毫无反应——他压根没把这两样当食物。'}
+  {id:'cheese', name:'好像很好吃的起司', icon:'image/crossgate/lv01_mp0000_cheese_好像很好吃的起司.gif', level:1, cat:'食物', flavor:'高格调高品质的起司', ask:'喔！那是「好像很好吃的起司」吗？要给我吃吗？', react:'真好吃啊！如果能配上一杯美酒就更好了。'},
+  {id:'travelration', name:'旅行干粮', icon:'image/crossgate/lv01_mp0015_travelration_旅行干粮.gif', level:1, cat:'食物', flavor:'伊尔自古以来传下来的面包，魔法力可回复15左右', ask:'那是「旅行干粮」吗？要给我吃吗？', react:'嗯！真是好吃！', jpNote:'日服版更带点自嘲："把非常食在非非常时期吃掉，别有一番风味呢"——本质上也是正面评价。'},
+  {id:'spicycurry', name:'超辣咖喱', icon:'image/crossgate/lv01_mp0000_spicycurry_超辣咖喱.gif', level:1, cat:'食物', flavor:'特制的超辣咖哩', ask:'那是「超辣咖喱饭」吗？要给我吃吗？', react:'虽然很辣可是一点也不好吃···'},
+  {id:'plumcandy', name:'梅子糖', icon:'image/crossgate/lv01_mp0000_plumcandy_梅子糖.gif', level:1, cat:'食物', flavor:'里面有很多酸梅的冰棒', ask:'那是有放酸梅的「酸梅糖果」吗？要给我吃吗？', react:'这个糖果真的很不错，很好吃唷！'},
+  {id:'whitelover', name:'白色恋人', icon:'image/crossgate/lv01_mp0000_whitelover_白色恋人.gif', level:1, cat:'食物', flavor:'亚留特名产的冰零嘴，里面有巧克力，很甜（其实是圣拉鲁卡的特产）', ask:'那是圣拉鲁卡的名产「白色恋人」吗？要给我吃吗？', react:'嗯！不愧是名产，真好吃啊！'},
+  {id:'taoubread', name:'陶欧食品店精制面包', icon:'image/crossgate/lv01_mp0000_taoubread_陶欧食品店精制面包.gif', level:1, cat:'不明', flavor:'陶欧食品店特制的面包，很好吃', ask:'那是「陶欧食品店特制面包」吗？要给我吃吗？', react:'蛮好吃的嘛！', jpNote:'日服评价意思相近："业务用的东西意外地好吃嘛"。另有一条趣闻：喂过这个面包后如果去找某个忍者任务的NPC搭话，忍者任务会被打断，提示"调查出现重大障碍"——大概率是任务变量冲突的小彩蛋，与称号无关。'},
+  {id:'alcorsnack', name:'亚尔科尔的点心', icon:'image/crossgate/lv01_mp0000_alcorsnack_亚尔科尔的点心.gif', level:1, cat:'不明', flavor:'亚尔科尔为心美做的点心', ask:'那是什么点心啊？要给我吃吗？', react:'给我吃真的没关系吗？', jpNote:'日服台词几乎一字不差，也是"这真的是可以给我吃的东西吗？"。'},
+  {id:'wildstrawberry', name:'野草莓', icon:'image/crossgate/lv01_mp0000_wildstrawberry_野草莓.gif', level:1, cat:'食物', flavor:'在寒冷的冬天依然能活下去的野草莓', ask:'那是「野草莓」吗？要给我吃吗？', react:'好吃！可是份量好少喔···'},
+  {id:'fruittomato', name:'水果番茄', icon:'image/crossgate/lv01_mp0000_fruittomato_水果番茄.gif', level:1, cat:'不明', flavor:'又甜又新鲜的番茄', ask:'那是水果番茄吗？要给我吃吗？', react:'给我吃真的没关系吗？', jpNote:'日服同款句式："这真的可以给我吃吗？"，和亚尔科尔的点心是同一条系统台词。'},
+  {id:'yakisobalunch', name:'炒面面包便当', icon:'image/crossgate/lv01_mp0000_yakisobalunch_炒面面包便当.gif', level:1, cat:'食物', flavor:'矿工毕夫鲁的便当', ask:'那是炒面面包便当吗？要给我吃吗？', react:'给我吃真的没关系吗？'},
+  {id:'tomato', name:'番茄', icon:'image/crossgate/lv01_mp0000_tomato_番茄.gif', level:1, cat:'蔬菜', flavor:'新鲜的番茄', ask:'那是番茄吗？要给我吃吗？', react:'番茄对身体不错唷！'},
+  {id:'premiumtomato', name:'高级番茄', icon:'image/crossgate/lv01_mp0000_premiumtomato_高级番茄.gif', level:1, cat:'蔬菜', flavor:'颜色鲜艳的新鲜番茄', ask:'那是高级番茄吗？要给我吃吗？', react:'真好吃···番茄很有营养的。', jpNote:'日服评价大意一致："好吃，不过光吃番茄总觉得差点意思"。'},
+  {id:'evanbiscuit', name:'艾文的饼干', icon:'image/crossgate/lv01_mp0000_evanbiscuit_艾文的饼干.gif', level:1, cat:'不明', flavor:'送给樵夫弗伦的饼干', ask:'那是饼干吗？要给我吃吗？', react:'给我吃真的没关系吗？', jpNote:'关联条目（非同一物品）：日服帖里有人喂"排队买来的手工饼干"，被念叨"这么珍贵的东西真的要给我？不是要留给重要的人吗"。台词对不上艾文的饼干，但明显是同一套"这食物本来要送别人"的系统模板，谨慎标注为关联而非合并。'},
+  {id:'ujikintoki', name:'宇治金时', icon:'image/crossgate/lv05_mp0000_ujikintoki_宇治金时.gif', level:5, cat:'料理', flavor:'以沉睡在永久冻土里的冰做成的刨冰，非常好吃', ask:'那不是「宇治金时」吗？要给我吃吗？', react:'呜···好冰···', jpNote:'日服反应是"脑袋一阵刺痛"，纯粹的生理吐槽，和中文版"呜···好冰···"是同一种被冰到的调调。另有玩家试过喂番茄酱、"鬼酒"给他，两样都毫无反应——他压根没把这两样当食物。'}
 ];
 
 /* 计时料理：按等级升序，同级按回复魔力升序；询问台词与时机无关，挂在料理本身 */
 const TIMED = [
-  {id:'candy', name:'糖果', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/57OW5p6c_9zzaJnHTFsTV.gif', level:1, cat:'料理', mp:50, flavor:'很甜的糖果，吃多了会蛀牙', ask:'那是「糖果」吧？要给我吃吗？', states:[
+  {id:'candy', name:'糖果', icon:'image/crossgate/lv01_mp0050_candy_糖果.gif', level:1, cat:'料理', mp:50, flavor:'很甜的糖果，吃多了会蛀牙', ask:'那是「糖果」吧？要给我吃吗？', states:[
     {cond:'正常', temp:'perfect', out:'flat', react:'谢谢你的糖果。', jpNote:'日服台词几乎一字不差，也是"谢谢你的糖果"。'},
     {cond:'坏了', temp:'spoiled', out:'down', react:'那个糖果都快烂掉了···你是故意的吗？', reward:'不合格厨师'}
   ]},
-  {id:'bread', name:'面包', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_7/6Z2i5YyF_NTQDRgeebcvt.gif', level:1, cat:'料理', mp:100, flavor:'非常好吃的热呼呼的面包', ask:'那不是「面包」吗？要给我吃吗？', states:[
+  {id:'bread', name:'面包', icon:'image/crossgate/lv01_mp0100_bread_面包.gif', level:1, cat:'料理', mp:100, flavor:'非常好吃的热呼呼的面包', ask:'那不是「面包」吗？要给我吃吗？', states:[
     {cond:'刚做好 · 到 1h', temp:'perfect', out:'flat', react:'嗯！好吃！这面包真是太好吃了！'},
     {cond:'放了 24h 以上', temp:'spoiled', out:'down', react:'又冷又硬的面包能吃吗？', titleLine:'你还差得远呢！去吧！冠上「不合格厨师」的头衔吧！', reward:'不合格厨师'}
   ]},
-  {id:'frenchbread', name:'法国面包', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/5rOV5Zu96Z2i5Q==_NZ64yRMhycEH.gif', level:2, cat:'料理', mp:100, flavor:'脆脆的外皮加上软酥的馅，香味迷人的法国面包', ask:'那是「法国面包」吗？要给我吃吗？', states:[
+  {id:'frenchbread', name:'法国面包', icon:'image/crossgate/lv02_mp0100_frenchbread_法国面包.gif', level:2, cat:'料理', mp:100, flavor:'脆脆的外皮加上软酥的馅，香味迷人的法国面包', ask:'那是「法国面包」吗？要给我吃吗？', states:[
     {cond:'刚做好 1m · 正好', temp:'perfect', out:'flat', react:'好好吃啊！真是人间美味。'},
     {cond:'冷掉', temp:'cold', out:'flat', react:'冷掉的面包一点都不好吃。'}
   ]},
-  {id:'omurice', name:'蛋包饭', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/6JuL5YyF6aWt_RjHZI9vywDIl.gif', level:2, cat:'料理', mp:150, flavor:'以最新鲜的蛋制成的半熟蛋包饭', ask:'这不是「蛋包饭」吗？要给我吃吗？', states:[
+  {id:'omurice', name:'蛋包饭', icon:'image/crossgate/lv02_mp0150_omurice_蛋包饭.gif', level:2, cat:'料理', mp:150, flavor:'以最新鲜的蛋制成的半熟蛋包饭', ask:'这不是「蛋包饭」吗？要给我吃吗？', states:[
     {cond:'烫 · 1 分钟内', temp:'hot', out:'flat', react:'好烫！你应该放久一点再端出来的吧？'},
     {cond:'正好', temp:'perfect', out:'up', react:'嗯！真好吃！真是人间美味啊！', reward:'敏腕厨师', jpNote:'日服社群测出的窗口更精确：出锅 0~1 分钟会被念叨"还没蒸透"，大约 1~2 分钟这段才真正算数拿到敏腕。'},
     {cond:'冷掉', temp:'cold', out:'flat', react:'都变冷变硬了，这东西能吃吗？'}
   ]},
-  {id:'friednoodle', name:'炒面', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/54KS6Z2i_23QHjbD2dv2u.gif', level:3, cat:'料理', mp:250, flavor:'香喷喷的酱汁配上手工面条，可引以为傲的好吃炒面', ask:'那是「炒面」吧！要给我吃吗？', states:[
+  {id:'friednoodle', name:'炒面', icon:'image/crossgate/lv03_mp0250_friednoodle_炒面.gif', level:3, cat:'料理', mp:250, flavor:'香喷喷的酱汁配上手工面条，可引以为傲的好吃炒面', ask:'那是「炒面」吧！要给我吃吗？', states:[
     {cond:'刚做好 1m · 正好', temp:'perfect', out:'flat', react:'真是太好吃了！没吃过这么棒的炒面！'},
     {cond:'冷掉（2:00 后）', temp:'cold', out:'down', react:'这个炒面做的有点失败···', reward:'不合格厨师'}
   ]},
-  {id:'greenpepperbeef', name:'青椒肉丝', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/6Z2S5qSS6IKJ5A==_0oDqi9uoQDlW.gif', level:3, cat:'料理', mp:300, flavor:'融合牛肉与青椒的人间美味', ask:'这不是「青椒肉丝」吗？要给我吃吗？', states:[
+  {id:'greenpepperbeef', name:'青椒肉丝', icon:'image/crossgate/lv03_mp0300_greenpepperbeef_青椒肉丝.gif', level:3, cat:'料理', mp:300, flavor:'融合牛肉与青椒的人间美味', ask:'这不是「青椒肉丝」吗？要给我吃吗？', states:[
     {cond:'烫 · 1 分钟内', temp:'hot', out:'flat', react:'有点烫诶！能再冷一点就好了···'},
     {cond:'正好', temp:'perfect', out:'flat', react:null},
     {cond:'冷掉', temp:'cold', out:'down', react:'都冷掉了，真难吃！', reward:'不合格厨师'}
   ]},
-  {id:'roastchicken', name:'烧鸡', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/54On6bih_SuMqTddjUeBF.gif', level:4, cat:'料理', mp:350, flavor:'柔软的炖鸡肉，口感十分黏稠', ask:'那是「烧鸡」？要给我吃吗？', states:[
+  {id:'roastchicken', name:'烧鸡', icon:'image/crossgate/lv04_mp0350_roastchicken_烧鸡.gif', level:4, cat:'料理', mp:350, flavor:'柔软的炖鸡肉，口感十分黏稠', ask:'那是「烧鸡」？要给我吃吗？', states:[
     {cond:'烫 · 1 分钟内', temp:'hot', out:'flat', react:'有点烫耶！如果能等冷一点再端出来就好了。'},
     {cond:'正好', temp:'perfect', out:'flat', react:null},
     {cond:'冷掉', temp:'cold', out:'flat', react:'变冷又变硬了，这是要怎么吃？回去好好反省吧！'}
   ]},
-  {id:'oyakodon', name:'亲子丼', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/5Lqy5a2Q5Li8_Ho8RacqUZrOA.gif', level:4, cat:'料理', mp:400, flavor:'热腾腾的饭上放有半熟的蛋和刚起锅的鸡肉之人间美味', ask:'那是「亲子丼」？要给我吃吗？', states:[
+  {id:'oyakodon', name:'亲子丼', icon:'image/crossgate/lv04_mp0400_oyakodon_亲子丼.gif', level:4, cat:'料理', mp:400, flavor:'热腾腾的饭上放有半熟的蛋和刚起锅的鸡肉之人间美味', ask:'那是「亲子丼」？要给我吃吗？', states:[
     {cond:'偏热 · 刚做好 1s', temp:'hot', out:'flat', react:'放久一点应该会更好吃吧？'},
     {cond:'正好', temp:'perfect', out:'up', react:'嗯！真好吃！好久没吃过这么好吃的东西了。', titleLine:'你是个不错的厨师。其实我是王国公认的厨师鉴定师。「敏腕厨师」的头衔就给你吧！还有，如果你能让我吃到好吃的东西，我就给你「极上厨师」的头衔。（成为"敏腕"后）不愧是我所看好的敏腕厨师做的料理。非常的好吃。下次也要多努力唷！（极上部分原帖待补充）', reward:'极上厨师 / 敏腕厨师', jpNote:'日服社群实测：出锅后 1:00〜2:29 之间交给他，同样能拿到敏腕厨师——窗口比想象中宽一些。'}
   ]},
-  {id:'hamburger', name:'汉堡', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/5rGJ5aCh_okdrFLGcY9zl.gif', level:5, cat:'料理', mp:450, flavor:'黏稠的食感令人吃过还想再吃', ask:'那是「汉堡」吗？要给我吃吗？', states:[
+  {id:'hamburger', name:'汉堡', icon:'image/crossgate/lv05_mp0450_hamburger_汉堡.gif', level:5, cat:'料理', mp:450, flavor:'黏稠的食感令人吃过还想再吃', ask:'那是「汉堡」吗？要给我吃吗？', states:[
     {cond:'刚做好 1s · 正好', temp:'perfect', out:'flat', react:'嗯！真好吃！真是人间美味啊！'},
     {cond:'25 分钟后 · 冷掉', temp:'cold', out:'down', react:'变冷变硬了，一点都不好吃。你也实在太混了吧？', reward:'不合格厨师'}
   ]},
-  {id:'congereelrice', name:'星鳗饭团', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/6bOX6bG86aWt5Q==_C2ybPU2VZeJj.gif', level:5, cat:'料理', mp:450, flavor:'酥软的鳗鱼肉，仿佛会在舌头上融化一般', ask:'那是「星鳗饭团」吗？要给我吃吗？', states:[
+  {id:'congereelrice', name:'星鳗饭团', icon:'image/crossgate/lv05_mp0450_congereelrice_星鳗饭团.gif', level:5, cat:'料理', mp:450, flavor:'酥软的鳗鱼肉，仿佛会在舌头上融化一般', ask:'那是「星鳗饭团」吗？要给我吃吗？', states:[
     {cond:'正好', temp:'perfect', out:'flat', react:'嗯！好吃！真是太好吃了！'},
     {cond:'冷掉', temp:'cold', out:'flat', react:'放太久都冷掉了···这样的东西谁想吃呢？'}
   ]},
-  {id:'yakisobabread', name:'炒面面包', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/54KS6Z2i6Z2i5Q==_VCXzohCU1eBl.gif', level:6, cat:'料理', mp:550, flavor:'融合法国面包与炒面的超级美食', ask:'那是「炒面面包」吗？要给我吃吗？', states:[
+  {id:'yakisobabread', name:'炒面面包', icon:'image/crossgate/lv06_mp0550_yakisobabread_炒面面包.gif', level:6, cat:'料理', mp:550, flavor:'融合法国面包与炒面的超级美食', ask:'那是「炒面面包」吗？要给我吃吗？', states:[
     {cond:'刚做出 1.5m · 烫', temp:'hot', out:'down', react:'有点烫呢···面包还是有点冷冷的才好吃。（原帖备注：加味精时无称号）', reward:'不合格厨师'},
     {cond:'正好', temp:'perfect', out:'flat', react:null},
     {cond:'5m 后 · 冷掉', temp:'cold', out:'down', react:'这个面包冷掉了，一点都不好吃。', reward:'不合格厨师'}
   ]},
-  {id:'sukiyaki', name:'寿喜烧', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/5a+5Zac6ZSF_3GVR2E2f1cMR.gif', level:6, cat:'料理', mp:600, flavor:'肉料理的帝王', ask:'那是「寿喜烧」吗？要给我吃吗？', states:[
+  {id:'sukiyaki', name:'寿喜烧', icon:'image/crossgate/lv06_mp0600_sukiyaki_寿喜烧.gif', level:6, cat:'料理', mp:600, flavor:'肉料理的帝王', ask:'那是「寿喜烧」吗？要给我吃吗？', states:[
     {cond:'1 分钟内 · 烫', temp:'hot', out:'flat', react:'味道还是不错，但是如果能再放久一点应该会更好吃吧···'},
     {cond:'10 分钟多 · 正好', temp:'perfect', out:'up', react:'嗯！真好吃！好久没吃到这么好吃的东西了。', titleLine:'你是个不错的厨师。其实我是王国公认的厨师鉴定师。「敏腕厨师」的头衔就给你吧！', reward:'敏腕厨师', jpNote:'日服社群反复测试：第 9 分钟还会被嫌"完全没入味"，第 10 分钟才真正算数——卡得很死。'},
     {cond:'冷掉', temp:'cold', out:'flat', react:'这个寿喜烧已经冷掉了。下次记得不要放太久。'}
   ]},
-  {id:'kimchirice', name:'韩式泡菜饭', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/6Z+p5byP5rOh6A==_yLpa1MVBVjUv.gif', level:7, cat:'料理', mp:700, flavor:'异国来的梦幻料理', ask:'这不是「韩式泡菜饭」吗！要给我吃吗？', states:[
+  {id:'kimchirice', name:'韩式泡菜饭', icon:'image/crossgate/lv07_mp0700_kimchirice_韩式泡菜饭.gif', level:7, cat:'料理', mp:700, flavor:'异国来的梦幻料理', ask:'这不是「韩式泡菜饭」吗！要给我吃吗？', states:[
     {cond:'太烫', temp:'hot', out:'down', react:'好烫！烫死我了！你应该多放久一点再端出来的···', reward:'不合格厨师'},
     {cond:'正好', temp:'perfect', out:'flat', react:null}
   ]},
-  {id:'crabpot', name:'螃蟹锅', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/6J6D6J+56ZSF_4Xs4eLb5ttxA.gif', level:8, cat:'料理', mp:750, flavor:'冬天最HOT的料理', ask:'那不是「螃蟹锅」吗？要给我吃吗？', states:[
+  {id:'crabpot', name:'螃蟹锅', icon:'image/crossgate/lv08_mp0750_crabpot_螃蟹锅.gif', level:8, cat:'料理', mp:750, flavor:'冬天最HOT的料理', ask:'那不是「螃蟹锅」吗？要给我吃吗？', states:[
     {cond:'正好', temp:'perfect', out:'flat', react:null},
     {cond:'冷掉', temp:'cold', out:'down', react:'你煮太久了。这样的东西一点都不好吃。', reward:'不合格厨师'}
   ]},
-  {id:'melonbread', name:'哈密瓜面包', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/6a2F5oOR55qE5Q==_uv6msKq3MfOc.gif', level:8, cat:'不明', flavor:'有一股香甜气味的哈密瓜面包', ask:'那是「哈密瓜面包」吧！要给我吃吗？', states:[
+  {id:'melonbread', name:'哈密瓜面包', icon:'image/crossgate/lv08_mp0000_melonbread_哈密瓜面包.gif', level:8, cat:'不明', flavor:'有一股香甜气味的哈密瓜面包', ask:'那是「哈密瓜面包」吧！要给我吃吗？', states:[
     {cond:'正好', temp:'perfect', out:'flat', react:null},
     {cond:'冷掉', temp:'cold', out:'flat', react:'这个面包放太久了吧？这样要怎么吃？'}
   ]},
-  {id:'sushiset', name:'豪华寿司组', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/6LGq5Y2O5a+5Q==_Ki83vTCUfwji.gif', level:9, cat:'料理', mp:900, flavor:'将人间所有美味放在一起的高级料理', ask:'这不是最好吃的「豪华寿司组」吗？你要给我吃吗？', states:[
+  {id:'sushiset', name:'豪华寿司组', icon:'image/crossgate/lv09_mp0900_sushiset_豪华寿司组.gif', level:9, cat:'料理', mp:900, flavor:'将人间所有美味放在一起的高级料理', ask:'这不是最好吃的「豪华寿司组」吗？你要给我吃吗？', states:[
     {cond:'正好', temp:'perfect', out:'flat', react:null, jpNote:'日服有一条不太确定的记录：把某种多层食盒（可能是同类高级料理）掐在"整 2 分钟"给他，额外拿到过一个万能调理组。原文没点名具体是哪道菜，姑且记在这里，不当作确凿结论。'},
     {cond:'冷掉', temp:'cold', out:'down', react:'你放太久了吧？变得好难吃···', reward:'不合格厨师'}
   ]},
-  {id:'sharkfinsoup', name:'鱼翅汤', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/6bG857+F5rGk_LIijqZDkrjxG.gif', level:10, cat:'料理', mp:1000, flavor:'用传说中的梦幻食材"鱼翅"做成的汤', ask:'这不是梦幻料理「鱼翅汤」吗！你要给我吃吗？', states:[
+  {id:'sharkfinsoup', name:'鱼翅汤', icon:'image/crossgate/lv10_mp1000_sharkfinsoup_鱼翅汤.gif', level:10, cat:'料理', mp:1000, flavor:'用传说中的梦幻食材"鱼翅"做成的汤', ask:'这不是梦幻料理「鱼翅汤」吗！你要给我吃吗？', states:[
     {cond:'正好', temp:'perfect', out:'flat', react:null},
     {cond:'冷掉', temp:'cold', out:'down', react:'好像冷掉了。这样一点都不好吃了说，可惜了这些材料啊！', reward:'不合格厨师'}
   ]}
@@ -428,7 +428,7 @@ const TIMED = [
 
 const GATES = [
   {id:'whitebear', name:'白熊肉排', from:'敏腕厨师', to:'极上厨师',
-    icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/55m954aK6IKJ5g==_os5QpZIiCUrP.gif',
+    icon:'image/crossgate/lv10_mp0100_whitebear_白熊肉排.gif',
     level:10, cat:'料理', mp:100, flavor:'严格挑选的嫩白熊肉。',
     unlock:'需要先拿到「敏腕厨师」——日服玩家实测：敏腕之前他甚至不承认这是食物，问了也没反应。',
     jpNote:'日服玩家实测：敏腕之前他甚至不承认这是食物，问了也没反应。',
@@ -441,7 +441,7 @@ const GATES = [
       {who:'授予', npc:true, text:'你是个了不起的厨师。「极上厨师」的称号就给你吧！还有，希望你能帮我做咖喱饭。如果你能做出让我赞不绝口的咖喱饭的话，我就给你「究级厨师」的称号。那就等你的好消息吧！'}
     ], reward:['极上厨师']},
   {id:'curry', name:'咖喱饭', from:'极上厨师', to:'究极厨师',
-    icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/5ZKW5ZOp_F9dh5jit7987.gif',
+    icon:'image/crossgate/lv07_mp0650_curry_咖喱饭.gif',
     level:7, cat:'料理', mp:650, flavor:'香味十分迷人，在法兰大多用鸡肉来煮',
     unlock:'需要先是「极上厨师」，且咖喱要静置约 24 小时又 1~2 分钟。日服资料：没放够时间也能喂，只会被判"甜口"、称号原地不动，可以反复重试；只有精确落进那个窗口才会触发"辛口"评价、直接升究极（辛口/甘口在日文里也双关"评价严格与否"）。',
     jpNote:'日服资料：没放够时间也能喂，只会被判"甜口"、称号原地不动；只有精确落进窗口才会触发"辛口"评价升究极。',
