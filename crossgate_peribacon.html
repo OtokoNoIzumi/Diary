@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>培里·贝肯 · 称号地图 — 分支帝特殊NPC对话收录</title>
+<style>
+  :root{
+    --bg:#1c140f;
+    --bg-deep:#140e0a;
+    --panel:#251b15;
+    --panel-alt:#2d2119;
+    --line:#4a3626;
+    --line-soft:#3a2c20;
+    --gold:#c9a15c;
+    --gold-bright:#e6c17e;
+    --jade:#5fae8c;
+    --amber:#d98a4a;
+    --ice:#6fa3c9;
+    --rust:#a3493f;
+    --cream:#f1e6d3;
+    --cream-dim:#cdbfa8;
+    --muted:#8a7862;
+    --jp:#7a93b8;
+    --serif:"Songti SC","Noto Serif SC","STSong","SimSun",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--bg);color:var(--cream);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;}
+  a{color:var(--gold-bright);}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px;}
+
+  /* ---------- HERO ---------- */
+  .hero{background:radial-gradient(ellipse 900px 380px at 50% -120px, rgba(201,161,92,0.14), transparent 70%),var(--bg-deep);border-bottom:1px solid var(--line);padding:52px 0 34px;}
+  .hero-frame{border:1px solid var(--line);border-radius:4px;padding:2px;}
+  .hero-frame-inner{border:1px solid var(--line-soft);border-radius:3px;padding:34px 36px;}
+  .hero-kicker{color:var(--gold);font-size:13px;letter-spacing:.04em;margin:0 0 14px;}
+  .hero-title{font-family:var(--serif);font-size:44px;margin:0 0 6px;color:var(--cream);font-weight:700;}
+  .hero-alias{font-size:14px;color:var(--muted);margin:0 0 18px;}
+  .hero-desc{max-width:600px;color:var(--cream-dim);font-size:15px;margin:0;}
+  .hero-sources{margin-top:14px;font-size:12.5px;color:var(--muted);}
+  .src-tag{display:inline-block;border:1px solid var(--line);border-radius:4px;padding:1px 7px;margin-right:6px;}
+  .src-tag.jp{color:var(--jp);border-color:var(--jp);}
+  .src-tag.zh{color:var(--gold);border-color:var(--gold);}
+
+  section{padding:44px 0;}
+  .section-head{margin-bottom:20px;}
+  .section-title{font-family:var(--serif);font-size:24px;margin:0 0 8px;color:var(--cream);}
+  .section-sub{font-size:14px;color:var(--muted);margin:0;max-width:660px;}
+
+  /* ---------- FLOW (intro dialogue script, unchanged pattern) ---------- */
+  .flow{border-left:2px solid var(--line);margin-left:6px;padding-left:26px;}
+  .flow-item{position:relative;margin-bottom:18px;}
+  .flow-item::before{content:"";position:absolute;left:-31px;top:6px;width:9px;height:9px;border-radius:50%;background:var(--bg-deep);border:2px solid var(--line);}
+  .flow-cond{display:inline-block;font-size:12px;color:var(--ice);border:1px solid var(--ice);border-radius:4px;padding:2px 8px;margin-bottom:6px;}
+  .flow-cond.warn{color:var(--rust);border-color:var(--rust);}
+  .flow-cond.good{color:var(--jade);border-color:var(--jade);}
+  .flow-bubble{background:var(--panel);border:1px solid var(--line-soft);border-radius:8px;padding:12px 16px;color:var(--cream-dim);font-size:14.5px;max-width:640px;}
+  .flow-bubble.npc{border-left:3px solid var(--gold);}
+  .flow-bubble p{margin:0 0 6px;}
+  .flow-bubble p:last-child{margin-bottom:0;}
+  .flow-choice{display:flex;gap:10px;margin-top:8px;}
+  .flow-choice span{font-size:12.5px;border:1px dashed var(--muted);color:var(--cream-dim);padding:3px 10px;border-radius:4px;}
+  .flow-note{font-size:13px;color:var(--muted);font-style:italic;}
+
+  .item-card{background:var(--panel-alt);border:1px solid var(--line-soft);border-radius:8px;padding:16px;display:flex;gap:14px;align-items:flex-start;margin-top:22px;}
+  .item-card .icon{width:52px;height:52px;border-radius:6px;background:var(--bg-deep);border:1px solid var(--line);flex:none;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .item-card .icon img{width:40px;height:40px;image-rendering:pixelated;object-fit:contain;}
+  .item-card h4{margin:0 0 4px;font-family:var(--serif);font-size:16px;}
+  .item-card p{margin:0 0 6px;font-size:13px;color:var(--cream-dim);}
+
+  .jp-note{font-size:12.5px;color:var(--jp);border-left:2px solid var(--jp);padding-left:9px;margin-top:6px;}
+  .jp-note b{color:var(--jp);font-weight:600;}
+
+  /* ---------- MAP / CRUMBS ---------- */
+  .crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:12.5px;color:var(--muted);margin-bottom:14px;padding:10px 14px;background:var(--panel);border:1px solid var(--line-soft);border-radius:6px;position:sticky;top:10px;z-index:6;}
+  .crumbs button{background:none;border:none;color:var(--gold-bright);font-size:12.5px;cursor:pointer;padding:2px 4px;font-family:var(--sans);}
+  .crumbs button:disabled{color:var(--cream);cursor:default;font-weight:600;}
+  .crumbs .sep{color:var(--line);}
+  .map-search{width:100%;margin-bottom:16px;position:relative;}
+  .map-search input{width:100%;background:var(--bg-deep);border:1px solid var(--line);border-radius:6px;padding:10px 12px;color:var(--cream);font-size:14px;font-family:var(--sans);}
+  .map-search .suggest{position:absolute;left:0;right:0;top:calc(100% + 4px);background:var(--panel);border:1px solid var(--gold);border-radius:6px;overflow:hidden;z-index:8;display:none;}
+  .map-search .suggest.show{display:block;}
+  .map-search .suggest button{display:block;width:100%;text-align:left;background:none;border:none;color:var(--cream-dim);padding:8px 12px;font-size:13.5px;cursor:pointer;font-family:var(--sans);}
+  .map-search .suggest button:hover{background:var(--panel-alt);color:var(--cream);}
+
+  .spine{position:relative;border-left:2px solid var(--line);margin-left:10px;padding-left:28px;}
+  .node{position:relative;margin-bottom:14px;}
+  .node::before{content:"";position:absolute;left:-33px;top:10px;width:10px;height:10px;border-radius:50%;background:var(--bg-deep);border:2px solid var(--line);}
+
+  .station{padding:8px 0;}
+  .station .pill{display:inline-block;padding:7px 18px;border-radius:999px;font-size:14.5px;font-weight:600;border:1px solid;}
+  .station.s-fail .pill{color:var(--rust);border-color:var(--rust);background:rgba(163,73,63,.1);}
+  .station.s-mid .pill{color:var(--jade);border-color:var(--jade);background:rgba(95,174,140,.1);}
+  .station.s-high .pill{color:var(--gold);border-color:var(--gold);background:rgba(201,161,92,.1);}
+  .station.s-top .pill{color:var(--gold-bright);border-color:var(--gold-bright);background:rgba(230,193,126,.14);}
+  .station .station-sub{font-size:12px;color:var(--muted);margin-top:6px;}
+  .node::before.station-dot{}
+  .node.station::before{width:14px;height:14px;left:-35px;top:8px;}
+
+  .cluster-head{display:flex;align-items:center;gap:10px;cursor:pointer;padding:9px 12px;background:var(--panel);border:1px solid var(--line-soft);border-radius:7px;}
+  .cluster-head:hover{border-color:var(--gold);}
+  .cluster-head .chev{color:var(--muted);font-size:11px;transition:transform .15s;flex:none;}
+  .cluster-head.open .chev{transform:rotate(90deg);}
+  .cluster-head .ttl{font-size:14px;color:var(--cream);font-weight:600;flex:1;}
+  .cluster-head .cnt{font-size:12px;color:var(--muted);}
+  .cluster-hint{font-size:12px;color:var(--muted);margin:6px 2px 0;}
+  .satellite-row{display:none;flex-wrap:wrap;gap:8px;margin-top:10px;padding-left:14px;border-left:2px dashed var(--line-soft);}
+  .satellite-row.open{display:flex;}
+
+  .dish-chip{display:flex;align-items:center;gap:8px;background:var(--panel-alt);border:1px solid var(--line-soft);border-radius:999px;padding:5px 12px 5px 6px;cursor:pointer;font-size:13px;color:var(--cream-dim);}
+  .dish-chip:hover{border-color:var(--gold);}
+  .dish-chip.open{border-color:var(--gold);color:var(--cream);}
+  .dish-chip .thumb{width:22px;height:22px;border-radius:5px;overflow:hidden;background:var(--bg-deep);display:flex;align-items:center;justify-content:center;flex:none;}
+  .dish-chip .thumb img{width:18px;height:18px;image-rendering:pixelated;object-fit:contain;}
+  .dish-chip .lv,.dp-name .lv,.gate-name .lv,.state-row .lv{font-size:10px;color:var(--gold);border:1px solid var(--gold);border-radius:3px;padding:0 4px;margin-left:4px;font-family:var(--sans);font-weight:500;vertical-align:middle;}
+  .dish-chip .flag,.dp-name .flag,.gate-name .flag,.state-row .flag{font-size:10px;color:var(--jp);border:1px solid var(--jp);border-radius:3px;padding:0 4px;margin-left:4px;font-family:var(--sans);font-weight:500;vertical-align:middle;}
+  .dish-chip .flag.note,.dp-name .flag.note,.gate-name .flag.note,.state-row .flag.note{color:var(--ice);border-color:var(--ice);}
+
+  .dish-panel{width:100%;margin-top:10px;padding:14px 16px;background:var(--panel);border:1px solid var(--line-soft);border-radius:8px;display:none;}
+  .dish-panel.open{display:block;}
+  .dish-panel .dp-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:8px;}
+  .dish-panel .dp-icon{width:40px;height:40px;border-radius:6px;background:var(--bg-deep);border:1px solid var(--line);flex:none;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .dish-panel .dp-icon img{width:32px;height:32px;image-rendering:pixelated;object-fit:contain;}
+  .dish-panel .dp-name{font-family:var(--serif);font-size:16px;margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:0;}
+  .dish-panel .dp-meta{font-size:12px;color:var(--muted);}
+  .dish-panel .dp-flavor{font-size:13px;color:var(--cream-dim);font-style:italic;border-left:2px solid var(--line-soft);padding-left:10px;margin:0 0 10px;}
+  .dish-panel .dp-ask{font-size:13px;color:var(--cream-dim);margin:0 0 10px;padding:8px 10px;background:var(--bg-deep);border:1px solid var(--line-soft);border-radius:6px;}
+  .dish-panel .dp-ask .who{color:var(--muted);font-size:11.5px;display:block;margin-bottom:2px;}
+
+  .state-row{display:flex;align-items:center;gap:8px;padding:6px 9px;border-radius:5px;border:1px solid var(--line-soft);background:var(--panel-alt);cursor:pointer;margin-bottom:6px;}
+  .state-row:hover{border-color:var(--gold);}
+  .state-row .dot{width:8px;height:8px;border-radius:50%;flex:none;}
+  .dot.perfect{background:var(--jade);}
+  .dot.hot{background:var(--amber);}
+  .dot.cold{background:var(--ice);}
+  .dot.spoiled{background:var(--rust);}
+  .dot.neutral{background:var(--muted);}
+  .state-row .cond{flex:1;font-size:12.5px;color:var(--cream-dim);}
+  .outcome{font-size:11px;padding:1px 8px;border-radius:999px;border:1px solid;white-space:nowrap;}
+  .outcome.up{color:var(--jade);border-color:var(--jade);}
+  .outcome.down{color:var(--rust);border-color:var(--rust);}
+  .outcome.flat{color:var(--muted);border-color:var(--muted);}
+  .state-row .arrow{color:var(--muted);font-size:11px;transition:transform .15s;flex:none;}
+  .state-row.open .arrow{transform:rotate(90deg);}
+  .state-detail{display:none;padding:8px 10px 10px;margin:0 0 8px;font-size:13px;color:var(--cream-dim);border-left:2px solid var(--line-soft);}
+  .state-detail.open{display:block;}
+  .state-detail .who{color:var(--muted);font-size:11.5px;display:block;margin-bottom:2px;}
+  .state-detail .line{margin:0 0 8px;}
+  .not-recorded{color:var(--muted);font-style:italic;}
+  .reward-badge{display:inline-block;font-size:12px;padding:2px 9px;border-radius:999px;border:1px solid;margin-top:2px;}
+  .reward-badge.fail{color:var(--rust);border-color:var(--rust);}
+  .reward-badge.mid{color:var(--jade);border-color:var(--jade);}
+  .reward-badge.high{color:var(--gold);border-color:var(--gold);}
+  .reward-badge.top{color:var(--gold-bright);border-color:var(--gold-bright);}
+
+  /* gate nodes */
+  .gate{padding:14px 16px;background:var(--panel);border:1px solid var(--gold);border-radius:8px;cursor:pointer;}
+  .gate:hover{background:var(--panel-alt);}
+  .gate .gate-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+  .gate .gate-head{display:flex;gap:12px;align-items:flex-start;min-width:0;}
+  .gate .gate-icon{width:40px;height:40px;border-radius:6px;background:var(--bg-deep);border:1px solid var(--line);flex:none;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .gate .gate-icon img{width:32px;height:32px;image-rendering:pixelated;object-fit:contain;}
+  .gate .gate-name{font-family:var(--serif);font-size:17px;color:var(--cream);margin:0;display:flex;flex-wrap:wrap;align-items:center;}
+  .gate .gate-meta{font-size:12px;color:var(--muted);margin:2px 0 0;}
+  .gate .gate-flavor{font-size:13px;color:var(--cream-dim);font-style:italic;border-left:2px solid var(--line-soft);padding-left:10px;margin:8px 0 0;}
+  .gate .gate-arrow{font-size:12px;color:var(--gold);flex:none;padding-top:4px;white-space:nowrap;}
+  .gate .gate-unlock{font-size:12px;color:var(--muted);margin-top:8px;}
+  .gate-script{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--line-soft);}
+  .gate-script.open{display:block;}
+  .script-line{display:flex;gap:10px;margin-bottom:8px;font-size:13.5px;}
+  .script-who{flex:none;width:56px;font-size:12px;color:var(--muted);padding-top:2px;}
+  .script-line.npc .script-who{color:var(--gold);}
+  .script-text{color:var(--cream-dim);}
+  .gate-reward{margin-top:10px;}
+
+  .state-row .cond .flag{margin-left:6px;}
+
+  /* ---------- NOTES ---------- */
+  details.note{background:var(--panel);border:1px solid var(--line-soft);border-radius:8px;padding:14px 18px;margin-bottom:14px;}
+  details.note summary{cursor:pointer;font-size:14px;color:var(--cream);font-weight:600;}
+  .quote{margin:12px 0 6px;padding-left:14px;border-left:2px solid var(--gold);color:var(--cream-dim);font-size:13.5px;}
+  .quote.jp{border-left-color:var(--jp);}
+  .quote-attr{font-size:12px;color:var(--muted);margin-top:4px;}
+  ul.trivia{margin:10px 0 0;padding-left:20px;font-size:13px;color:var(--cream-dim);}
+  ul.trivia li{margin-bottom:8px;}
+
+  footer{border-top:1px solid var(--line);padding:26px 0 40px;font-size:12.5px;color:var(--muted);}
+  footer a{color:var(--muted);text-decoration:underline;}
+  footer p{margin:0 0 8px;}
+
+  @media (max-width:600px){
+    .hero-title{font-size:32px;}
+    .hero-frame-inner{padding:24px 20px;}
+    .crumbs{position:static;}
+    .spine{margin-left:4px;padding-left:20px;}
+    .satellite-row{padding-left:8px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-frame"><div class="hero-frame-inner">
+      <p class="hero-kicker">法兰城 · 王宫食堂</p>
+      <h1 class="hero-title">培里·贝肯</h1>
+      <p class="hero-alias">自称全世界最能吃的美食家 · 只对「好吃」两个字买账</p>
+      <p class="hero-desc">这不是一张表格，是一条真实存在的晋升路线：从「不合格厨师」出发，靠端菜的时机往上爬，最终换来「究极厨师」。下面按这条路线本身的结构来逛——沿主线走，遇到岔路再展开看细节。</p>
+      <p class="hero-sources"><span class="src-tag zh">中文数据</span>噬生神殿论坛 2013 年帖子　<span class="src-tag jp">日服考据</span>ge-myu.net 2002 年原服 BBS 讨论帖</p>
+    </div></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="flow">
+    <div class="section-head">
+      <h2 class="section-title">见面之后会发生什么</h2>
+      <p class="section-sub">在逛地图之前，先看懂这段固定开场——它决定了你身上带什么东西、他会先说哪句话。</p>
+    </div>
+    <div class="flow">
+      <div class="flow-item">
+        <span class="flow-cond">未携带相关物品 / 没有敏腕厨师称号时携带白熊肉排</span>
+        <div class="flow-bubble npc"><p>你有没有什么可以吃的？明明点了食物却都一直没送来，真是饿死我了。</p></div>
+      </div>
+      <div class="flow-item">
+        <span class="flow-cond">携带了万能调理组</span>
+        <div class="flow-bubble npc"><p>请用我送你的「万能料理组合」来做料理吧！如果你是要做料理给我吃的话，则请你先把它收起来。因为如果不是在相同条件下做出料理的话就没有意义了。</p></div>
+      </div>
+      <div class="flow-item">
+        <span class="flow-cond good">携带了食物</span>
+        <div class="flow-bubble npc">
+          <p>我是培里·贝肯。是全世界最能吃的美食家。虽然我什么都能吃，但是我对自己的味觉十分有信心喔！</p>
+          <p>能把你手上的料理给我吃吗？如果能让我吃的饱的话，我就送你好东西。不过别忘了，只有好吃的东西才那让我感到饱。</p>
+        </div>
+      </div>
+      <div class="flow-item">
+        <span class="flow-cond warn">物品栏满</span>
+        <div class="flow-bubble npc"><p>如果你能给我吃好吃的料理，我一定会好好的报答你···可是你的身上已经满了，去清一清再来好吗？千万不要糟蹋粮食哦！</p></div>
+      </div>
+      <div class="flow-item">
+        <span class="flow-cond">未满</span>
+        <div class="flow-bubble npc"><p>好好吃的料理呀···不会是你自己要吃吧？</p></div>
+        <div class="flow-choice"><span>是 → 「怎么这样！明明有饿成这样的你居然不给他吃···请给我吧！」</span></div>
+        <div class="flow-choice"><span>否 → 依次询问身上可食用的料理，直到问完为止</span></div>
+      </div>
+      <div class="flow-item">
+        <span class="flow-cond">问到最后一样仍选「否」</span>
+        <div class="flow-bubble npc"><p>是吗？那等你改变主意后再来找我吧！</p></div>
+      </div>
+      <div class="flow-item">
+        <span class="flow-cond good">选「是」交出料理 → 进入评价</span>
+        <div class="flow-bubble"><p class="flow-note">嚼嚼···好吃好吃···唔···我添···哦···（下方每道料理挂在地图上的「评价」就是这一步说的话）</p></div>
+      </div>
+      <div class="flow-item">
+        <span class="flow-cond warn">评价后仍「未饱」</span>
+        <div class="flow-bubble npc"><p>对不起，请再多给我一些吧！我还是觉得不饱耶！不过为了感谢你，我还是把这个调味料『味精』送给你吧！这个可以让料理变得更好吃，有机会一定要试试。</p></div>
+      </div>
+      <div class="flow-item">
+        <span class="flow-cond good">评价后「饱了」</span>
+        <div class="flow-bubble npc">
+          <p>嗯？这是什么感觉···我觉得肚子好饱喔！已经好久没有这么满足了···</p>
+          <p>啊···谢谢你！我终于饱了。这个「万能料理组合」就送给你吧！请你鉴定之后再装备起来看看吧！嗯···说完话肚子又饿起来了···</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="item-card">
+      <div class="icon"><img src="http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/5LiH6IO96LCD5w==_5V6eugtluIg6.gif" alt="" onerror="this.parentElement.innerHTML='🔸'"></div>
+      <div>
+        <h4>万能调理组 <span class="reward-badge high">装备 · 戒指</span></h4>
+        <p>等级 1　耐久 0067/0067　种类 戒指　装备起来做料理时魔力消耗值会减少。不管谁来用，都能轻松煮出好吃的料理的调理道具。</p>
+        <div class="jp-note"><b>日服考据 · 2002</b>　这东西好像不只发一次——有玩家前后拿到 3 个。第 2、3 个似乎跟"当天第一次喂食、精确踩中某个分钟数（比如整 2 分钟）"有关，具体规则当年也没定论，姑且当传说记录一下。</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="map">
+    <div class="section-head">
+      <h2 class="section-title">称号地图</h2>
+      <p class="section-sub">沿主线从「不合格厨师」往下逛。每一级下面挂着的是能推你往上（或打回原形）的菜——点开菜看时机，点开时机看对话。搜索框可以直接跳到某道菜。</p>
+    </div>
+
+    <div class="map-search">
+      <input id="mapSearch" type="text" placeholder="搜索料理名称，比如「咖喱饭」，回车或点建议跳过去">
+      <div class="suggest" id="mapSuggest"></div>
+    </div>
+
+    <div class="crumbs" id="crumbs"></div>
+
+    <div class="spine" id="spine"></div>
+  </section>
+
+  <section id="notes">
+    <div class="section-head">
+      <h2 class="section-title">编者注</h2>
+    </div>
+    <details class="note" open>
+      <summary>2013 年记录时留下的观察（中文帖）</summary>
+      <div class="quote">还剩余的一些料理外的情况：持有各种厨师称号的时候似乎会有不同的对话；越级给他可以提升称号水平的料理会如何，尚不确定（无法直接给白熊肉排，咖喱饭未知）。
+      <div class="quote-attr">—— 楼主，2013-08-14</div></div>
+      <div class="quote">另，携带万能调理组后料理耗魔应该会减少，不知道这时做出来的东西，取下调理组后再给他吃会怎样（猜测为一样）。似乎加了味精的料理即使时间不对，也不会被评价为不合格厨师。
+      <div class="quote-attr">—— 楼主，2013-08-14</div></div>
+    </details>
+
+    <details class="note">
+      <summary>2002 年原服玩家的实测摘录（日服帖）</summary>
+      <p style="font-size:13px;color:var(--cream-dim);margin:0 0 10px;">这个 NPC 原来在日服上线时就有——一群玩家花了将近半个月边试边报，才拼出「不合格→敏腕→极上→究极」这条线。下面是几条比较关键、又没被中文帖记录下来的发现：</p>
+      <ul class="trivia">
+        <li><b>计时可能从"做出来"那一刻就开始算。</b>有人刚从 NPC 商店买到普通面包就立刻拿去喂，结果直接被判定"在抽屉里放干了"，当场不合格——说明倒计时未必是从端上桌开始的。</li>
+        <li><b>白熊肉排有"识别门槛"。</b>敏腕厨师之前，他甚至不会把白熊肉排当成食物看待，问了也没反应；拿到敏腕之后再喂才成功变成极上。</li>
+        <li><b>咖喱饭失败不会打回原形。</b>极上状态下咖喱饭没放够 24 小时也能喂，只是被判定成"甜口"、称号原地不动，可以反复重试；只有精确落在 24 小时又 1～2 分钟这个窗口才会触发"辛口"评价，直接升到究极。（辛口/甘口在日文里既指咖喱辣不辣，也双关"评价严不严格"，这个文字游戏埋得挺讲究。）</li>
+        <li><b>称号可以删了再要回来。</b>有玩家试着把自己的称号删掉，再去找负责外号的 NPC 搭话，同一个称号又领回来了，不需要重新考核一遍。</li>
+        <li><b>他不是什么都收。</b>有人试着喂番茄酱和一种叫"鬼酒"的道具，他完全没反应——连食物都不承认，比给错时机还惨。</li>
+      </ul>
+    </details>
+
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>中文数据整理自「噬生神殿」论坛帖子《分支帝·特殊NPC对话收录》：<a href="http://lifeator.xclub.tw/viewthread.php?tid=56&extra=page%3D1" target="_blank" rel="noopener">lifeator.xclub.tw/viewthread.php?tid=56</a></p>
+    <p>日服考据整理自「クロスゲートクエストBBS」2002/03/28 帖《王宮食堂クエスト》的 Wayback Machine 存档：<a href="https://web.archive.org/web/20030930085203/http://www.ge-myu.net/game/crossgate/bbs/float.cgi?bbs=quest&thread=20328150421&last=50" target="_blank" rel="noopener">http://www.ge-myu.net/game/crossgate/bbs</a></p>
+    <p>图标沿用原帖 2013 年的图片外链（部分来自已停用的老论坛主机），如果显示不出来，是老图床年久失修，不是本页的问题。此页面仅作个人整理与前端呈现演示，不新增或修改原帖记录内容。</p>
+  </div>
+</footer>
+
+<script>
+/* ---------------- DATA ---------------- */
+
+const DAILY = [
+  {id:'cheese', name:'好像很好吃的起司', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_7/6LW35Y+4_gyw27mt0CjCn.gif', level:1, cat:'食物', flavor:'高格调高品质的起司', ask:'喔！那是「好像很好吃的起司」吗？要给我吃吗？', react:'真好吃啊！如果能配上一杯美酒就更好了。'},
+  {id:'travelration', name:'旅行干粮', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/5bmy57Ku_LNhiDsmCsyHN.gif', level:1, cat:'食物', flavor:'伊尔自古以来传下来的面包，魔法力可回复15左右', ask:'那是「旅行干粮」吗？要给我吃吗？', react:'嗯！真是好吃！', jpNote:'日服版更带点自嘲："把非常食在非非常时期吃掉，别有一番风味呢"——本质上也是正面评价。'},
+  {id:'spicycurry', name:'超辣咖喱', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/5ZKW5ZOp_F9dh5jit7987.gif', level:1, cat:'食物', flavor:'特制的超辣咖哩', ask:'那是「超辣咖喱饭」吗？要给我吃吗？', react:'虽然很辣可是一点也不好吃···'},
+  {id:'plumcandy', name:'梅子糖', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/57OW_eajTARFCeqQT.gif', level:1, cat:'食物', flavor:'里面有很多酸梅的冰棒', ask:'那是有放酸梅的「酸梅糖果」吗？要给我吃吗？', react:'这个糖果真的很不错，很好吃唷！'},
+  {id:'whitelover', name:'白色恋人', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/5Yaw5r+A5YeM_Bp2RHo6WN4qK.gif', level:1, cat:'食物', flavor:'亚留特名产的冰零嘴，里面有巧克力，很甜（其实是圣拉鲁卡的特产）', ask:'那是圣拉鲁卡的名产「白色恋人」吗？要给我吃吗？', react:'嗯！不愧是名产，真好吃啊！'},
+  {id:'taoubread', name:'陶欧食品店精制面包', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_7/6Z2i5YyF_NTQDRgeebcvt.gif', level:1, cat:'不明', flavor:'陶欧食品店特制的面包，很好吃', ask:'那是「陶欧食品店特制面包」吗？要给我吃吗？', react:'蛮好吃的嘛！', jpNote:'日服评价意思相近："业务用的东西意外地好吃嘛"。另有一条趣闻：喂过这个面包后如果去找某个忍者任务的NPC搭话，忍者任务会被打断，提示"调查出现重大障碍"——大概率是任务变量冲突的小彩蛋，与称号无关。'},
+  {id:'alcorsnack', name:'亚尔科尔的点心', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/54K55b+D_f2yCUbdpVAkr.gif', level:1, cat:'不明', flavor:'亚尔科尔为心美做的点心', ask:'那是什么点心啊？要给我吃吗？', react:'给我吃真的没关系吗？', jpNote:'日服台词几乎一字不差，也是"这真的是可以给我吃的东西吗？"。'},
+  {id:'wildstrawberry', name:'野草莓', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/6YeO6I2J6I6T_5o7tYhbNaclE.gif', level:1, cat:'食物', flavor:'在寒冷的冬天依然能活下去的野草莓', ask:'那是「野草莓」吗？要给我吃吗？', react:'好吃！可是份量好少喔···'},
+  {id:'fruittomato', name:'水果番茄', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/55Wq6IyE_V1MT7KmXBlXo.gif', level:1, cat:'不明', flavor:'又甜又新鲜的番茄', ask:'那是水果番茄吗？要给我吃吗？', react:'给我吃真的没关系吗？', jpNote:'日服同款句式："这真的可以给我吃吗？"，和亚尔科尔的点心是同一条系统台词。'},
+  {id:'yakisobalunch', name:'炒面面包便当', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/54KS6Z2i6Z2i5Q==_VCXzohCU1eBl.gif', level:1, cat:'食物', flavor:'矿工毕夫鲁的便当', ask:'那是炒面面包便当吗？要给我吃吗？', react:'给我吃真的没关系吗？'},
+  {id:'tomato', name:'番茄', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/55Wq6IyE_V1MT7KmXBlXo.gif', level:1, cat:'蔬菜', flavor:'新鲜的番茄', ask:'那是番茄吗？要给我吃吗？', react:'番茄对身体不错唷！'},
+  {id:'premiumtomato', name:'高级番茄', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/55Wq6IyE_V1MT7KmXBlXo.gif', level:1, cat:'蔬菜', flavor:'颜色鲜艳的新鲜番茄', ask:'那是高级番茄吗？要给我吃吗？', react:'真好吃···番茄很有营养的。', jpNote:'日服评价大意一致："好吃，不过光吃番茄总觉得差点意思"。'},
+  {id:'evanbiscuit', name:'艾文的饼干', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/5bmy57Ku_LNhiDsmCsyHN.gif', level:1, cat:'不明', flavor:'送给樵夫弗伦的饼干', ask:'那是饼干吗？要给我吃吗？', react:'给我吃真的没关系吗？', jpNote:'关联条目（非同一物品）：日服帖里有人喂"排队买来的手工饼干"，被念叨"这么珍贵的东西真的要给我？不是要留给重要的人吗"。台词对不上艾文的饼干，但明显是同一套"这食物本来要送别人"的系统模板，谨慎标注为关联而非合并。'},
+  {id:'ujikintoki', name:'宇治金时', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/5a6H5rK76YeR5g==_WRHjMApAvmL1.gif', level:5, cat:'料理', flavor:'以沉睡在永久冻土里的冰做成的刨冰，非常好吃', ask:'那不是「宇治金时」吗？要给我吃吗？', react:'呜···好冰···', jpNote:'日服反应是"脑袋一阵刺痛"，纯粹的生理吐槽，和中文版"呜···好冰···"是同一种被冰到的调调。另有玩家试过喂番茄酱、"鬼酒"给他，两样都毫无反应——他压根没把这两样当食物。'}
+];
+
+/* 计时料理：按等级升序，同级按回复魔力升序；询问台词与时机无关，挂在料理本身 */
+const TIMED = [
+  {id:'candy', name:'糖果', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/57OW5p6c_9zzaJnHTFsTV.gif', level:1, cat:'料理', mp:50, flavor:'很甜的糖果，吃多了会蛀牙', ask:'那是「糖果」吧？要给我吃吗？', states:[
+    {cond:'正常', temp:'perfect', out:'flat', react:'谢谢你的糖果。', jpNote:'日服台词几乎一字不差，也是"谢谢你的糖果"。'},
+    {cond:'坏了', temp:'spoiled', out:'down', react:'那个糖果都快烂掉了···你是故意的吗？', reward:'不合格厨师'}
+  ]},
+  {id:'bread', name:'面包', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_7/6Z2i5YyF_NTQDRgeebcvt.gif', level:1, cat:'料理', mp:100, flavor:'非常好吃的热呼呼的面包', ask:'那不是「面包」吗？要给我吃吗？', states:[
+    {cond:'刚做好 · 到 1h', temp:'perfect', out:'flat', react:'嗯！好吃！这面包真是太好吃了！'},
+    {cond:'放了 24h 以上', temp:'spoiled', out:'down', react:'又冷又硬的面包能吃吗？', titleLine:'你还差得远呢！去吧！冠上「不合格厨师」的头衔吧！', reward:'不合格厨师'}
+  ]},
+  {id:'frenchbread', name:'法国面包', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/5rOV5Zu96Z2i5Q==_NZ64yRMhycEH.gif', level:2, cat:'料理', mp:100, flavor:'脆脆的外皮加上软酥的馅，香味迷人的法国面包', ask:'那是「法国面包」吗？要给我吃吗？', states:[
+    {cond:'刚做好 1m · 正好', temp:'perfect', out:'flat', react:'好好吃啊！真是人间美味。'},
+    {cond:'冷掉', temp:'cold', out:'flat', react:'冷掉的面包一点都不好吃。'}
+  ]},
+  {id:'omurice', name:'蛋包饭', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/6JuL5YyF6aWt_RjHZI9vywDIl.gif', level:2, cat:'料理', mp:150, flavor:'以最新鲜的蛋制成的半熟蛋包饭', ask:'这不是「蛋包饭」吗？要给我吃吗？', states:[
+    {cond:'烫 · 1 分钟内', temp:'hot', out:'flat', react:'好烫！你应该放久一点再端出来的吧？'},
+    {cond:'正好', temp:'perfect', out:'up', react:'嗯！真好吃！真是人间美味啊！', reward:'敏腕厨师', jpNote:'日服社群测出的窗口更精确：出锅 0~1 分钟会被念叨"还没蒸透"，大约 1~2 分钟这段才真正算数拿到敏腕。'},
+    {cond:'冷掉', temp:'cold', out:'flat', react:'都变冷变硬了，这东西能吃吗？'}
+  ]},
+  {id:'friednoodle', name:'炒面', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/54KS6Z2i_23QHjbD2dv2u.gif', level:3, cat:'料理', mp:250, flavor:'香喷喷的酱汁配上手工面条，可引以为傲的好吃炒面', ask:'那是「炒面」吧！要给我吃吗？', states:[
+    {cond:'刚做好 1m · 正好', temp:'perfect', out:'flat', react:'真是太好吃了！没吃过这么棒的炒面！'},
+    {cond:'冷掉（2:00 后）', temp:'cold', out:'down', react:'这个炒面做的有点失败···', reward:'不合格厨师'}
+  ]},
+  {id:'greenpepperbeef', name:'青椒肉丝', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/6Z2S5qSS6IKJ5A==_0oDqi9uoQDlW.gif', level:3, cat:'料理', mp:300, flavor:'融合牛肉与青椒的人间美味', ask:'这不是「青椒肉丝」吗？要给我吃吗？', states:[
+    {cond:'烫 · 1 分钟内', temp:'hot', out:'flat', react:'有点烫诶！能再冷一点就好了···'},
+    {cond:'正好', temp:'perfect', out:'flat', react:null},
+    {cond:'冷掉', temp:'cold', out:'down', react:'都冷掉了，真难吃！', reward:'不合格厨师'}
+  ]},
+  {id:'roastchicken', name:'烧鸡', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/54On6bih_SuMqTddjUeBF.gif', level:4, cat:'料理', mp:350, flavor:'柔软的炖鸡肉，口感十分黏稠', ask:'那是「烧鸡」？要给我吃吗？', states:[
+    {cond:'烫 · 1 分钟内', temp:'hot', out:'flat', react:'有点烫耶！如果能等冷一点再端出来就好了。'},
+    {cond:'正好', temp:'perfect', out:'flat', react:null},
+    {cond:'冷掉', temp:'cold', out:'flat', react:'变冷又变硬了，这是要怎么吃？回去好好反省吧！'}
+  ]},
+  {id:'oyakodon', name:'亲子丼', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/5Lqy5a2Q5Li8_Ho8RacqUZrOA.gif', level:4, cat:'料理', mp:400, flavor:'热腾腾的饭上放有半熟的蛋和刚起锅的鸡肉之人间美味', ask:'那是「亲子丼」？要给我吃吗？', states:[
+    {cond:'偏热 · 刚做好 1s', temp:'hot', out:'flat', react:'放久一点应该会更好吃吧？'},
+    {cond:'正好', temp:'perfect', out:'up', react:'嗯！真好吃！好久没吃过这么好吃的东西了。', titleLine:'你是个不错的厨师。其实我是王国公认的厨师鉴定师。「敏腕厨师」的头衔就给你吧！还有，如果你能让我吃到好吃的东西，我就给你「极上厨师」的头衔。（成为"敏腕"后）不愧是我所看好的敏腕厨师做的料理。非常的好吃。下次也要多努力唷！（极上部分原帖待补充）', reward:'极上厨师 / 敏腕厨师', jpNote:'日服社群实测：出锅后 1:00〜2:29 之间交给他，同样能拿到敏腕厨师——窗口比想象中宽一些。'}
+  ]},
+  {id:'hamburger', name:'汉堡', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/5rGJ5aCh_okdrFLGcY9zl.gif', level:5, cat:'料理', mp:450, flavor:'黏稠的食感令人吃过还想再吃', ask:'那是「汉堡」吗？要给我吃吗？', states:[
+    {cond:'刚做好 1s · 正好', temp:'perfect', out:'flat', react:'嗯！真好吃！真是人间美味啊！'},
+    {cond:'25 分钟后 · 冷掉', temp:'cold', out:'down', react:'变冷变硬了，一点都不好吃。你也实在太混了吧？', reward:'不合格厨师'}
+  ]},
+  {id:'congereelrice', name:'星鳗饭团', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/6bOX6bG86aWt5Q==_C2ybPU2VZeJj.gif', level:5, cat:'料理', mp:450, flavor:'酥软的鳗鱼肉，仿佛会在舌头上融化一般', ask:'那是「星鳗饭团」吗？要给我吃吗？', states:[
+    {cond:'正好', temp:'perfect', out:'flat', react:'嗯！好吃！真是太好吃了！'},
+    {cond:'冷掉', temp:'cold', out:'flat', react:'放太久都冷掉了···这样的东西谁想吃呢？'}
+  ]},
+  {id:'yakisobabread', name:'炒面面包', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/54KS6Z2i6Z2i5Q==_VCXzohCU1eBl.gif', level:6, cat:'料理', mp:550, flavor:'融合法国面包与炒面的超级美食', ask:'那是「炒面面包」吗？要给我吃吗？', states:[
+    {cond:'刚做出 1.5m · 烫', temp:'hot', out:'down', react:'有点烫呢···面包还是有点冷冷的才好吃。（原帖备注：加味精时无称号）', reward:'不合格厨师'},
+    {cond:'正好', temp:'perfect', out:'flat', react:null},
+    {cond:'5m 后 · 冷掉', temp:'cold', out:'down', react:'这个面包冷掉了，一点都不好吃。', reward:'不合格厨师'}
+  ]},
+  {id:'sukiyaki', name:'寿喜烧', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/5a+5Zac6ZSF_3GVR2E2f1cMR.gif', level:6, cat:'料理', mp:600, flavor:'肉料理的帝王', ask:'那是「寿喜烧」吗？要给我吃吗？', states:[
+    {cond:'1 分钟内 · 烫', temp:'hot', out:'flat', react:'味道还是不错，但是如果能再放久一点应该会更好吃吧···'},
+    {cond:'10 分钟多 · 正好', temp:'perfect', out:'up', react:'嗯！真好吃！好久没吃到这么好吃的东西了。', titleLine:'你是个不错的厨师。其实我是王国公认的厨师鉴定师。「敏腕厨师」的头衔就给你吧！', reward:'敏腕厨师', jpNote:'日服社群反复测试：第 9 分钟还会被嫌"完全没入味"，第 10 分钟才真正算数——卡得很死。'},
+    {cond:'冷掉', temp:'cold', out:'flat', react:'这个寿喜烧已经冷掉了。下次记得不要放太久。'}
+  ]},
+  {id:'kimchirice', name:'韩式泡菜饭', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/6Z+p5byP5rOh6A==_yLpa1MVBVjUv.gif', level:7, cat:'料理', mp:700, flavor:'异国来的梦幻料理', ask:'这不是「韩式泡菜饭」吗！要给我吃吗？', states:[
+    {cond:'太烫', temp:'hot', out:'down', react:'好烫！烫死我了！你应该多放久一点再端出来的···', reward:'不合格厨师'},
+    {cond:'正好', temp:'perfect', out:'flat', react:null}
+  ]},
+  {id:'crabpot', name:'螃蟹锅', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/6J6D6J+56ZSF_4Xs4eLb5ttxA.gif', level:8, cat:'料理', mp:750, flavor:'冬天最HOT的料理', ask:'那不是「螃蟹锅」吗？要给我吃吗？', states:[
+    {cond:'正好', temp:'perfect', out:'flat', react:null},
+    {cond:'冷掉', temp:'cold', out:'down', react:'你煮太久了。这样的东西一点都不好吃。', reward:'不合格厨师'}
+  ]},
+  {id:'melonbread', name:'哈密瓜面包', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/6a2F5oOR55qE5Q==_uv6msKq3MfOc.gif', level:8, cat:'不明', flavor:'有一股香甜气味的哈密瓜面包', ask:'那是「哈密瓜面包」吧！要给我吃吗？', states:[
+    {cond:'正好', temp:'perfect', out:'flat', react:null},
+    {cond:'冷掉', temp:'cold', out:'flat', react:'这个面包放太久了吧？这样要怎么吃？'}
+  ]},
+  {id:'sushiset', name:'豪华寿司组', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/6LGq5Y2O5a+5Q==_Ki83vTCUfwji.gif', level:9, cat:'料理', mp:900, flavor:'将人间所有美味放在一起的高级料理', ask:'这不是最好吃的「豪华寿司组」吗？你要给我吃吗？', states:[
+    {cond:'正好', temp:'perfect', out:'flat', react:null, jpNote:'日服有一条不太确定的记录：把某种多层食盒（可能是同类高级料理）掐在"整 2 分钟"给他，额外拿到过一个万能调理组。原文没点名具体是哪道菜，姑且记在这里，不当作确凿结论。'},
+    {cond:'冷掉', temp:'cold', out:'down', react:'你放太久了吧？变得好难吃···', reward:'不合格厨师'}
+  ]},
+  {id:'sharkfinsoup', name:'鱼翅汤', icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/6bG857+F5rGk_LIijqZDkrjxG.gif', level:10, cat:'料理', mp:1000, flavor:'用传说中的梦幻食材"鱼翅"做成的汤', ask:'这不是梦幻料理「鱼翅汤」吗！你要给我吃吗？', states:[
+    {cond:'正好', temp:'perfect', out:'flat', react:null},
+    {cond:'冷掉', temp:'cold', out:'down', react:'好像冷掉了。这样一点都不好吃了说，可惜了这些材料啊！', reward:'不合格厨师'}
+  ]}
+];
+
+const GATES = [
+  {id:'whitebear', name:'白熊肉排', from:'敏腕厨师', to:'极上厨师',
+    icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/55m954aK6IKJ5g==_os5QpZIiCUrP.gif',
+    level:10, cat:'料理', mp:100, flavor:'严格挑选的嫩白熊肉。',
+    unlock:'需要先拿到「敏腕厨师」——日服玩家实测：敏腕之前他甚至不承认这是食物，问了也没反应。',
+    jpNote:'日服玩家实测：敏腕之前他甚至不承认这是食物，问了也没反应。',
+    lines:[
+      {who:'培里', npc:true, text:'那不是牛排吗？是用什么肉做的呢？要给我吃吗？'},
+      {who:'选「否」', npc:false, text:'这样啊···真想吃吃看。（可再次尝试）'},
+      {who:'培里', npc:true, text:'咬！好~~~吃！这个浓厚中带有清新的味道···'},
+      {who:'', npc:true, text:'这是···熊肉对吧！而且不是一般普通的熊肉···这个肉质应该是栖息在寒冷地带的熊才对···白熊吗？'},
+      {who:'', npc:true, text:'太棒了！你真是一个了不起的料理人！'},
+      {who:'授予', npc:true, text:'你是个了不起的厨师。「极上厨师」的称号就给你吧！还有，希望你能帮我做咖喱饭。如果你能做出让我赞不绝口的咖喱饭的话，我就给你「究级厨师」的称号。那就等你的好消息吧！'}
+    ], reward:['极上厨师']},
+  {id:'curry', name:'咖喱饭', from:'极上厨师', to:'究极厨师',
+    icon:'http://bbs.polchina.com.cn/crossgate/affixss/forumid_5/5ZKW5ZOp_F9dh5jit7987.gif',
+    level:7, cat:'料理', mp:650, flavor:'香味十分迷人，在法兰大多用鸡肉来煮',
+    unlock:'需要先是「极上厨师」，且咖喱要静置约 24 小时又 1~2 分钟。日服资料：没放够时间也能喂，只会被判"甜口"、称号原地不动，可以反复重试；只有精确落进那个窗口才会触发"辛口"评价、直接升究极（辛口/甘口在日文里也双关"评价严格与否"）。',
+    jpNote:'日服资料：没放够时间也能喂，只会被判"甜口"、称号原地不动；只有精确落进窗口才会触发"辛口"评价升究极。',
+    lines:[
+      {who:'培里', npc:true, text:'那是「咖喱饭」吗？太好了。就让我一边吃一边为你评分吧！这个咖哩饭我可以吃吧？那么···我吃！这、这是！'},
+      {who:'培里', npc:true, text:'好~~~　好~~~　吃~~~！好吃！世界第一好吃！宇宙第一好吃！'},
+      {who:'授予', npc:true, text:'你是究级的厨师！'}
+    ], reward:['究极厨师','万能调理组']}
+];
+
+const EXTRA = [
+  {id:'iskalpot', name:'イスカル锅', jpOnly:true, meta:'日服资料 · 暂无对应中文译名', flavor:'原文提到的一道锅物料理，具体食材与中文条目未能对应，先按日文原名收录。', states:[
+    {cond:'出锅 0~5 分钟', temp:'perfect', out:'flat', ask:null, react:'（会被称赞，但只给一份味精，不改变称号）'},
+    {cond:'出锅 6 分钟以上', temp:'spoiled', out:'down', ask:null, react:'（直接判定为「赤点」，对应不合格厨师）', reward:'不合格厨师'}
+  ]}
+];
+
+/* ---------------- helpers ---------------- */
+function rewardClass(r){
+  if(!r) return 'high';
+  if(r.indexOf('不合格')>-1) return 'fail';
+  if(r.indexOf('究极')>-1 || r.indexOf('究級')>-1) return 'top';
+  if(r.indexOf('极上')>-1) return 'high';
+  if(r.indexOf('敏腕')>-1) return 'mid';
+  return 'high';
+}
+function outcomeTag(out){
+  if(out==='up') return '<span class="outcome up">↑ 称号提升</span>';
+  if(out==='down') return '<span class="outcome down">↓ 打回不合格</span>';
+  return '<span class="outcome flat">· 称号不变</span>';
+}
+function metaLine(item){
+  const parts=[];
+  if(item.cat) parts.push(item.cat);
+  if(item.mp) parts.push('回复'+item.mp+'点魔法力');
+  return parts.join(' · ');
+}
+function hasJpNote(item){
+  if(item.jpNote) return true;
+  if(item.states && item.states.some(s=>s.jpNote)) return true;
+  return false;
+}
+function nameMarks(item){
+  let html = '';
+  if(item.level!=null) html += '<span class="lv">Lv.'+item.level+'</span>';
+  if(item.jpOnly) html += '<span class="flag">日服</span>';
+  else if(hasJpNote(item)) html += '<span class="flag note">考据</span>';
+  return html;
+}
+function iconHtml(icon, name, size){
+  const fallback = name.slice(0,1);
+  return '<img src="'+icon+'" alt="'+name+'" onerror="this.parentElement.textContent=\'' + fallback + '\'">';
+}
+
+/* ---------------- state ---------------- */
+const ui = { cluster:null, dish:null, state:null, gate:null };
+
+function toggleCluster(id){
+  ui.cluster = (ui.cluster===id) ? null : id;
+  ui.dish=null; ui.state=null;
+  render();
+}
+function toggleDish(id){
+  ui.dish = (ui.dish===id) ? null : id;
+  ui.state=null;
+  render();
+}
+function toggleStateRow(idx){
+  ui.state = (ui.state===idx) ? null : idx;
+  render();
+}
+function toggleGate(id){
+  ui.gate = (ui.gate===id) ? null : id;
+  render();
+}
+function jumpTo(clusterId, dishId){
+  ui.cluster = clusterId; ui.dish = dishId; ui.state = null;
+  render();
+  requestAnimationFrame(()=>{
+    const el = document.querySelector('[data-dish="'+dishId+'"]');
+    if(el) el.scrollIntoView({behavior:'smooth', block:'center'});
+  });
+}
+
+/* ---------------- render pieces ---------------- */
+function renderStateRow(dishScopeId, s, idx){
+  const open = ui.dish===dishScopeId && ui.state===idx;
+  const rewardsHtml = [];
+  if(s.reward){
+    s.reward.split('/').forEach(r=>{r=r.trim();rewardsHtml.push('<span class="reward-badge '+rewardClass(r)+'">'+r+'</span>');});
+  }
+  return `
+    <div class="state-row${open?' open':''}" onclick="toggleStateRow(${idx})">
+      <span class="dot ${s.temp}"></span>
+      <span class="cond">${s.cond}${s.jpNote?'<span class="flag note">考据</span>':''}</span>
+      ${outcomeTag(s.out)}
+      <span class="arrow">▸</span>
+    </div>
+    <div class="state-detail${open?' open':''}">
+      ${s.react ? `<p class="line"><span class="who">评价：</span>${s.react}</p>` : `<p class="line not-recorded">（原帖此处未记录评价）</p>`}
+      ${s.titleLine ? `<p class="line"><span class="who">授予称号时会多说：</span>${s.titleLine}</p>` : ``}
+      ${s.jpNote ? `<div class="jp-note"><b>日服考据 · 2002</b>　${s.jpNote}</div>` : ``}
+      ${rewardsHtml.length ? `<div style="margin-top:6px;">${rewardsHtml.join(' ')}</div>` : ``}
+    </div>`;
+}
+
+function renderDishPanel(item){
+  const open = ui.dish===item.id;
+  let body;
+  if(item.states){
+    const askBlock = item.ask
+      ? `<p class="dp-ask"><span class="who">出示时他问：</span>${item.ask}</p>`
+      : ``;
+    body = askBlock + item.states.map((s,i)=>renderStateRow(item.id, s, i)).join('');
+  } else {
+    body = `
+      <div class="state-row" style="cursor:default;">
+        <span class="dot neutral"></span>
+        <span class="cond">常规</span>
+        ${outcomeTag('flat')}
+      </div>
+      <div class="state-detail open">
+        <p class="line"><span class="who">你出示料理，他问：</span>${item.ask}</p>
+        <p class="line"><span class="who">评价：</span>${item.react}</p>
+        ${item.jpNote ? `<div class="jp-note"><b>日服考据 · 2002</b>　${item.jpNote}</div>` : ``}
+      </div>`;
+  }
+  return `
+    <div class="dish-panel${open?' open':''}">
+      <div class="dp-head">
+        <div class="dp-icon">${iconHtml(item.icon, item.name)}</div>
+        <div>
+          <p class="dp-name">${item.name}${nameMarks(item)}</p>
+          <p class="dp-meta">${item.jpOnly ? item.meta : metaLine(item)}</p>
+        </div>
+      </div>
+      ${item.flavor?`<p class="dp-flavor">${item.flavor}</p>`:``}
+      ${body}
+    </div>`;
+}
+
+function renderChip(item, clusterId){
+  const open = ui.dish===item.id;
+  return `
+    <div class="dish-chip${open?' open':''}" data-dish="${item.id}" onclick="toggleDish('${item.id}')">
+      <span class="thumb">${iconHtml(item.icon, item.name)}</span>
+      ${item.name}${nameMarks(item)}
+    </div>`;
+}
+
+function renderCluster(id, title, hint, items){
+  const open = ui.cluster===id;
+  const chips = items.map(it=>renderChip(it,id)).join('');
+  const panel = ui.dish ? (items.find(it=>it.id===ui.dish) ? renderDishPanel(items.find(it=>it.id===ui.dish)) : '') : '';
+  return `
+    <div class="node">
+      <div class="cluster-head${open?' open':''}" onclick="toggleCluster('${id}')">
+        <span class="chev">▸</span>
+        <span class="ttl">${title}</span>
+        <span class="cnt">${items.length} 项</span>
+      </div>
+      <p class="cluster-hint">${hint}</p>
+      <div class="satellite-row${open?' open':''}">
+        ${chips}
+        ${panel}
+      </div>
+    </div>`;
+}
+
+function renderStation(cls, label, sub){
+  return `
+    <div class="node station ${cls}">
+      <span class="pill">${label}</span>
+      <div class="station-sub">${sub}</div>
+    </div>`;
+}
+
+function renderGate(g){
+  const open = ui.gate===g.id;
+  const scriptLines = g.lines.map(l=>`<div class="script-line${l.npc?' npc':''}"><span class="script-who">${l.who}</span><span class="script-text">${l.text}</span></div>`).join('');
+  const rewardsHtml = g.reward.map(r=>`<span class="reward-badge ${rewardClass(r)}">${r}</span>`).join(' ');
+  return `
+    <div class="node">
+      <div class="gate" onclick="toggleGate('${g.id}')">
+        <div class="gate-top">
+          <div class="gate-head">
+            <div class="gate-icon">${iconHtml(g.icon, g.name)}</div>
+            <div>
+              <p class="gate-name">${g.name}${nameMarks(g)}</p>
+              <p class="gate-meta">${metaLine(g)}</p>
+            </div>
+          </div>
+          <span class="gate-arrow">${g.from} → ${g.to}</span>
+        </div>
+        ${g.flavor?`<p class="gate-flavor">${g.flavor}</p>`:``}
+        <div class="gate-unlock">${g.unlock}</div>
+        <div class="gate-script${open?' open':''}">
+          ${scriptLines}
+          <div class="gate-reward">${rewardsHtml}</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function render(){
+  const spine = document.getElementById('spine');
+  spine.innerHTML = [
+    renderCluster('daily','日常小吃（不影响称号）','这些不会让你升级，也不会把你打回原形——随时喂都安全。', DAILY),
+    renderStation('s-fail','不合格厨师','起点，也是各种"喂错时机"最后落回来的地方。'),
+    renderCluster('timed','计时料理（决定你升到敏腕，还是打回原形）','按料理等级、同级按回复魔力从低到高排列。出示时的询问台词固定；端早了、端晚了、端得刚刚好，变的是评价。', TIMED.concat(EXTRA)),
+    renderStation('s-mid','敏腕厨师','从上面「计时料理」里挑对时机的一道，就能升到这里。'),
+    renderGate(GATES[0]),
+    renderStation('s-high','极上厨师',''),
+    renderGate(GATES[1]),
+    renderStation('s-top','究极厨师','目前已知的终点。')
+  ].join('');
+
+  renderCrumbs();
+}
+
+function renderCrumbs(){
+  const crumbs = document.getElementById('crumbs');
+  const parts = [];
+  parts.push(`<button disabled>地图</button>`);
+  if(ui.cluster){
+    const label = ui.cluster==='daily' ? '日常小吃' : '计时料理';
+    parts.push(`<span class="sep">›</span><button onclick="toggleCluster('${ui.cluster}')">${label}</button>`);
+    if(ui.dish){
+      const pool = ui.cluster==='daily' ? DAILY : TIMED.concat(EXTRA);
+      const item = pool.find(it=>it.id===ui.dish);
+      if(item){
+        parts.push(`<span class="sep">›</span><button onclick="toggleDish('${item.id}')">${item.name}</button>`);
+        if(item.states && ui.state!==null){
+          const s = item.states[ui.state];
+          parts.push(`<span class="sep">›</span><button disabled>${s.cond}</button>`);
+        }
+      }
+    }
+  }
+  crumbs.innerHTML = parts.join('');
+}
+
+/* ---------------- search ---------------- */
+const ALL_SEARCHABLE = DAILY.map(i=>({...i,_cluster:'daily'})).concat(TIMED.map(i=>({...i,_cluster:'timed'}))).concat(EXTRA.map(i=>({...i,_cluster:'timed'})));
+const searchInput = document.getElementById('mapSearch');
+const suggestBox = document.getElementById('mapSuggest');
+searchInput.addEventListener('input', ()=>{
+  const q = searchInput.value.trim();
+  if(!q){ suggestBox.classList.remove('show'); suggestBox.innerHTML=''; return; }
+  const hits = ALL_SEARCHABLE.filter(it=>it.name.indexOf(q)>-1).slice(0,8);
+  if(!hits.length){ suggestBox.classList.remove('show'); suggestBox.innerHTML=''; return; }
+  suggestBox.innerHTML = hits.map(it=>`<button onclick="jumpTo('${it._cluster}','${it.id}');document.getElementById('mapSuggest').classList.remove('show');document.getElementById('mapSearch').value='';">${it.name}</button>`).join('');
+  suggestBox.classList.add('show');
+});
+document.addEventListener('click', (e)=>{
+  if(!e.target.closest('.map-search')) suggestBox.classList.remove('show');
+});
+
+render();
+</script>
+</body>
+</html>
