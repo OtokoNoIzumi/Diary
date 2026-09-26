@@ -1,0 +1,1906 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>老鲁迪乌斯真的"活该"吗？——从"公正世界假设"聊聊争议</title>
+  <style>
+    /* ==========================================================================
+       设计系统：水彩文学温润风（对标机核视频质感）
+       高度高斯模糊动态背景、机核级饱满大字号、mix-blend-mode去底融合、底部字幕留白
+       ========================================================================== */
+    :root {
+      --bg-cream: #FAF8F5;
+      --bg-subtle: #F4EFE6;
+      --border-gold: #C5A059;
+      --border-soft: #D8E0D5;
+      --border-double: #E2D9C8;
+
+      --color-text-main: #16212B;
+      --color-text-muted: #4A5B6C;
+      --color-text-faint: #7A8B9A;
+
+      --accent-sage: #4E7350;
+      --accent-iris: #385C80;
+      --accent-coral: #B33D37;
+      --accent-gold: #B3863B;
+
+      --font-serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, "STSong", serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: var(--bg-cream);
+      color: var(--color-text-main);
+      font-family: var(--font-serif);
+      line-height: 1.7;
+    }
+
+    /* ==========================================================================
+       机核式动态高斯模糊背景层（按页码寻找 bg_{index}.jpg，回退 bg_default.jpg）
+       ========================================================================== */
+    /* ==========================================================================
+       机核式动态高斯模糊背景层（按页码寻找 bg_{index}.jpg/png，回退 bg_default.jpg）
+       ========================================================================== */
+    .video-bg-layer {
+      position: fixed;
+      top: -50px;
+      left: -50px;
+      right: -50px;
+      bottom: -50px;
+      background-image: url("assets/bg_default.jpg");
+      background-size: cover;
+      background-position: center;
+      filter: blur(65px) brightness(0.92) saturate(1.25);
+      transform: scale(1.18); /* 彻底消除高斯模糊边缘色边 */
+      z-index: 0;
+      transition: background-image 0.7s ease-in-out;
+    }
+
+    /* 水彩暖调通透遮罩层：保留底层色彩流动光晕，确保前景大字高保真对比度 */
+    .video-bg-overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 50% 45%, rgba(250, 248, 245, 0.62) 0%, rgba(246, 242, 235, 0.78) 100%);
+      backdrop-filter: blur(4px);
+      z-index: 1;
+    }
+
+    /* 顶部边缘呼出触发区（鼠标移到顶端0~18px才显示控制条，录制时彻底隐藏） */
+    .top-hover-trigger {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 20px;
+      z-index: 200;
+    }
+
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 40px;
+      background: rgba(255, 255, 255, 0.94);
+      border-bottom: 1px solid var(--border-soft);
+      z-index: 210;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+      transform: translateY(-100%);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.28s ease;
+    }
+
+    /* 鼠标悬停顶端时平滑滑下 */
+    .top-hover-trigger:hover + .top-bar,
+    .top-bar:hover {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ==========================================================================
+       纯净录制模式（F11 全屏 / 按 H 键生效）：彻底隐藏所有控制条与提词器
+       ========================================================================== */
+    body.is-recording .top-bar,
+    body.is-recording .top-hover-trigger,
+    body.is-recording .prompter-hud,
+    :fullscreen .top-bar,
+    :fullscreen .top-hover-trigger,
+    :fullscreen .prompter-hud,
+    :-webkit-full-screen .top-bar,
+    :-webkit-full-screen .top-hover-trigger,
+    :-webkit-full-screen .prompter-hud {
+      display: none !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    .brand-title {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--color-text-main);
+    }
+
+    .controls-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .counter-tag {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      color: var(--color-text-muted);
+      letter-spacing: 1px;
+    }
+
+    .btn-mode {
+      background: #FFFFFF;
+      border: 1px solid var(--border-soft);
+      padding: 4px 14px;
+      font-size: 12px;
+      font-family: var(--font-sans);
+      color: var(--color-text-muted);
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-mode.active {
+      background: var(--accent-sage);
+      color: #FFFFFF;
+      border-color: var(--accent-sage);
+    }
+
+    /* ==========================================================================
+       演播全屏模式：16:9 画幅饱满铺满视口，底部预留 150px 纯净剪辑字幕安全区
+       ========================================================================== */
+    #view-presentation {
+      position: relative;
+      z-index: 10;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      /* 左右内边距 96px，顶部 52px，底部坚守 150px 纯净留白 */
+      padding: 52px 96px 150px 96px;
+    }
+
+    /* 三个角落的花朵装饰（基于归一化 WebP 统一基准高度 120px 等比缩放） */
+    .corner-flower {
+      position: absolute;
+      height: 120px;
+      width: auto;
+      object-fit: contain;
+      pointer-events: none;
+      z-index: 15;
+      mix-blend-mode: multiply;
+      opacity: 0.95;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.04));
+    }
+
+    /* 左上角：洛琪希蓝鸢尾，水平翻转朝向画面内侧 */
+    .corner-flower.tl-roxy {
+      top: 24px;
+      left: 28px;
+      transform: scaleX(-1);
+    }
+
+    /* 右上角：希露菲白百合，独立安放无任何界面元素压盖 */
+    .corner-flower.tr-sylphy {
+      top: 24px;
+      right: 28px;
+    }
+
+    /* 左下角：艾莉丝红康乃馨（紧凑无缝），水平翻转朝向画面内侧 */
+    .corner-flower.bl-eris {
+      bottom: 42px;
+      left: 28px;
+      transform: scaleX(-1);
+    }
+
+    /* 完结页：只留清晰主图和浅金结语，装饰花与模糊背景都不出现 */
+    #view-presentation.is-finale .corner-flower,
+    body.is-finale .video-bg-layer,
+    body.is-finale .video-bg-overlay {
+      display: none;
+    }
+
+    .finale-plate {
+      margin: 0 auto;
+      width: min(980px, 78%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .finale-plate img {
+      width: 100%;
+      max-height: 58vh;
+      object-fit: contain;
+      display: block;
+    }
+
+    .finale-plate figcaption {
+      margin-top: 28px;
+      text-align: center;
+      font-size: 28px;
+      line-height: 1.85;
+      font-weight: 400;
+      letter-spacing: 3px;
+      color: #A89474;
+    }
+
+    /* 幻灯片内容舞台 */
+    .slide-deck {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .slide-item {
+      display: none;
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .slide-item.active {
+      display: flex;
+    }
+
+    /* 章节小标题印章（已彻底移除所有具体时间数字） */
+    .slide-tag {
+      font-size: 16px;
+      font-family: var(--font-sans);
+      letter-spacing: 3px;
+      color: var(--accent-sage);
+      font-weight: 600;
+      margin-bottom: 18px;
+      display: inline-block;
+      border-left: 3.5px solid var(--accent-sage);
+      padding-left: 10px;
+      line-height: 1.2;
+    }
+
+    /* 核心大标题：升级为机核级粗壮饱满字重（48px） */
+    .slide-headline {
+      font-size: 48px;
+      line-height: 1.25;
+      font-weight: 700;
+      color: var(--color-text-main);
+      margin-bottom: 34px;
+      letter-spacing: 0.5px;
+    }
+
+    .slide-headline em {
+      font-style: normal;
+      color: var(--accent-coral);
+    }
+
+    .slide-grid {
+      display: grid;
+      grid-template-columns: 0.92fr 1.08fr;
+      gap: 60px;
+      align-items: center;
+      width: 100%;
+    }
+
+    /* 统一图文对调：左侧为实体配图/相框，右侧为深度解读文字（完全对标机核图 1） */
+    .slide-grid .asset-slot-box {
+      order: 1;
+    }
+
+    .slide-grid .slide-prose {
+      order: 2;
+    }
+
+    .slide-grid.single {
+      grid-template-columns: 1fr;
+      max-width: 1380px;
+    }
+
+    /* 正文大字号排版：升级为 25px~26px，高对比度，久看不累 */
+    .slide-prose {
+      font-size: 26px;
+      color: var(--color-text-main);
+      line-height: 1.85;
+      font-weight: 450;
+    }
+
+    .slide-prose p {
+      margin-bottom: 24px;
+    }
+
+    .slide-quote-box {
+      border-left: 5px solid var(--border-gold) !important;
+      background: rgba(254, 252, 248, 0.92);
+      border-radius: 4px;
+      padding: 20px 28px;
+      margin: 22px 0;
+      font-size: 23px;
+      color: var(--color-text-main);
+      box-shadow: 0 4px 16px rgba(197, 160, 89, 0.08);
+    }
+
+    .slide-quote-box strong {
+      color: var(--color-text-main);
+    }
+
+    .slide-quote-box .author {
+      display: block;
+      margin-top: 10px;
+      font-size: 16px;
+      color: var(--color-text-muted);
+      font-family: var(--font-sans);
+    }
+
+    /* 大原由衣子客观数据结构化展示卡片 */
+    .song-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 20px 0;
+    }
+
+    .stat-pill {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid var(--border-gold);
+      border-radius: 6px;
+      padding: 10px 14px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(197, 160, 89, 0.06);
+    }
+
+    .stat-pill strong {
+      display: block;
+      font-size: 14px;
+      font-family: var(--font-sans);
+      color: var(--accent-gold);
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .stat-pill span {
+      display: block;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--color-text-main);
+      font-family: var(--font-sans);
+    }
+
+    /* 同一页多张完整画面：并排或上下排列，不互相遮挡 */
+    .still-row {
+      display: grid;
+      gap: 18px;
+      width: 100%;
+      margin: 0;
+    }
+
+    .still-row.two {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .still-row.three {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .still-card {
+      margin: 0;
+      background: #FFFFFF;
+      border: 2px solid var(--border-double);
+      outline: 1.5px solid var(--border-gold);
+      border-radius: 8px;
+      padding: 10px 10px 12px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+    }
+
+    .still-card img {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: contain;
+      background: #F7F4EE;
+      border-radius: 4px;
+      display: block;
+    }
+
+    .still-card figcaption {
+      margin-top: 8px;
+      text-align: center;
+      font-size: 16px;
+      letter-spacing: 1px;
+      color: var(--color-text-muted);
+      font-family: var(--font-sans);
+    }
+
+    .still-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .still-note {
+      margin-top: 18px;
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--color-text-muted);
+      font-family: var(--font-sans);
+    }
+
+    .asset-slot-box.portrait {
+      height: 560px;
+    }
+
+    /* 配图与预留素材框（对齐机核图 1 & 图 2 统一实体画框质感） */
+    .asset-slot-box {
+      width: 100%;
+      height: 400px;
+      background: rgba(255, 255, 255, 0.85);
+      border: 2px dashed var(--border-soft);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.04);
+      transition: all 0.3s ease;
+    }
+
+    /* 实体相框状态（图片就位后自动激活，与图 2 作者推文完全统一） */
+    .asset-slot-box.solid-frame,
+    .asset-slot-box.has-image {
+      border: 2px solid var(--border-double);
+      outline: 1.5px solid var(--border-gold);
+      background: #FFFFFF;
+      padding: 14px;
+      border-style: solid;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+    }
+
+    /* 图片就位后，彻底消除所有覆盖在图片上的占位注释与药丸标签 */
+    .asset-slot-box.has-image .asset-placeholder-info,
+    .asset-slot-box.solid-frame .asset-placeholder-info {
+      display: none !important;
+    }
+
+    .asset-slot-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      position: relative;
+      z-index: 1;
+      border-radius: 4px;
+    }
+
+    .asset-placeholder-info {
+      position: relative;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .asset-placeholder-name {
+      font-family: monospace;
+      font-size: 16px;
+      color: var(--accent-iris);
+      background: rgba(255, 255, 255, 0.95);
+      padding: 6px 14px;
+      border: 1px solid var(--border-soft);
+      border-radius: 4px;
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+
+    .asset-placeholder-desc {
+      font-size: 15px;
+      color: var(--color-text-muted);
+      line-height: 1.6;
+    }
+
+
+
+    /* ==========================================================================
+       模块二：观点索引树模式
+       真正独立的上下物理双层结构（Flex布局），图谱常驻在上，正文独立在下滚动，绝不重叠
+       ========================================================================== */
+    #view-tree {
+      display: none;
+      position: relative;
+      z-index: 10;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden; /* 外部视口绝对不滚，彻底杜绝外层穿透 */
+      flex-direction: column;
+      background-color: var(--bg-cream);
+    }
+
+    .compass-card {
+      background: #FFFFFF;
+      border: 2px solid var(--border-double);
+      outline: 1.5px solid var(--border-gold);
+      padding: 32px 40px;
+      margin-bottom: 48px;
+      border-radius: 8px;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.03);
+    }
+
+    .compass-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    /* ==========================================
+       认知科技树 (Skill Tree Dashboard) 顶部独立面板
+       纯实色不透明，拥有独立物理高度，永不盖在正文上方
+       ========================================== */
+    .skill-tree-dashboard {
+      flex-shrink: 0;
+      width: 100%;
+      background: #FFFFFF !important;
+      border-bottom: 1.5px solid var(--border-soft);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+      padding: 12px 36px 14px;
+      box-sizing: border-box;
+      z-index: 50;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .skill-tree-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      flex-wrap: nowrap;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .skill-tree-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .skill-tree-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--color-text-main);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .skill-tree-title::before {
+      content: "◈";
+      color: var(--accent-sage);
+      font-size: 18px;
+    }
+
+    .skill-tree-subtitle {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      margin: 0;
+    }
+
+    .skill-tree-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .progress-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-soft);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      color: var(--color-text-muted);
+      font-family: var(--font-sans);
+    }
+
+    .progress-count {
+      font-weight: 700;
+      color: var(--accent-sage);
+      font-size: 13px;
+    }
+
+    .btn-tree-action {
+      background: #FFFFFF;
+      border: 1px solid var(--border-soft);
+      color: var(--color-text-main);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-tree-action:hover {
+      border-color: var(--accent-sage);
+      color: var(--accent-sage);
+      background: rgba(78, 115, 80, 0.05);
+    }
+
+    .btn-tree-reset:hover {
+      border-color: #C07060;
+      color: #A04030;
+      background: rgba(192, 112, 96, 0.06);
+    }
+
+    .btn-tree-toggle {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-soft);
+      color: var(--color-text-main);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-tree-toggle:hover {
+      border-color: var(--accent-sage);
+      color: var(--accent-sage);
+      background: #FFFFFF;
+    }
+
+    /* 折叠态迷你横向胶囊导航 */
+    .tree-mini-nav {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .skill-tree-dashboard.is-collapsed .tree-mini-nav {
+      display: flex;
+    }
+
+    .mini-pill {
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 14px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-soft);
+      color: var(--color-text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: var(--font-sans);
+      transition: all 0.2s ease;
+    }
+
+    .mini-pill:hover {
+      border-color: var(--accent-sage);
+      color: var(--accent-sage);
+      background: #FFFFFF;
+    }
+
+    .mini-pill.is-read {
+      background: rgba(78, 115, 80, 0.08);
+      border-color: rgba(78, 115, 80, 0.3);
+      color: #2E5832;
+    }
+
+    .mini-pill.is-active {
+      background: #FFFFFF !important;
+      border-color: var(--border-gold) !important;
+      color: #7A5818 !important;
+      font-weight: 700;
+      box-shadow: 0 0 0 2px rgba(176, 142, 82, 0.2);
+    }
+
+    /* 展开态：横向图谱容器 */
+    .tree-graph-wrapper {
+      max-height: 400px;
+      opacity: 1;
+      overflow: hidden;
+      transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, margin 0.3s ease;
+      margin-top: 14px;
+    }
+
+    .skill-tree-dashboard.is-collapsed .tree-graph-wrapper {
+      max-height: 0;
+      opacity: 0;
+      margin-top: 0;
+      pointer-events: none;
+    }
+
+    .skill-tree-dashboard.is-collapsed {
+      padding-bottom: 14px;
+    }
+
+    /* 横向拓扑图网格（紧凑居中，彻底消除横向滚动条与空隙） */
+    .tree-graph-h {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: fit-content;
+      max-width: 100%;
+      margin: 0 auto;
+      overflow-x: auto;
+      padding: 2px 4px;
+      scrollbar-width: none; /* Firefox 隐藏多余滚动条 */
+    }
+
+    .tree-graph-h::-webkit-scrollbar {
+      display: none; /* Chrome/Safari 隐藏滚动条 */
+    }
+
+    .h-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .h-col-node {
+      width: 156px;
+    }
+
+    .h-col-dual {
+      width: 338px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .dual-upper-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .dual-upper-row .tree-node {
+      width: 156px;
+    }
+
+    .dual-lower-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .dual-lower-row .tree-node {
+      width: 220px;
+    }
+
+    .dual-lower-hint {
+      font-size: 10.5px;
+      color: var(--color-text-muted);
+      background: rgba(248, 246, 240, 0.95);
+      border: 1px dashed var(--border-soft);
+      border-radius: 6px;
+      padding: 4px 6px;
+      line-height: 1.35;
+      flex: 1;
+    }
+
+    .h-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-sage);
+      font-size: 11px;
+      flex-shrink: 0;
+      width: 20px;
+      padding: 0;
+      font-weight: 700;
+      opacity: 0.85;
+      font-family: var(--font-sans);
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    /* 树节点通用卡片 (紧凑横向版) */
+    .tree-node {
+      background: #FFFFFF;
+      border: 1.5px solid var(--border-soft);
+      border-radius: 7px;
+      padding: 7px 10px;
+      cursor: pointer;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+      position: relative;
+      box-sizing: border-box;
+    }
+
+    .tree-node:hover {
+      border-color: var(--accent-sage);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(78, 115, 80, 0.12);
+    }
+
+    .tree-node.is-read {
+      border-color: rgba(78, 115, 80, 0.45);
+      background: linear-gradient(135deg, #FFFFFF 0%, rgba(78, 115, 80, 0.03) 100%);
+    }
+
+    .tree-node.is-active {
+      border-color: var(--border-gold) !important;
+      box-shadow: 0 0 0 2.5px rgba(176, 142, 82, 0.25), 0 4px 14px rgba(176, 142, 82, 0.15) !important;
+      background: #FFFFFF !important;
+      transform: translateY(-2px);
+    }
+
+    .tree-node.tn-apex {
+      border-color: rgba(176, 142, 82, 0.6);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 246, 240, 0.95));
+      width: 172px;
+    }
+
+    .tn-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+
+    .tn-level {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--accent-sage);
+      font-family: var(--font-sans);
+    }
+
+    .tn-status {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.04);
+      color: var(--color-text-muted);
+      font-family: var(--font-sans);
+      transition: all 0.2s ease;
+    }
+
+    .tree-node.is-read .tn-status {
+      background: rgba(78, 115, 80, 0.14);
+      color: #2E5832;
+    }
+
+    .tree-node.is-active .tn-status {
+      background: rgba(176, 142, 82, 0.2);
+      color: #7A5818;
+    }
+
+    .tn-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-text-main);
+      margin-bottom: 3px;
+      line-height: 1.35;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tn-quote {
+      font-size: 11.5px;
+      color: var(--color-text-muted);
+      font-style: italic;
+      font-family: var(--font-sans);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* 下方卡片高光呼吸动画 */
+    @keyframes cardPulseGlow {
+      0% {
+        box-shadow: 0 0 0 0 rgba(176, 142, 82, 0.7);
+        border-color: var(--border-gold);
+      }
+      50% {
+        box-shadow: 0 0 0 10px rgba(176, 142, 82, 0.25);
+        border-color: var(--border-gold);
+      }
+      100% {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+        border-color: var(--border-soft);
+      }
+    }
+
+    .card-highlight-pulse {
+      animation: cardPulseGlow 1.8s ease-out;
+    }
+
+    /* 下层独立正文滚动视口：物理隔离，正文只在图谱下方独立滚动，绝无重叠可能 */
+    .tree-content-scroll {
+      flex: 1;
+      width: 100%;
+      overflow-y: auto;
+      padding: 28px 0 100px 0;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+
+    .tree-stream {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      position: relative;
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 0 40px;
+      box-sizing: border-box;
+    }
+
+    .tree-stream::before {
+      content: "";
+      position: absolute;
+      left: 60px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--border-soft);
+      z-index: 1;
+    }
+
+    .tree-card {
+      position: relative;
+      margin-left: 56px;
+      background: #FFFFFF;
+      border: 1px solid var(--border-soft);
+      border-left: 4.5px solid var(--accent-sage);
+      padding: 32px 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+      scroll-margin-top: 20px;
+    }
+
+    .tree-card::before {
+      content: "";
+      position: absolute;
+      left: -43px;
+      top: 36px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      border: 3.5px solid var(--accent-sage);
+      z-index: 2;
+    }
+
+    .tree-level-tag {
+      font-size: 13px;
+      letter-spacing: 1px;
+      font-family: var(--font-sans);
+      color: var(--accent-sage);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .tree-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .tree-body {
+      font-size: 17px;
+      line-height: 1.85;
+      margin-bottom: 18px;
+    }
+
+    .tree-insight {
+      background: var(--bg-subtle);
+      border-left: 3.5px solid var(--border-gold);
+      padding: 14px 20px;
+      font-size: 15px;
+      color: var(--color-text-muted);
+    }
+
+    .tree-insight strong {
+      color: var(--color-text-main);
+    }
+
+    /* -- 观点技能树：节点内部结构 -- */
+    .tree-input-view {
+      background: linear-gradient(135deg, rgba(78, 115, 80, 0.06), rgba(78, 115, 80, 0.02));
+      border: 1px dashed var(--accent-sage);
+      border-radius: 6px;
+      padding: 14px 20px;
+      margin-bottom: 18px;
+      font-size: 15px;
+      font-style: italic;
+      color: var(--color-text-muted);
+      font-family: var(--font-sans);
+    }
+    .tree-input-view::before {
+      content: "INPUT";
+      display: block;
+      font-style: normal;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      color: var(--accent-sage);
+      margin-bottom: 6px;
+    }
+    .tree-conclusion {
+      background: rgba(176, 142, 82, 0.08);
+      border-left: 4px solid var(--border-gold);
+      padding: 16px 22px;
+      margin-bottom: 20px;
+      font-size: 17px;
+      line-height: 1.8;
+      font-weight: 600;
+      color: var(--color-text-main);
+    }
+    .tree-conclusion::before {
+      content: "CONCLUSION";
+      display: block;
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      font-weight: 700;
+      color: var(--border-gold);
+      margin-bottom: 6px;
+    }
+    .tree-upper-label {
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      font-weight: 700;
+      color: var(--accent-sage);
+      margin-bottom: 8px;
+      font-family: var(--font-sans);
+    }
+    .tree-takeaway {
+      background: var(--color-text-main);
+      color: #FFFFFF;
+      padding: 18px 24px;
+      border-radius: 6px;
+      font-size: 16px;
+      line-height: 1.75;
+      font-weight: 600;
+      margin-top: 20px;
+    }
+    .tree-takeaway::before {
+      content: "TAKEAWAY";
+      display: block;
+      font-size: 11px;
+      letter-spacing: 2px;
+      font-weight: 800;
+      opacity: 0.5;
+      margin-bottom: 8px;
+    }
+    .tree-node-link {
+      display: inline-block;
+      margin-top: 14px;
+      margin-right: 18px;
+      font-size: 14px;
+      color: var(--accent-sage);
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+    .tree-node-link:hover {
+      color: var(--border-gold);
+    }
+    .tree-node-link::before {
+      content: "-> ";
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 机核式动态高斯模糊背景层 -->
+  <div class="video-bg-layer" id="video-bg-layer"></div>
+  <div class="video-bg-overlay"></div>
+
+  <!-- 顶部轻便控制条（平时完全隐藏，鼠标移到屏幕最顶端边缘才优雅滑出） -->
+  <div class="top-hover-trigger"></div>
+  <header class="top-bar" id="top-bar">
+    <div class="brand-title">
+      無職転生 S3E13 日記篇 <span>/ 1080P 全屏演播录制台</span>
+    </div>
+    <div class="controls-right">
+      <span class="counter-tag" id="slide-counter">01 / 10</span>
+      <button class="btn-mode active" id="btn-show-pres" onclick="switchMode('pres')">演播录制</button>
+      <button class="btn-mode" id="btn-show-tree" onclick="switchMode('tree')">观点索引树 (M)</button>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       模块一：16:9 全屏演播录制台（正片画面纯净留白，无横线与硬编码字幕打架）
+       ========================================================================== -->
+  <main id="view-presentation">
+
+    <!-- 三个角落的花朵装饰（透明通道 WebP 紧凑归一化，大小视觉完全均等） -->
+    <img src="assets/roxy_iris.webp" class="corner-flower tl-roxy" alt="左上：洛琪希的蓝鸢尾">
+    <img src="assets/sylphy_lily.webp" class="corner-flower tr-sylphy" alt="右上：希露菲的白百合">
+    <img src="assets/eris_carnation.webp" class="corner-flower bl-eris" alt="左下：艾莉丝的红花">
+
+    <div class="slide-deck">
+
+      <section class="slide-item active">
+        <span class="slide-tag">「 专属歌姬 · 大原ゆい子 」</span>
+        <div class="slide-grid">
+          <div class="still-stack">
+            <figure class="still-card">
+              <img src="assets/p01_ed_kagirohi.webp" alt="片尾《一縷》">
+              <figcaption>我回来了 我深爱着的地方</figcaption>
+            </figure>
+          </div>
+          <div class="slide-prose">
+
+            <p>这是大原由衣子为《无职转生》动画量身定制的第 16 首原创歌曲。</p>
+            <!-- 主观听感安抚与情感对冲 -->
+            <p>本季度的第三首 OP 也是我非常喜欢的一首，淡淡的哀伤正好可以作为《一縷》的舒缓。</p>
+            <div class="song-stats-grid">
+              <div class="stat-pill">
+                <strong>第一季</strong>
+                <span>6 首片头 · 2 首片尾</span>
+              </div>
+              <div class="stat-pill">
+                <strong>第二季</strong>
+                <span>2 首片尾 · 2 首特别片尾</span>
+              </div>
+              <div class="stat-pill">
+                <strong>第三季</strong>
+                <span>3 首片头 · 1 首特别片尾</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <section class="slide-item">
+        <span class="slide-tag">「 作者评论 」</span>
+        <div class="slide-grid">
+          <div class="asset-slot-box solid-frame has-image">
+            <img src="assets/p03_author_comment.webp" alt="作者感想">
+          </div>
+          <div class="slide-prose">
+            <div class="slide-quote-box" style="margin-top: 0;">
+              “人的<b>本质</b>虽然是黑暗的，但正因为人会尽量不显露自己的黑暗、努力以光明的姿态活着，所以才显得美丽吧。”
+              <span class="author">理不尽な孫の手</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide-item">
+        <span class="slide-tag">「 公正世界假设 」</span>
+        <div class="slide-grid">
+          <div class="asset-slot-box solid-frame has-image portrait">
+            <img src="assets/p04_just_world_book.webp" alt="The Belief in a Just World 书封面">
+            <figcaption>梅尔文·勒纳 著于 1980</figcaption>
+
+          </div>
+          <div class="slide-prose">
+            <div class="slide-quote-box" style="margin-top: 0;">
+              <strong>我和鲁迪乌斯不一样，我足够清醒和健全，所以我绝对不会落到他那种下场。</strong>
+            </div>
+            <p>自我，在极端情况下，或许比我们想象的要脆弱得多。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide-item">
+        <span class="slide-tag">「 希露菲 」</span>
+        <div class="still-row three">
+          <figure class="still-card">
+            <img src="assets/p05_sylphy_s1e04.webp" alt="第一季第四话的希露菲">
+            <figcaption>第一季 · 第四话</figcaption>
+          </figure>
+          <figure class="still-card">
+            <img src="assets/p06_sylphy_s2e11.webp" alt="第二季第十一话的希露菲">
+            <figcaption>第二季 · 第十一话</figcaption>
+          </figure>
+          <figure class="still-card">
+            <img src="assets/p07_sylphy_s2e12_ring.webp" alt="第二季第十二话，戒指">
+            <figcaption>第二季 · 第十二话</figcaption>
+          </figure>
+        </div>
+        <p class="still-note">在享受那个女孩的温柔和包容时，却没有珍惜她的誓言。</p>
+        <p class="still-note"><b>冷知识</b>：无职转生毕竟只是鲁迪乌斯的一生，不是两性关系的示范教材。</p>
+        <p class="still-note">up主动态还转发了一篇 <b>puppet</b> 老师的《艾莉丝字条误会事件详细解析》，也很精彩，推荐阅读。</p>
+      </section>
+
+      <section class="slide-item">
+        <span class="slide-tag">「 炎上公式 」</span>
+        <div class="slide-grid">
+          <div class="asset-slot-box solid-frame has-image">
+            <img src="assets/p08_anime_formula.webp" alt="奇幻、真实感与争议元素">
+          </div>
+          <div class="slide-prose">
+            <div class="slide-quote-box" style="margin-top: 0;">
+              <strong>奇幻设定 x 真实感 x 争议性元素（后宫）</strong>
+              <span class="author">阿泥妹饭 不只是聊动漫No.301 BV11Z8t6wEPY </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide-item">
+        <span class="slide-tag">「 JOJO · 迪奥 」</span>
+        <div class="still-row two">
+          <figure class="still-card">
+            <img src="assets/p11_dio_s1.webp" alt="第一部的迪奥">
+            <figcaption>第一部 · 世俗之恶</figcaption>
+          </figure>
+          <figure class="still-card">
+            <img src="assets/p12_dio_s3.webp" alt="第三部的 DIO">
+            <figcaption>第三部 · 概念之恶</figcaption>
+          </figure>
+        </div>
+        <p class="still-note">部分观点启发自<b>笑匠Smile</b>的硬核角色人物志#05 BV1ruJAzkEcL</p>
+        <p class="still-note">真实感本身不是作品优劣的唯一标准，甚至不是所有作品都需要追求的方向。</p>
+        <p class="still-note">有什么不以真实性取胜的优秀作品打动过你吗？欢迎写在弹幕和评论区，和大家分享交流。</p>
+
+      </section>
+
+      <section class="slide-item">
+        <span class="slide-tag">「 莎拉 」</span>
+        <div class="slide-grid">
+          <div class="asset-slot-box solid-frame has-image">
+            <img src="assets/p10_sara_reunion.webp" alt="莎拉与鲁迪重逢">
+            <figcaption>第三季 · 第六话</figcaption>
+          </div>
+          <div class="slide-prose">
+            <p>考虑到老鲁迪的作用，和爱丽丝的关系本就有突破点</p>
+            <p>本可不再登场的莎拉，也迎来了她的个人回</p>
+
+          </div>
+        </div>
+      </section>
+
+      <section class="slide-item">
+        <span class="slide-tag">「 恐怖谷 」</span>
+        <div class="slide-grid">
+          <div class="asset-slot-box solid-frame has-image">
+            <img src="assets/p09_uncanny_valley.webp" alt="森政弘的恐怖谷曲线">
+          </div>
+          <div class="slide-prose">
+            <p>或许并不是争论的双方都在“双标”</p>
+            <p>而是我们本来就在一个评价体系里的不同坐标</p>
+            <p style="font-size:16px; color:var(--color-text-faint); margin-top:12px; text-align:left;">※ 按第一季龙神的说法，即便没有鲁迪拉偏架，保罗仍会犯下同样的错并有两个女儿，且得不到对等的惩罚。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide-item">
+        <span class="slide-tag">「 珍惜邂逅 」</span>
+        <div class="slide-grid">
+          <div class="asset-slot-box solid-frame has-image">
+            <img src="assets/old_rudeus_rest.jpg" alt="三朵花">
+            <figcaption>原作者：大島ルヴ @Ruvu0702</figcaption>
+          </div>
+          <div class="slide-prose">
+            <div class="slide-quote-box" style="margin-top: 0;">
+              <strong>非常感谢能有机会参与我人生中最喜欢的故事的动画化工作。此外，能够参与制作《无职转生》中对我而言最具特殊意义的一集，我感到非常荣幸与高兴……！</strong>
+              <span class="author">大島ルヴ（第三季第13话 演出）</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide-item slide-finale">
+        <figure class="finale-plate">
+          <img src="assets/three_flowers.jpg" alt="三朵花">
+          <figcaption>现在，我们可能更难遇到，<br>一部愿意较真到这个地步的作品了。</figcaption>
+        </figure>
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- ==========================================================================
+       模块二：观点索引树模式
+       ========================================================================== -->
+  <main id="view-tree">
+
+    <section class="skill-tree-dashboard" id="skill-tree-dashboard">
+      <div class="skill-tree-top-bar">
+        <div class="skill-tree-title-group">
+          <button class="btn-tree-action" onclick="switchMode('pres')" style="font-weight: 700; color: #2E5832; border-color: rgba(78, 115, 80, 0.4); background: rgba(78, 115, 80, 0.06); padding: 5px 14px; font-size: 13px;" title="返回 16:9 全屏演播录制台（快捷键 M 或 Tab 或 Esc）">← 返回演播台</button>
+          <h2 class="skill-tree-title">数字分身认知科技树</h2>
+          <span class="skill-tree-subtitle">因果网络拓扑图谱</span>
+        </div>
+        <div class="skill-tree-actions">
+          <span style="font-size: 12px; color: var(--color-text-faint); margin-right: 4px; font-family: var(--font-sans);">[快捷键 M / Tab]</span>
+          <div class="progress-pill">
+            <span class="progress-label">探明进度</span>
+            <span class="progress-count" id="tree-progress-count">0 / 6</span>
+          </div>
+          <button class="btn-tree-action" onclick="markAllNodesRead()" title="点亮所有认知节点">
+            ✓ 全部已读
+          </button>
+          <button class="btn-tree-action btn-tree-reset" onclick="markAllNodesUnread()" title="重置解锁进度">
+            ↺ 全部未读
+          </button>
+          <button class="btn-tree-toggle" id="btn-tree-toggle" onclick="toggleTreeCollapse()" title="折叠/展开科技树图谱">
+            收起图谱 ▴
+          </button>
+        </div>
+      </div>
+
+      <!-- 折叠态时显示的紧凑横向胶囊导航 -->
+      <div class="tree-mini-nav" id="tree-mini-nav">
+        <span style="font-size: 11px; color: var(--color-text-muted); font-weight: 600;">快速索引：</span>
+        <span class="mini-pill" id="mp-card-attribution" onclick="selectTreeNode('card-attribution')">1. 本质论归因</span>
+        <span class="mini-pill" id="mp-card-just-world" onclick="selectTreeNode('card-just-world')">2. 公正世界假设</span>
+        <span class="mini-pill" id="mp-card-system-crash" onclick="selectTreeNode('card-system-crash')">3. 心理资源耗竭</span>
+        <span class="mini-pill" id="mp-card-resilience" onclick="selectTreeNode('card-resilience')">4. 关系容灾机制</span>
+        <span class="mini-pill" id="mp-card-fiction-distance" onclick="selectTreeNode('card-fiction-distance')">5. 虚构距离代价</span>
+        <span class="mini-pill" id="mp-card-methodology" onclick="selectTreeNode('card-methodology')">6. 现实防线构建 ◈</span>
+      </div>
+
+      <!-- 展开态：横向科技树图谱 (Horizontal Skill Tree Graph) -->
+      <div class="tree-graph-wrapper" id="tree-graph-wrapper">
+        <div class="tree-graph-h">
+          <!-- 第 1 列：争议入口 -->
+          <div class="h-col h-col-node">
+            <div class="tree-node" id="tn-card-attribution" onclick="selectTreeNode('card-attribution')">
+              <div class="tn-header">
+                <span class="tn-level">L1 · 争议入口</span>
+                <span class="tn-status">待探明</span>
+              </div>
+              <div class="tn-title">本质论归因</div>
+              <div class="tn-quote">"老鲁迪本质就是人渣"</div>
+            </div>
+          </div>
+
+          <!-- 箭头 1 -> 2 -->
+          <div class="h-arrow">──►</div>
+
+          <!-- 第 2 列：认知防御 -->
+          <div class="h-col h-col-node">
+            <div class="tree-node" id="tn-card-just-world" onclick="selectTreeNode('card-just-world')">
+              <div class="tn-header">
+                <span class="tn-level">L2 · 认知防御</span>
+                <span class="tn-status">待探明</span>
+              </div>
+              <div class="tn-title">公正世界假设</div>
+              <div class="tn-quote">"不是作死又是什么"</div>
+            </div>
+          </div>
+
+          <!-- 箭头 2 -> 双轨 -->
+          <div class="h-arrow">┬──►<br>└──►</div>
+
+          <!-- 第 3 列：双轨推演 -->
+          <div class="h-col h-col-dual">
+            <!-- 上轨：人性机制 -> 现实容灾 -->
+            <div class="dual-upper-row">
+              <div class="tree-node" id="tn-card-system-crash" onclick="selectTreeNode('card-system-crash')">
+                <div class="tn-header">
+                  <span class="tn-level">L3 · 机制深层</span>
+                  <span class="tn-status">待探明</span>
+                </div>
+                <div class="tn-title">心理资源耗竭</div>
+                <div class="tn-quote">"以前不是这样的人"</div>
+              </div>
+              <div class="h-arrow">──►</div>
+              <div class="tree-node" id="tn-card-resilience" onclick="selectTreeNode('card-resilience')">
+                <div class="tn-header">
+                  <span class="tn-level">L4 · 现实推论</span>
+                  <span class="tn-status">待探明</span>
+                </div>
+                <div class="tn-title">关系容灾机制</div>
+                <div class="tn-quote">"真爱就不该离开"</div>
+              </div>
+            </div>
+
+            <!-- 下轨：元叙事与审美代价 -->
+            <div class="dual-lower-row">
+              <div class="tree-node" id="tn-card-fiction-distance" onclick="selectTreeNode('card-fiction-distance')">
+                <div class="tn-header">
+                  <span class="tn-level">L4 · 叙事代价</span>
+                  <span class="tn-status">待探明</span>
+                </div>
+                <div class="tn-title">虚构距离与现实标尺</div>
+                <div class="tn-quote">"别的番怎么没人骂"</div>
+              </div>
+              <div class="dual-lower-hint">
+                <strong style="color: var(--accent-sage);">平行元分析：</strong>抽取虚构缓冲垫
+              </div>
+            </div>
+          </div>
+
+          <!-- 箭头 双轨 -> 顶峰 -->
+          <div class="h-arrow">──┬►<br>──┘</div>
+
+          <!-- 第 4 列：终局顶峰 -->
+          <div class="h-col h-col-node">
+            <div class="tree-node tn-apex" id="tn-card-methodology" onclick="selectTreeNode('card-methodology')">
+              <div class="tn-header">
+                <span class="tn-level">L5 · 终局顶峰</span>
+                <span class="tn-status">待探明</span>
+              </div>
+              <div class="tn-title">认知突围 · 防线构建</div>
+              <div class="tn-quote">"这对我有什么用？"</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 下层：正文流独立滚动视口（物理隔离，与图谱互不重叠） -->
+    <div class="tree-content-scroll" id="tree-content-scroll">
+      <div class="tree-stream">
+
+      <!-- 节点一：本质论归因 -->
+      <article class="tree-card" id="card-attribution">
+        <div class="tree-level-tag">争议入口 · 本质论归因</div>
+        <h3 class="tree-title">本质论归因：行为的恶果不等于人格的宿命</h3>
+        <div class="tree-input-view">
+          "老鲁迪变成这样，就是因为他本质就是个人渣。"
+        </div>
+        <div class="tree-conclusion">
+          一个人的错误行为可以被谴责；但把一个人的崩溃完全解释为“他的本质如此”，往往忽略了人如何在极端环境中被逐渐推向失控。
+        </div>
+        <div class="tree-upper-label">&#9650; 上位认知：本质论归因倾向</div>
+        <div class="tree-body">
+          看到一个结果，寻找一个稳定的人格原因——这是人类最习惯的认知捷径（“他失败因为懒”、“他被骗因为蠢”、“他堕落因为本来就是坏人”）。但这里真正值得深思的焦点不是老鲁迪，而是“本质”这两个字：老鲁迪确实做出了极其恶劣的错误行为，但这绝不意味着他从一开始就注定成为恶人。错误是具体行为的恶果，不是先天的本质烙印；人格不是宿命论的判决。
+        </div>
+        <div class="tree-takeaway">
+          评价一个人的行为，需要看他做了什么；理解一个人的崩溃，需要看他经历了什么。
+        </div>
+        <span class="tree-node-link" onclick="jumpToTreeCard('card-just-world')">&#9650; 向上推演认知防御：公正世界假设与秩序感防空洞</span>
+      </article>
+
+      <!-- 节点二：公正世界假设 -->
+      <article class="tree-card" id="card-just-world">
+        <div class="tree-level-tag">认知防御 · 公正世界假设</div>
+        <h3 class="tree-title">公正世界假设：对随机厄运的心理防御机制</h3>
+        <div class="tree-input-view">
+          "如果不是他自己作死，为什么会落到这个结局？"
+        </div>
+        <div class="tree-conclusion">
+          相信“坏结果一定来自坏原因”，是为了让世界重新变得可预测——只要证明他本质有问题，世界对观察者而言就重新变回安全公平的了。
+        </div>
+        <div class="tree-upper-label">&#9650; 上位认知：对随机性的恐惧与防御</div>
+        <div class="tree-body">
+          心理学中的“公正世界假设”（梅尔文·勒纳）：人面对不幸时倾向于相信世界有因果秩序，更容易把受害者的遭遇解释为“他本来就做错了什么”。真正令人恐惧的不是坏人受罚，而是一个努力向善的普通人，在荒谬的厄运设计下也会被彻底摧毁。“他活该”是一种心理隔离屏障——通过确信“我和他不同，所以我很安全”，换取内心的虚假秩序感。
+        </div>
+        <div class="tree-takeaway">
+          承认世界存在无法控制的随机灾难，是成熟风险意识的开始。
+        </div>
+        <span class="tree-node-link" onclick="jumpToTreeCard('card-system-crash')">&#9650; 向上推演崩溃机制：心理资源耗竭与自我破碎</span>
+        <span class="tree-node-link" onclick="jumpToTreeCard('card-fiction-distance')">&#9670; 横向展开叙事契约：虚构距离与现实标尺</span>
+      </article>
+
+      <!-- 节点三：心理资源耗竭 -->
+      <article class="tree-card" id="card-system-crash">
+        <div class="tree-level-tag">人性机制 · 心理资源模型</div>
+        <h3 class="tree-title">心理资源耗竭：系统超载与自我认知的崩裂</h3>
+        <div class="tree-input-view">
+          "以前那个鲁迪不是这样的人，为什么后来会变成这样？"
+        </div>
+        <div class="tree-conclusion">
+          道德与理性不是无限额度——维持理智、保持克制、主动沟通与承担责任，需要持续消耗心理资源。崩溃不是道德瞬间凭空蒸发，而是支撑系统的心理余裕被彻底透支。
+        </div>
+        <div class="tree-upper-label">&#9650; 上位认知：系统超载与自我崩裂路径</div>
+        <div class="tree-body">
+          如同重度抑郁症并非“想不开”，长期的重大创伤会直接摧毁调节情绪的生理机制，无法指望一个心理系统已经过载的人光凭意志力做出从容抉择。老鲁迪遭遇人神死局与连续失去，其本就不充裕的心理系统被彻底击穿；更要命的是，一次无法接受的重大过失，直接粉碎了他对“努力成为更好的人”这一核心自我认知的信念，使他彻底失去了复原动力。
+        </div>
+        <div class="tree-takeaway">
+          最危险的不是犯错，而是一次无法接受的过失，让人彻底放弃相信自己还能成为更好的人。自我在极端情况下，比想象的要脆弱得多。
+        </div>
+        <span class="tree-node-link" onclick="jumpToTreeCard('card-resilience')">&#9650; 向上推演现实防线：关系容灾与分布式储备</span>
+      </article>
+
+      <!-- 节点四：关系容灾 -->
+      <article class="tree-card" id="card-resilience">
+        <div class="tree-level-tag">现实推论 · 关系容灾</div>
+        <h3 class="tree-title">关系容灾机制：系统性储备替代临界考验</h3>
+        <div class="tree-input-view">
+          "真正爱我的人，在困难的时候一定不会离开我。"
+        </div>
+        <div class="tree-conclusion">
+          健康的关系不是依赖双方在极端时刻爆发圣人人性，而是建立在日常积累的容灾余量之上；将关系寄托于“誓言可克服一切”，恰恰是让关系走向悬崖的盲信。
+        </div>
+        <div class="tree-upper-label">&#9650; 上位认知：系统性积累替代临界考验</div>
+        <div class="tree-body">
+          在极端恐惧与连续受挫的高压下，个体的理智极其脆弱，根本无法要求伴侣在最绝望的时刻违背人性极限进行无限包容（希露菲的离开并非无情，而是伤害积累击穿了容错上限）。信任绝非应急消耗品，而是日常透明沟通建立的结构性抗风险缓冲。无法容错的关系，实质上是将整套系统悬挂在不可控的人性悬崖之上。
+        </div>
+        <div class="tree-takeaway">
+          不要把信任当成应急资源，而要把信任当成日常积累的抗风险能力。人性不是热血漫，不会在最绝望时突然爆发带你跨过一切。
+        </div>
+        <span class="tree-node-link" onclick="jumpToTreeCard('card-methodology')">&#9650; 终局收束：从作品争议跃升至现实方法论</span>
+      </article>
+
+      <!-- 节点五：虚构距离 -->
+      <article class="tree-card" id="card-fiction-distance">
+        <div class="tree-level-tag">元分析 · 虚构距离</div>
+        <h3 class="tree-title">虚构距离与叙事代价：现实标尺与安全沙盒的抽离</h3>
+        <div class="tree-input-view">
+          "为什么其他作品的人渣角色没人骂，无职转生却争议这么大？"
+        </div>
+        <div class="tree-conclusion">
+          作品越极力营造世界的真实自洽，观众越会本能激活审视现实的道德标尺——《无职转生》是把审视现实的那把钢尺，亲手递到了观众手里。
+        </div>
+        <div class="tree-upper-label">&#9650; 上位认知：虚构缓冲垫与审美契约</div>
+        <div class="tree-body">
+          观众与虚构角色之间通常存在一层“虚构缓冲垫”（如 Dio 升华为概念之恶，抽离世俗伦理反而让恶变得超然与安全）。而《无职转生》通过自创语种、地域写实 OP、过客角色的体面成长等顶格制作工艺，抽走了二次元的夸张缓冲，迫使观众大脑切换到审视真实人性的尺度。争论不是双标，而是顶级写实叙事必然承受的审美代价。
+        </div>
+        <div class="tree-takeaway">
+          真实感越强，幻想越容易变成伦理实验场；深刻的争议，是对严肃叙事最昂贵的回应。
+        </div>
+        <span class="tree-node-link" onclick="jumpToTreeCard('card-methodology')">&#9650; 终局收束：从作品争议跃升至现实方法论</span>
+      </article>
+
+      <!-- 节点六：最高层方法论 -->
+      <article class="tree-card" id="card-methodology">
+        <div class="tree-level-tag">终局收束 · 现实方法论</div>
+        <h3 class="tree-title">认知突围：从审判他者到现实防御系统的构建</h3>
+        <div class="tree-input-view">
+          "所以这一切争论，对我自己的生活有什么用？"
+        </div>
+        <div class="tree-conclusion">
+          人真正需要防护的，不只是坏人的恶意，而是普通人在极端情况下也可能失去自己。审视日记篇的终极价值，是从对虚构角色的道德审判，转向对自身生存结构的审视。
+        </div>
+        <div class="tree-upper-label">&#9650; 三个维度的现实推论</div>
+        <div class="tree-body">
+          <strong>个人维度：</strong>不要只问“我是好人吗”，更要问“如果处于极端压力下，我有没有保护自己不崩溃的机制与求助通道”；<br><br>
+          <strong>关系维度：</strong>不要只问“我们够不够相爱”，更要问“我们的关系有没有积累足够的信誉储备与容错空间”；<br><br>
+          <strong>社会认知：</strong>不要只问“这个人是不是活该”，更要问“是什么样的系统性过载让一个普通人一步步走到了绝境”。
+        </div>
+        <div class="tree-takeaway">
+          真正成熟的认知，不是相信自己永远不会崩溃，而是承认自己可能崩溃，并提前建立不会彻底毁灭的结构。
+        </div>
+      </article>
+
+    </div>
+    </div>
+  </main>
+
+  <!-- ==========================================================================
+       交互逻辑：键盘翻页（仅 ← / →）、T 键显隐提词、动态背景切换
+       ========================================================================== -->
+  <script>
+    let currentSlideIndex = 0;
+    const slides = document.querySelectorAll('.slide-item');
+    const totalSlides = slides.length;
+    const slideCounter = document.getElementById('slide-counter');
+    const videoBgLayer = document.getElementById('video-bg-layer');
+
+    // 动态背景逻辑：检测 bg_{index}.jpg -> bg_{index}.png，取得到就用，取不到平滑回退 bg_default.jpg
+    function updateBackground(slideIndex) {
+      const pageNum = slideIndex + 1;
+      const jpgSrc = `assets/bg_${pageNum}.jpg`;
+      const pngSrc = `assets/bg_${pageNum}.png`;
+      const defaultSrc = `assets/bg_default.jpg`;
+
+      const testJpg = new Image();
+      testJpg.onload = function() {
+        videoBgLayer.style.backgroundImage = `url("${jpgSrc}")`;
+      };
+      testJpg.onerror = function() {
+        const testPng = new Image();
+        testPng.onload = function() {
+          videoBgLayer.style.backgroundImage = `url("${pngSrc}")`;
+        };
+        testPng.onerror = function() {
+          videoBgLayer.style.backgroundImage = `url("${defaultSrc}")`;
+        };
+        testPng.src = pngSrc;
+      };
+      testJpg.src = jpgSrc;
+    }
+
+    // 更新演播台状态
+    function updateSlide(index) {
+      if (index < 0 || index >= totalSlides) return;
+
+      slides[currentSlideIndex].classList.remove('active');
+      currentSlideIndex = index;
+      slides[currentSlideIndex].classList.add('active');
+
+      const onFinale = slides[currentSlideIndex].classList.contains('slide-finale');
+      document.body.classList.toggle('is-finale', onFinale);
+      document.getElementById('view-presentation').classList.toggle('is-finale', onFinale);
+
+      // 更新页码计数与背景
+      slideCounter.textContent = `${String(currentSlideIndex + 1).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}`;
+      updateBackground(currentSlideIndex);
+    }
+
+    // 模式切换函数（演播全屏 pres 与 观点索引树 tree）
+    function switchMode(mode) {
+      const viewPres = document.getElementById('view-presentation');
+      const viewTree = document.getElementById('view-tree');
+      const btnPres = document.getElementById('btn-show-pres');
+      const btnTree = document.getElementById('btn-show-tree');
+
+      if (mode === 'pres') {
+        viewPres.style.display = 'flex';
+        viewTree.style.display = 'none';
+        btnPres.classList.add('active');
+        btnTree.classList.remove('active');
+      } else {
+        viewPres.style.display = 'none';
+        viewTree.style.display = 'flex';
+        btnPres.classList.remove('active');
+        btnTree.classList.add('active');
+      }
+
+      try {
+        localStorage.setItem('mushoku_view_mode', mode);
+      } catch (e) {}
+    }
+
+    // 一键往返切换模式（M 键或 Tab 键触发）
+    function toggleMode() {
+      const viewPres = document.getElementById('view-presentation');
+      const isPres = viewPres.style.display !== 'none';
+      switchMode(isPres ? 'tree' : 'pres');
+    }
+
+    // 全屏 / 纯净录制模式状态自动探测（F11 触发时自动隐藏所有干扰控件）
+    function syncRecordingState() {
+      const isFs = Boolean(document.fullscreenElement) || (window.innerHeight >= (screen.height - 4));
+      if (isFs) {
+        document.body.classList.add('is-recording');
+      }
+    }
+
+    window.addEventListener('resize', syncRecordingState);
+    document.addEventListener('fullscreenchange', syncRecordingState);
+
+    // 键盘监听：
+    // M 键 / Tab 键：一键在「演播录制全屏」与「观点索引树导航」之间来回切换
+    // Esc 键：在索引树中按 Esc 快速返回演播录制大屏
+    // F 键：一键进入/退出全屏
+    // ← / → (或 PageUp/PageDown)：演播台平稳翻页
+    // H 键：切换演播台纯净模式（显隐顶部控制栏）
+    window.addEventListener('keydown', (e) => {
+      // 1. 全局模式切换键（在任何模式下均生效）
+      if (e.key === 'm' || e.key === 'M' || e.key === 'Tab') {
+        e.preventDefault();
+        toggleMode();
+        return;
+      }
+
+      if (e.key === 'f' || e.key === 'F') {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
+        return;
+      }
+
+      const isPresActive = document.getElementById('view-presentation').style.display !== 'none';
+
+      // 处于观点索引树时：按 Esc 返回演播录制全屏
+      if (!isPresActive) {
+        if (e.key === 'Escape') {
+          switchMode('pres');
+        }
+        return;
+      }
+
+      // 处于演播录制全屏时：翻页与纯净录制
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+        e.preventDefault();
+        if (currentSlideIndex < totalSlides - 1) {
+          updateSlide(currentSlideIndex + 1);
+        }
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        if (currentSlideIndex > 0) {
+          updateSlide(currentSlideIndex - 1);
+        }
+      } else if (e.key === 'h' || e.key === 'H') {
+        document.body.classList.toggle('is-recording');
+      }
+    });
+
+    // ==========================================
+    // 认知科技树状态管理与交互 (localStorage 缓存)
+    // ==========================================
+    const ALL_TREE_NODE_IDS = [
+      'card-attribution',
+      'card-just-world',
+      'card-system-crash',
+      'card-resilience',
+      'card-fiction-distance',
+      'card-methodology'
+    ];
+
+    let readNodes = new Set();
+    let currentActiveNodeId = null;
+
+    // 从 localStorage 读取已读节点
+    try {
+      const savedRead = JSON.parse(localStorage.getItem('mushoku_read_nodes') || '[]');
+      readNodes = new Set(savedRead);
+    } catch (e) {
+      readNodes = new Set();
+    }
+
+    function saveReadNodes() {
+      try {
+        localStorage.setItem('mushoku_read_nodes', JSON.stringify([...readNodes]));
+      } catch (e) {}
+    }
+
+    // 同步科技树所有节点的 UI（已读点亮、激活高光、进度统计、迷你导航）
+    function syncTreeNodesUI() {
+      ALL_TREE_NODE_IDS.forEach(id => {
+        const nodeEl = document.getElementById(`tn-${id}`);
+        const miniEl = document.getElementById(`mp-${id}`);
+        const isRead = readNodes.has(id);
+        const isActive = (id === currentActiveNodeId);
+
+        if (nodeEl) {
+          nodeEl.classList.toggle('is-read', isRead);
+          nodeEl.classList.toggle('is-active', isActive);
+
+          const statusEl = nodeEl.querySelector('.tn-status');
+          if (statusEl) {
+            if (isActive) {
+              statusEl.textContent = isRead ? '聚焦 · 已探明 ✓' : '聚焦 · 探明中';
+            } else {
+              statusEl.textContent = isRead ? '已探明 ✓' : '待探明';
+            }
+          }
+        }
+
+        if (miniEl) {
+          miniEl.classList.toggle('is-read', isRead);
+          miniEl.classList.toggle('is-active', isActive);
+        }
+      });
+
+      // 更新进度统计
+      const countEl = document.getElementById('tree-progress-count');
+      if (countEl) {
+        countEl.textContent = `${readNodes.size} / ${ALL_TREE_NODE_IDS.length}`;
+      }
+    }
+
+    // 折叠 / 展开科技树图谱
+    function toggleTreeCollapse() {
+      const dashboard = document.getElementById('skill-tree-dashboard');
+      const toggleBtn = document.getElementById('btn-tree-toggle');
+      if (!dashboard) return;
+
+      const isCollapsed = dashboard.classList.toggle('is-collapsed');
+      if (toggleBtn) {
+        toggleBtn.textContent = isCollapsed ? '展开图谱 ▾' : '收起图谱 ▴';
+      }
+      try {
+        localStorage.setItem('mushoku_tree_collapsed', isCollapsed ? '1' : '0');
+      } catch (e) {}
+    }
+
+    // 选中/跳转到指定认知节点（实质性高亮、点亮已读、平滑滚动、呼吸高光）
+    function selectTreeNode(cardId, shouldScroll = true) {
+      currentActiveNodeId = cardId;
+      readNodes.add(cardId);
+      saveReadNodes();
+      syncTreeNodesUI();
+
+      if (shouldScroll) {
+        const targetCard = document.getElementById(cardId);
+        if (targetCard) {
+          targetCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          targetCard.classList.remove('card-highlight-pulse');
+          void targetCard.offsetWidth; // 触发 reflow 重启动画
+          targetCard.classList.add('card-highlight-pulse');
+        }
+      }
+    }
+
+    // 全部已读
+    function markAllNodesRead() {
+      ALL_TREE_NODE_IDS.forEach(id => readNodes.add(id));
+      saveReadNodes();
+      syncTreeNodesUI();
+    }
+
+    // 全部未读（重置）
+    function markAllNodesUnread() {
+      readNodes.clear();
+      saveReadNodes();
+      currentActiveNodeId = null;
+      syncTreeNodesUI();
+    }
+
+    // 兼容原罗盘直达定位调用
+    function jumpToTreeCard(cardId) {
+      selectTreeNode(cardId, true);
+    }
+
+    // 自动扫描并同步所有图片槽位（只要图片就位，自动升级图 2 实体金框并隐去占位注释）
+    function syncAssetSlots() {
+      document.querySelectorAll('.asset-slot-box').forEach(box => {
+        const img = box.querySelector('img');
+        if (!img) return;
+
+        function markSuccess() {
+          box.classList.add('has-image', 'solid-frame');
+          img.style.opacity = '1';
+        }
+
+        function markFail() {
+          box.classList.remove('has-image', 'solid-frame');
+          img.style.opacity = '0';
+        }
+
+        if (img.complete && img.naturalWidth > 0) {
+          markSuccess();
+        } else {
+          img.addEventListener('load', markSuccess);
+          img.addEventListener('error', markFail);
+        }
+      });
+    }
+
+    // 初始背景与素材槽位加载
+    updateBackground(0);
+    syncAssetSlots();
+
+    // 初始化科技树状态与记忆模式恢复
+    syncTreeNodesUI();
+    try {
+      const savedMode = localStorage.getItem('mushoku_view_mode');
+      if (savedMode === 'tree') {
+        switchMode('tree');
+      }
+    } catch (e) {}
+
+    // 初始化折叠/展开状态记忆恢复
+    try {
+      const savedCollapsed = localStorage.getItem('mushoku_tree_collapsed');
+      if (savedCollapsed === '1') {
+        const dashboard = document.getElementById('skill-tree-dashboard');
+        const toggleBtn = document.getElementById('btn-tree-toggle');
+        if (dashboard) dashboard.classList.add('is-collapsed');
+        if (toggleBtn) toggleBtn.textContent = '展开图谱 ▾';
+      }
+    } catch (e) {}
+  </script>
+</body>
+</html>
