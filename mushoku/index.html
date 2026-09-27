@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>无职转生——原作科普也要拿出真本事</title>
+  <style>
+    :root {
+      --bg: #F6F1E8;
+      --paper: #FFFcf7;
+      --ink: #1C2430;
+      --muted: #5C6B7A;
+      --faint: #8A97A3;
+      --line: #E4D8C4;
+      --gold: #C6A15A;
+      --gold-deep: #8C6A2F;
+      --sage: #3E6B4A;
+      --sage-soft: #E7F0E6;
+      --coral: #9C3B36;
+      --iris: #2F5578;
+      --serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif;
+      --sans: "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--bg); color: var(--ink); }
+    body {
+      font-family: var(--sans);
+      min-height: 100vh;
+    }
+    button, input { font-family: inherit; }
+
+    .archive-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid var(--line);
+      background: rgba(246, 241, 232, 0.92);
+      backdrop-filter: blur(12px);
+      padding: 18px 32px;
+    }
+    .header-inner {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .brand-area {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+    }
+    .brand-title {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+    }
+    .brand-subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 0.8px;
+    }
+    .reading-meter {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #f3ece0;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+    }
+    .meter-label {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .meter-track {
+      width: 120px;
+      height: 6px;
+      background: #e2d9cc;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .meter-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--gold);
+    }
+    .meter-val {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 48px));
+      margin: 0 auto;
+      padding: 28px 0 64px;
+    }
+
+    .filter-panels {
+      background: #fbf8f1;
+      border: 1px solid #dcd3bf;
+      border-radius: 12px;
+      padding: 8px 24px;
+      margin-bottom: 8px;
+    }
+    .filter-row {
+      display: flex;
+      align-items: baseline;
+      gap: 18px;
+      padding: 14px 0;
+      border-bottom: 1px solid #dcd3bf;
+    }
+    .filter-row:last-child { border-bottom: none; }
+    .filter-title {
+      width: 76px;
+      flex-shrink: 0;
+      padding-top: 6px;
+      font-size: 14px;
+      font-weight: 400;
+      color: #6b6255;
+    }
+    .filter-chips { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; }
+    .chip-btn {
+      appearance: none;
+      border: 1px solid #dcd3bf;
+      background: #fbf8f1;
+      color: #2b2620;
+      border-radius: 99px;
+      padding: 6px 13px;
+      font-size: 13.5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .chip-btn:hover:not(:disabled) { border-color: #6b6255; }
+    .chip-btn b {
+      font-size: 12px;
+      font-weight: 400;
+      color: #6b6255;
+      font-variant-numeric: tabular-nums;
+    }
+    .chip-btn.is-all { border-style: dashed; }
+    .chip-btn.is-all.is-current {
+      border-style: solid;
+      background: #fbf3f0;
+      border-color: #8c2e1f;
+      color: #8c2e1f;
+    }
+    .chip-btn.is-on {
+      background: #8c2e1f;
+      border-color: #8c2e1f;
+      color: #fff;
+    }
+    .chip-btn.is-on::before { content: "✓"; font-size: 11px; }
+    .chip-btn.is-on b { color: rgba(255, 255, 255, 0.75); }
+    .chip-btn.is-empty,
+    .chip-btn:disabled {
+      color: #b9b0a0;
+      border-color: #dcd3bf;
+      cursor: default;
+      opacity: 0.55;
+    }
+    .text-btn, .row-open, .linkish {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .empty-axis { color: var(--faint); font-size: 13px; margin: 0 0 8px; }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin: 18px 0 18px;
+    }
+    #query {
+      flex: 1;
+      width: auto;
+      border: 1px solid #dcd3bf;
+      background: #fbf8f1;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 14px;
+      color: #2b2620;
+    }
+    #query:focus { outline: 2px solid #8c2e1f; outline-offset: 1px; }
+    #clear {
+      border: 1px solid #dcd3bf;
+      background: transparent;
+      color: #6b6255;
+      border-radius: 10px;
+      padding: 0 16px;
+      height: 42px;
+    }
+    .combo {
+      min-height: 22px;
+      margin: 0 0 14px;
+      font-family: var(--serif);
+      font-size: 18px;
+    }
+    #reel-status { margin: 0 0 14px; color: var(--muted); font-size: 13px; }
+
+    .stage { display: flex; justify-content: center; }
+    .stage-carousel {
+      position: relative;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .stage-carousel .stack { width: min(820px, calc(100% - 120px)); }
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+      cursor: pointer;
+      font-size: 18px;
+      z-index: 2;
+    }
+    .carousel-btn.prev { left: 0; }
+    .carousel-btn.next { right: 0; }
+    .stack { width: min(820px, 100%); display: flex; flex-direction: column; gap: 10px; }
+
+    .row {
+      display: grid;
+      grid-template-columns: 92px 1fr auto auto auto;
+      gap: 10px;
+      align-items: center;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-left-width: 4px;
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+    .row .seal { transform: none; font-size: 12px; padding: 2px 8px; }
+    .row.true { border-left-color: var(--sage); }
+    .row.false { border-left-color: var(--coral); }
+    .row.open { border-left-color: var(--gold); }
+    .attach {
+      font-size: 12px;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 2px 8px;
+      white-space: nowrap;
+    }
+    .attach.has { color: var(--gold-deep); border-color: var(--gold); }
+    .row-id { font-size: 13px; color: var(--gold-deep); letter-spacing: 0.5px; }
+    .row-open {
+      border: 0;
+      background: transparent;
+      border-radius: 0;
+      padding: 0;
+      text-align: left;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    .make, .read, .back {
+      border: 1px solid var(--gold);
+      background: #fff;
+      color: var(--gold-deep);
+      border-radius: 999px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .refined {
+      width: min(820px, 100%);
+      background: #fffdf8;
+      border: 1px solid #e6dccb;
+      border-left: 6px solid var(--gold);
+      border-radius: 8px;
+      padding: 28px 32px 22px;
+      box-shadow: 0 4px 20px rgba(40, 30, 20, 0.05);
+    }
+    .refined.true { border-left-color: #1b6e38; }
+    .refined.false { border-left-color: #a82222; }
+    .refined.open { border-left-color: #946300; }
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+    .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill {
+      font-size: 12px;
+      padding: 2px 10px;
+      border-radius: 4px;
+      background: #f4efe6;
+      color: var(--muted);
+    }
+    .pill.kind { background: #eae3d4; color: #4a3e2c; font-weight: 600; }
+    .pill.code {
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      border: 1px solid #e6dccb;
+      background: #fff;
+    }
+    .seal {
+      font-family: var(--serif);
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 1.5px;
+      padding: 4px 12px;
+      border: 1.5px solid;
+      border-radius: 4px;
+      white-space: nowrap;
+      transform: rotate(-2deg);
+    }
+    .seal.true { color: #1b6e38; border-color: #1b6e38; background: #e7f4ec; }
+    .seal.false { color: #a82222; border-color: #a82222; background: #fbeceb; }
+    .seal.open { color: #946300; border-color: #946300; background: #f8f1e2; }
+    .query-box {
+      background: #f4efe6;
+      border-left: 3px solid #d1c5b0;
+      border-radius: 6px;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+    }
+    .query-box span { display: block; font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+    .query-box p { margin: 0; font-size: 16px; line-height: 1.65; }
+    .summary-line { margin: 0 0 8px; font-size: 16px; line-height: 1.8; }
+    .summary-line b { margin-right: 6px; }
+    .detail-block {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed #e4d8c4;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.75;
+    }
+    .compare {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .compare div {
+      background: #faf7f2;
+      border: 1px solid #e8dfd0;
+      border-radius: 6px;
+      padding: 12px 14px;
+    }
+    .compare span { display: block; font-size: 12px; font-weight: 600; color: #6c5b42; margin-bottom: 6px; }
+    .compare p { margin: 0; font-size: 14px; line-height: 1.65; }
+    .card-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+    .guide { font-size: 13px; line-height: 1.6; color: var(--muted); }
+    .guide strong { color: var(--ink); }
+    .guide-lib { margin-left: 8px; font-size: 12px; }
+    .see { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .share-btn {
+      border: 1px solid var(--gold);
+      background: #fff;
+      color: var(--gold-deep);
+      border-radius: 999px;
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+    .shot {
+      width: 100%;
+      max-height: 280px;
+      object-fit: contain;
+      background: #f7f3ec;
+      border-radius: 8px;
+      margin: 8px 0;
+    }
+    .shot-cap { margin: 0 0 8px; color: var(--muted); font-size: 13px; }
+
+    .back { margin: 0 0 12px; }
+    .share-note {
+      position: fixed;
+      left: 50%;
+      bottom: 28px;
+      transform: translateX(-50%);
+      background: #1c2430;
+      color: #fff;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-size: 14px;
+      z-index: 40;
+    }
+    .share-note[hidden] { display: none; }
+    .share-sheet {
+      position: fixed;
+      inset: 0;
+      background: rgba(20, 18, 16, 0.72);
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+    .share-sheet[hidden] { display: none; }
+    .share-panel {
+      width: min(420px, 100%);
+      background: var(--paper);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .share-panel img { width: 100%; height: auto; display: block; border-radius: 8px; }
+    .share-panel p { color: var(--muted); font-size: 14px; }
+    .share-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .editor {
+      margin-top: 36px;
+      background: rgba(255,252,247,0.8);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px 16px 16px;
+    }
+    .editor h2 { font-size: 16px; margin: 8px 0; }
+    .editor label { display: block; margin: 8px 0; font-size: 13px; color: var(--muted); }
+    .editor input, .editor textarea, .editor select {
+      width: 100%;
+      margin-top: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+      font: inherit;
+      background: #fff;
+    }
+    .editor-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    @media (max-width: 860px) {
+      .page { width: min(100% - 24px, 1180px); }
+      .filter-row { flex-direction: column; gap: 8px; }
+      .texts, .row, .editor-row { grid-template-columns: 1fr; }
+      .header-inner, .toolbar { flex-direction: column; align-items: flex-start; }
+      .brand-area { flex-direction: column; align-items: flex-start; gap: 4px; }
+      .stage-carousel .stack { width: min(820px, calc(100% - 88px)); }
+      .claim { font-size: 22px; }
+      #query { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="archive-header">
+    <div class="header-inner">
+      <div class="brand-area">
+        <h1 class="brand-title">无职转生——原作科普也要拿出真本事</h1>
+        <span class="brand-subtitle">原文对照 · 考据 · 辟谣</span>
+      </div>
+      <div class="reading-meter">
+        <span class="meter-label">阅读进度</span>
+        <div class="meter-track"><div class="meter-fill" id="meter-fill"></div></div>
+        <span class="meter-val" id="meter-val"></span>
+      </div>
+    </div>
+  </header>
+  <div class="page">
+    <section class="filter-panels" id="filters"></section>
+    <div class="toolbar">
+      <input id="query" type="search" placeholder="输入任意内容进行搜索过滤" autocomplete="off">
+      <button class="text-btn" id="clear" type="button">清空全部筛选</button>
+    </div>
+    <p class="combo" id="combo"></p>
+    <p id="reel-status"></p>
+    <div class="stage" id="stage"></div>
+
+    <details class="editor" id="editor" hidden>
+      <summary>维护：新增一条并下载数据文件</summary>
+      <h2>下一条编号由现有最大号加一，写进文件后就不再改。</h2>
+      <form id="editor-form">
+        <label>说法<input name="claim" required></label>
+        <label>一句结论<input name="summary" required></label>
+        <label>展开<textarea name="details" rows="3"></textarea></label>
+        <div class="editor-row">
+          <label>分类
+            <select name="category" id="editor-category"></select>
+          </label>
+          <label>判断
+            <select name="verdict" id="editor-verdict"></select>
+          </label>
+        </div>
+        <label>篇章 id，多个用空格<input name="chapters" placeholder="diary"></label>
+        <label>角色 id，多个用空格<input name="characters" placeholder="rudeus"></label>
+        <label>其他 id，多个用空格<input name="others"></label>
+        <label>出处<input name="cite"></label>
+        <label>图片路径，相对本页<input name="image" placeholder="rumor/assets/three_flowers.jpg"></label>
+        <button class="share-btn" type="submit">加入并下载数据文件</button>
+      </form>
+    </details>
+  </div>
+
+  <p class="share-note" id="share-note" hidden></p>
+  <div class="share-sheet" id="share-sheet" hidden>
+    <div class="share-panel">
+      <img id="share-sheet-img" alt="分享卡片">
+      <p id="share-sheet-hint"></p>
+      <div class="share-actions">
+        <button type="button" class="share-btn" id="share-copy">复制图片</button>
+        <button type="button" class="share-btn" id="share-save">保存图片</button>
+        <button type="button" class="text-btn" id="share-close">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="rumor/qrcode.js"></script>
+  <script src="rumor/rumor-share.js"></script>
+  <script src="rumor/rumor-data.js"></script>
+  <script>
+    const OPEN_KEY = "mushoku_rumor_opened_v1";
+    const KNOWN_KEY = "mushoku_rumor_known_v1";
+    const FILTER_ROWS = [
+      ["verdicts", "记录性质"],
+      ["chapters", "篇章"],
+      ["characters", "角色"],
+      ["categories", "内容"],
+      ["others", "其他标签"]
+    ];
+    const REEL_GAP = 6000;
+    const PAUSE_MS = 120000;
+
+    const state = {
+      chapters: new Set(),
+      characters: new Set(),
+      others: new Set(),
+      categories: new Set(),
+      verdicts: new Set(),
+      unreadOnly: false,
+      query: "",
+      view: "reel",
+      reelId: RUMOR_RECORDS[0].id,
+      openedId: "",
+      pauseUntil: 0,
+      playMs: 0
+    };
+
+    function loadIdSet(key) {
+      try {
+        return new Set(JSON.parse(localStorage.getItem(key) || "[]"));
+      } catch (e) {
+        return new Set();
+      }
+    }
+
+    function saveIdSet(key, set) {
+      localStorage.setItem(key, JSON.stringify([...set]));
+    }
+
+    const openedIds = loadIdSet(OPEN_KEY);
+    const knownIds = loadIdSet(KNOWN_KEY);
+    const freshIds = knownIds.size
+      ? RUMOR_RECORDS.map((record) => record.id).filter((id) => !knownIds.has(id))
+      : [];
+    saveIdSet(KNOWN_KEY, new Set(RUMOR_RECORDS.map((record) => record.id)));
+
+    function markOpened(id) {
+      if (!id || openedIds.has(id)) return false;
+      openedIds.add(id);
+      saveIdSet(OPEN_KEY, openedIds);
+      return true;
+    }
+
+    function readCount() {
+      return RUMOR_RECORDS.filter((record) => openedIds.has(record.id)).length;
+    }
+
+    function esc(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (ch) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[ch]));
+    }
+
+    function nameOf(axis, id) {
+      const row = catalogOf(axis).find((item) => item.id === id);
+      return row ? row.name : id;
+    }
+
+    function catalogOf(axis) {
+      if (axis === "verdicts") return RUMOR_VERDICTS;
+      if (axis === "categories") return RUMOR_CATEGORIES;
+      if (axis === "others") return orderedOthers();
+      return RUMOR_CATALOG[axis];
+    }
+
+    function resetFilters() {
+      FILTER_ROWS.forEach(([axis]) => { state[axis] = new Set(); });
+      state.unreadOnly = false;
+      state.query = "";
+    }
+
+    function recordTags(record, axis) {
+      if (axis === "verdicts") return record.verdict ? [record.verdict] : [];
+      if (axis === "categories") return record.category ? [record.category] : [];
+      return record[axis] || [];
+    }
+
+    function verdictOf(id) {
+      return RUMOR_VERDICTS.find((item) => item.id === id) || { id, name: id };
+    }
+
+    function lookupActive() {
+      if (state.unreadOnly || state.query.trim()) return true;
+      return FILTER_ROWS.some(([axis]) => state[axis].size > 0);
+    }
+
+    function recordSearchText(record) {
+      const names = [
+        verdictOf(record.verdict).name,
+        nameOf("categories", record.category),
+        ...(record.chapters || []).map((id) => nameOf("chapters", id)),
+        ...(record.characters || []).map((id) => nameOf("characters", id)),
+        ...(record.others || []).map((id) => nameOf("others", id))
+      ];
+      const comparisons = (record.comparisons || []).flatMap((item) => [item.source, item.text]);
+      const captions = (record.images || []).map((image) => typeof image === "string" ? "" : image.caption);
+      return [
+        record.id,
+        record.claim,
+        record.summary,
+        record.details,
+        record.cite,
+        ...names,
+        ...comparisons,
+        ...captions,
+        ...(record.see || [])
+      ].filter(Boolean).join("\n");
+    }
+
+    function matches(record, exceptAxis, ignoreUnread) {
+      const query = state.query.trim();
+      if (query && !recordSearchText(record).includes(query)) return false;
+      if (!ignoreUnread && state.unreadOnly && openedIds.has(record.id)) return false;
+      for (const [axis] of FILTER_ROWS) {
+        if (axis === exceptAxis || state[axis].size === 0) continue;
+        const tags = recordTags(record, axis);
+        if (![...state[axis]].some((id) => tags.includes(id))) return false;
+      }
+      return true;
+    }
+
+    function currentMatches() {
+      return RUMOR_RECORDS.filter((record) => matches(record));
+    }
+
+    function tagCount(axis, id) {
+      return RUMOR_RECORDS.filter((record) => matches(record, axis) && recordTags(record, axis).includes(id)).length;
+    }
+
+    function orderedOthers() {
+      return [...RUMOR_CATALOG.others].sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
+    }
+
+    function holdReel() {
+      state.pauseUntil = Date.now() + PAUSE_MS;
+      state.playMs = 0;
+    }
+
+    function pickNextReel() {
+      const pool = RUMOR_RECORDS.filter((record) => record.id !== state.reelId);
+      const source = pool.length ? pool : RUMOR_RECORDS;
+      const next = source[Math.floor(Math.random() * source.length)];
+      state.reelId = next.id;
+    }
+
+    function positionOf(id) {
+      return RUMOR_RECORDS.findIndex((record) => record.id === id) + 1;
+    }
+
+    function scopeLabel() {
+      const names = [];
+      for (const [axis] of FILTER_ROWS) {
+        for (const id of state[axis]) names.push(nameOf(axis, id));
+      }
+      const query = state.query.trim();
+      if (names.length === 1 && !state.unreadOnly && !query) return `${names[0]}相关`;
+      const parts = names.slice();
+      if (state.unreadOnly) parts.push("未读");
+      if (query) parts.push(`「${query}」`);
+      return parts.join("、");
+    }
+
+    function guideHtml(record) {
+      const library = positionOf(record.id);
+      const pool = currentMatches();
+      const at = pool.findIndex((item) => item.id === record.id);
+      if (lookupActive() && at >= 0) {
+        const label = scopeLabel();
+        const head = label
+          ? `${esc(label)} · 第 ${at + 1} / ${pool.length} 条`
+          : `第 ${at + 1} / ${pool.length} 条`;
+        return `<strong>${head}</strong><span class="guide-lib">（全库 #${library}）</span>`;
+      }
+      return `<strong>第 ${library} / ${RUMOR_RECORDS.length} 条</strong>`;
+    }
+
+    function qrSvg(text) {
+      const qr = qrcode(0, "M");
+      qr.addData(text);
+      qr.make();
+      return qr.createSvgTag({ cellSize: 3, margin: 1, scalable: true });
+    }
+
+    function renderTotals() {
+      const total = RUMOR_RECORDS.length;
+      const read = readCount();
+      const rate = total ? Math.round((read / total) * 100) : 0;
+      document.getElementById("meter-fill").style.width = `${rate}%`;
+      document.getElementById("meter-val").textContent = freshIds.length
+        ? `${read} / ${total} (${rate}%) · 新增 ${freshIds.length}`
+        : `${read} / ${total} (${rate}%)`;
+    }
+
+    function renderIndex() {
+      const rows = FILTER_ROWS.map(([axis, title]) => {
+        const none = state[axis].size === 0;
+        const chips = catalogOf(axis).map((item) => {
+          const count = tagCount(axis, item.id);
+          const on = state[axis].has(item.id);
+          if (axis === "others" && count === 0 && !on) return "";
+          const dead = count === 0 && !on;
+          return `<button type="button" class="chip-btn${on ? " is-on" : ""}${dead ? " is-empty" : ""}" data-axis="${axis}" data-id="${esc(item.id)}"${dead ? " disabled" : ""}>${esc(item.name)}<b>${count}</b></button>`;
+        }).join("");
+        return `<div class="filter-row"><span class="filter-title">${title}</span><div class="filter-chips"><button type="button" class="chip-btn is-all${none ? " is-current" : ""}" data-all="${axis}">全部</button>${chips}</div></div>`;
+      }).join("");
+      const unreadCount = RUMOR_RECORDS.filter((record) => matches(record, "", true) && !openedIds.has(record.id)).length;
+      const unread = `<div class="filter-row"><span class="filter-title">阅读</span><div class="filter-chips"><button type="button" class="chip-btn${state.unreadOnly ? " is-on" : ""}" data-unread="1">仅显示未读<b>${unreadCount}</b></button></div></div>`;
+      document.getElementById("filters").innerHTML = rows + unread;
+    }
+
+    function comboText() {
+      if (!lookupActive()) return "";
+      const parts = [];
+      for (const [axis] of FILTER_ROWS) {
+        if (state[axis].size === 0) continue;
+        const names = [...state[axis]].map((id) => nameOf(axis, id));
+        if (names.length) parts.push(names.join(" 或 "));
+      }
+      if (state.unreadOnly) parts.push("仅未读");
+      if (state.query.trim()) parts.push(`包含「${state.query.trim()}」`);
+      return `${parts.join(" × ")}共有${currentMatches().length}个条目`;
+    }
+
+    function cardHtml(record) {
+      const verdict = verdictOf(record.verdict);
+      const pills = [
+        `<span class="pill code">${esc(record.id)}</span>`,
+        `<span class="pill kind">${esc(nameOf("categories", record.category))}</span>`,
+        ...(record.chapters || []).map((id) => `<span class="pill">${esc(nameOf("chapters", id))}</span>`),
+        ...(record.characters || []).map((id) => `<span class="pill">${esc(nameOf("characters", id))}</span>`),
+        ...(record.others || []).map((id) => `<span class="pill">${esc(nameOf("others", id))}</span>`)
+      ].join("");
+      const comparisons = (record.comparisons || []).map((item) =>
+        `<div><span>${esc(item.source)}</span><p>${esc(item.text)}</p></div>`
+      ).join("");
+      const shots = (record.images || []).map((image) => {
+        const src = typeof image === "string" ? image : image.src;
+        const caption = typeof image === "string" ? "" : image.caption;
+        return `<img class="shot" src="${esc(src)}" alt="">${caption ? `<p class="shot-cap">${esc(caption)}</p>` : ""}`;
+      }).join("");
+      const related = (record.see || []).map((id) => `<button type="button" class="linkish" data-open="${esc(id)}">${esc(id)}</button>`).join("");
+      return `
+        <article class="refined ${esc(verdict.id)}" data-hold="1">
+          <div class="meta-row">
+            <div class="pills">${pills}</div>
+            <div class="seal ${esc(verdict.id)}">${esc(verdict.name)}</div>
+          </div>
+          <div class="query-box">
+            <span>关注点</span>
+            <p>${esc(record.claim)}</p>
+          </div>
+          <p class="summary-line"><b>查证结论</b>${esc(record.summary || "")}</p>
+          ${record.cite ? `<p class="shot-cap">${esc(record.cite)}</p>` : ""}
+          ${shots}
+          ${(record.details || comparisons) ? `<div class="detail-block">${esc(record.details || "")}${comparisons ? `<div class="compare">${comparisons}</div>` : ""}</div>` : ""}
+          <div class="card-foot">
+            <div class="guide">${guideHtml(record)}</div>
+            <div class="see">
+              ${related ? `<span>相关</span>${related}` : ""}
+              <button type="button" class="share-btn" data-share="${esc(record.id)}">生成分享图</button>
+            </div>
+          </div>
+        </article>`;
+    }
+
+    function listHtml(records) {
+      if (!records.length) {
+        const query = state.query.trim();
+        const text = query
+          ? `没有和「${query}」相符的条目。可以换个词，或修改上面的筛选。`
+          : "这些标记下面还没有条目。";
+        return `<div class="stack"><p class="empty-axis">${esc(text)}</p></div>`;
+      }
+      const rows = records.map((record) => {
+        const verdict = verdictOf(record.verdict);
+        return `
+          <div class="row ${esc(verdict.id)}">
+            <span class="row-id">${esc(record.id)}</span>
+            <button type="button" class="row-open" data-open="${esc(record.id)}">${esc(record.claim)}</button>
+            <span class="seal ${esc(verdict.id)}">${esc(verdict.name)}</span>
+            <span class="attach${(record.images || []).length ? " has" : ""}">${(record.images || []).length ? "附图" : "无附图"}</span>
+            <button type="button" class="make" data-open="${esc(record.id)}">生成卡片</button>
+          </div>`;
+      }).join("");
+      return `<div class="stack">${rows}</div>`;
+    }
+
+    function renderStage() {
+      const stage = document.getElementById("stage");
+      if (state.view === "list") {
+        stage.innerHTML = listHtml(currentMatches());
+        return;
+      }
+      const id = state.view === "card" ? state.openedId : state.reelId;
+      const record = RUMOR_RECORDS.find((item) => item.id === id) || RUMOR_RECORDS[0];
+      const back = state.view === "card"
+        ? `<button type="button" class="back" id="back">回到列表</button>`
+        : "";
+      stage.innerHTML = `
+        <div class="stage-carousel">
+          <button type="button" class="carousel-btn prev" data-shift="-1" title="上一张">❮</button>
+          <div class="stack">${back}${cardHtml(record)}</div>
+          <button type="button" class="carousel-btn next" data-shift="1" title="下一张">❯</button>
+        </div>`;
+    }
+
+    function shiftCard(delta) {
+      const pool = state.view === "card" ? currentMatches() : RUMOR_RECORDS;
+      if (!pool.length) return;
+      const currentId = state.view === "card" ? state.openedId : state.reelId;
+      let index = pool.findIndex((record) => record.id === currentId);
+      if (index < 0) index = 0;
+      const next = pool[(index + delta + pool.length) % pool.length];
+      holdReel();
+      if (state.view === "card") state.openedId = next.id;
+      else state.reelId = next.id;
+      render();
+    }
+
+    function remainText(ms) {
+      const sec = Math.max(0, Math.ceil(ms / 1000));
+      if (sec >= 60) {
+        const min = Math.floor(sec / 60);
+        const rest = String(sec % 60).padStart(2, "0");
+        return `${min} 分 ${rest} 秒后轮换下一张`;
+      }
+      return `${sec} 秒后轮换下一张`;
+    }
+
+    function updateStatus() {
+      const node = document.getElementById("reel-status");
+      if (lookupActive() || state.view !== "reel") {
+        node.textContent = "";
+        return;
+      }
+      if (Date.now() < state.pauseUntil) {
+        node.textContent = remainText(state.pauseUntil - Date.now());
+        return;
+      }
+      node.textContent = remainText(REEL_GAP - state.playMs);
+    }
+
+    function render() {
+      renderTotals();
+      renderIndex();
+      document.getElementById("combo").textContent = comboText();
+      renderStage();
+      updateStatus();
+    }
+
+    function openCard(id) {
+      holdReel();
+      markOpened(id);
+      state.openedId = id;
+      state.view = lookupActive() ? "card" : "reel";
+      if (state.view === "reel") state.reelId = id;
+      render();
+    }
+
+    document.getElementById("filters").addEventListener("click", (event) => {
+      const allBtn = event.target.closest("[data-all]");
+      if (allBtn) {
+        state[allBtn.dataset.all] = new Set();
+        holdReel();
+        state.view = lookupActive() ? "list" : "reel";
+        render();
+        return;
+      }
+      const unreadBtn = event.target.closest("[data-unread]");
+      if (unreadBtn) {
+        state.unreadOnly = !state.unreadOnly;
+        holdReel();
+        state.view = lookupActive() ? "list" : "reel";
+        render();
+        return;
+      }
+      const chip = event.target.closest("[data-axis]");
+      if (!chip || chip.disabled) return;
+      const axis = chip.dataset.axis;
+      const id = chip.dataset.id;
+      if (state[axis].has(id)) state[axis].delete(id);
+      else state[axis].add(id);
+      holdReel();
+      state.view = lookupActive() ? "list" : "reel";
+      render();
+    });
+
+    document.getElementById("stage").addEventListener("click", (event) => {
+      const openBtn = event.target.closest("[data-open]");
+      if (openBtn) {
+        openCard(openBtn.dataset.open);
+        return;
+      }
+      const shiftBtn = event.target.closest("[data-shift]");
+      if (shiftBtn) {
+        shiftCard(Number(shiftBtn.dataset.shift));
+        return;
+      }
+      const shareBtn = event.target.closest("[data-share]");
+      if (shareBtn) {
+        event.stopPropagation();
+        const record = RUMOR_RECORDS.find((item) => item.id === shareBtn.dataset.share);
+        if (!record) return;
+        markOpened(record.id);
+        holdReel();
+        renderTotals();
+        updateStatus();
+        const verdict = verdictOf(record.verdict);
+        RumorShare.capture(record, {
+          tags: [
+            nameOf("categories", record.category),
+            ...(record.chapters || []).map((id) => nameOf("chapters", id)),
+            ...(record.characters || []).map((id) => nameOf("characters", id)),
+            ...(record.others || []).map((id) => nameOf("others", id))
+          ].filter(Boolean),
+          verdict: verdict.name,
+          tone: verdict.id,
+          color: verdict.id === "true" ? "#1b6e38" : verdict.id === "false" ? "#a82222" : "#946300",
+          claim: record.claim,
+          summary: record.summary || "",
+          details: record.details || "",
+          cite: record.cite || "",
+          comparisons: record.comparisons || [],
+          see: record.see || [],
+          total: RUMOR_RECORDS.length,
+          index: positionOf(record.id)
+        });
+        return;
+      }
+      if (event.target.closest("#back")) {
+        state.view = "list";
+        render();
+        return;
+      }
+      if (event.target.closest("[data-hold]")) {
+        const id = state.view === "card" ? state.openedId : state.reelId;
+        const changed = markOpened(id);
+        holdReel();
+        if (changed) renderTotals();
+        updateStatus();
+      }
+    });
+
+    document.getElementById("query").addEventListener("input", (event) => {
+      state.query = event.target.value;
+      holdReel();
+      state.view = lookupActive() ? "list" : "reel";
+      render();
+    });
+
+    document.getElementById("clear").addEventListener("click", () => {
+      resetFilters();
+      document.getElementById("query").value = "";
+      state.view = "reel";
+      state.pauseUntil = 0;
+      state.playMs = 0;
+      pickNextReel();
+      render();
+    });
+
+    setInterval(() => {
+      if (lookupActive() || state.view !== "reel") {
+        updateStatus();
+        return;
+      }
+      if (Date.now() < state.pauseUntil) {
+        updateStatus();
+        return;
+      }
+      state.playMs += 1000;
+      if (state.playMs >= REEL_GAP) {
+        state.playMs = 0;
+        pickNextReel();
+        renderStage();
+      }
+      updateStatus();
+    }, 1000);
+
+    document.getElementById("share-close").addEventListener("click", () => {
+      document.getElementById("share-sheet").hidden = true;
+    });
+
+    function nextRecordId() {
+      let max = 0;
+      RUMOR_RECORDS.forEach((record) => {
+        const matched = String(record.id).match(/^R-(\d+)/);
+        const num = matched ? Number(matched[1]) : 0;
+        if (num > max) max = num;
+      });
+      return `R-${String(max + 1).padStart(4, "0")}`;
+    }
+
+    function downloadDataFile() {
+      const text = [
+        `const RUMOR_CATALOG = ${JSON.stringify(RUMOR_CATALOG, null, 2)};`,
+        `const RUMOR_CATEGORIES = ${JSON.stringify(RUMOR_CATEGORIES, null, 2)};`,
+        `const RUMOR_VERDICTS = ${JSON.stringify(RUMOR_VERDICTS, null, 2)};`,
+        `const RUMOR_RECORDS = ${JSON.stringify(RUMOR_RECORDS, null, 2)};`,
+        ""
+      ].join("\n\n");
+      const blob = new Blob([text], { type: "text/javascript" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "rumor-data.js";
+      link.click();
+    }
+
+    const EDITOR_KEY = "mushoku_rumor_editor_v1";
+    const editor = document.getElementById("editor");
+
+    function editorUnlocked() {
+      try { return sessionStorage.getItem(EDITOR_KEY) === "1"; }
+      catch (e) { return false; }
+    }
+
+    function unlockEditor() {
+      try { sessionStorage.setItem(EDITOR_KEY, "1"); } catch (e) { /* 这次打开仍然显示 */ }
+      editor.hidden = false;
+    }
+
+    editor.hidden = !editorUnlocked();
+    let editorTaps = 0;
+    document.querySelector(".reading-meter").addEventListener("click", () => {
+      if (!editor.hidden) return;
+      editorTaps += 1;
+      if (editorTaps >= 5) unlockEditor();
+    });
+
+    document.getElementById("editor-category").innerHTML = RUMOR_CATEGORIES.map((item) =>
+      `<option value="${esc(item.id)}">${esc(item.name)}</option>`
+    ).join("");
+    document.getElementById("editor-verdict").innerHTML = RUMOR_VERDICTS.map((item) =>
+      `<option value="${esc(item.id)}">${esc(item.name)}</option>`
+    ).join("");
+
+    document.getElementById("editor-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const form = new FormData(event.target);
+      const split = (name) => String(form.get(name) || "").split(/\s+/).filter(Boolean);
+      const chapters = split("chapters");
+      const characters = split("characters");
+      const others = split("others");
+      const unknown = [
+        ...chapters.filter((id) => !RUMOR_CATALOG.chapters.some((item) => item.id === id)),
+        ...characters.filter((id) => !RUMOR_CATALOG.characters.some((item) => item.id === id)),
+        ...others.filter((id) => !RUMOR_CATALOG.others.some((item) => item.id === id))
+      ];
+      if (unknown.length) {
+        window.alert(`这些标记不在目录里：${unknown.join("、")}`);
+        return;
+      }
+      const image = String(form.get("image") || "").trim();
+      RUMOR_RECORDS.push({
+        id: nextRecordId(),
+        category: form.get("category"),
+        verdict: form.get("verdict"),
+        chapters,
+        characters,
+        others,
+        claim: String(form.get("claim") || ""),
+        summary: String(form.get("summary") || ""),
+        details: String(form.get("details") || ""),
+        comparisons: [],
+        images: image ? [{ src: image, caption: "" }] : [],
+        cite: String(form.get("cite") || ""),
+        see: []
+      });
+      downloadDataFile();
+      event.target.reset();
+      render();
+    });
+
+    function hashRecordId() {
+      let raw = location.hash.replace(/^#/, "");
+      try { raw = decodeURIComponent(raw); } catch (err) { /* 保持原样 */ }
+      raw = raw.trim();
+      return RUMOR_RECORDS.some((record) => record.id === raw) ? raw : "";
+    }
+
+    function showHashedCard() {
+      const id = hashRecordId();
+      if (!id) return false;
+      holdReel();
+      state.reelId = id;
+      state.openedId = id;
+      state.view = "reel";
+      render();
+      document.getElementById("stage").scrollIntoView({ block: "nearest" });
+      return true;
+    }
+
+    resetFilters();
+    if (!showHashedCard()) {
+      pickNextReel();
+      render();
+    }
+    window.addEventListener("hashchange", () => { showHashedCard(); });
+  </script>
+</body>
+</html>
