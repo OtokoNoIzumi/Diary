@@ -214,24 +214,33 @@
       position: relative;
       width: 100%;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
     }
     .stage-carousel .stack { width: min(820px, calc(100% - 120px)); }
     .carousel-btn {
       position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
+      top: 160px;
       width: 44px;
       height: 44px;
       border-radius: 50%;
       border: 1px solid var(--line);
       background: #fff;
       color: var(--muted);
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
       cursor: pointer;
       font-size: 18px;
       z-index: 2;
+      transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .carousel-btn:hover {
+      background: var(--paper);
+      color: var(--ink);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+      transform: scale(1.06);
+    }
+    .carousel-btn:active {
+      transform: scale(0.96);
     }
     .carousel-btn.prev { left: 0; }
     .carousel-btn.next { right: 0; }
@@ -250,7 +259,7 @@
     }
     .row .seal { transform: none; font-size: 12px; padding: 2px 8px; }
     .row.true { border-left-color: var(--sage); }
-    .row.false { border-left-color: var(--coral); }
+    .row.false { border-left-color: #6d38b5; }
     .row.open { border-left-color: var(--gold); }
     .attach {
       font-size: 12px;
@@ -290,7 +299,7 @@
       box-shadow: 0 4px 20px rgba(40, 30, 20, 0.05);
     }
     .refined.true { border-left-color: #1b6e38; }
-    .refined.false { border-left-color: #a82222; }
+    .refined.false { border-left-color: #6d38b5; }
     .refined.open { border-left-color: #946300; }
     .meta-row {
       display: flex;
@@ -326,7 +335,7 @@
       transform: rotate(-2deg);
     }
     .seal.true { color: #1b6e38; border-color: #1b6e38; background: #e7f4ec; }
-    .seal.false { color: #a82222; border-color: #a82222; background: #fbeceb; }
+    .seal.false { color: #6d38b5; border-color: #6d38b5; background: #f5eefc; }
     .seal.open { color: #946300; border-color: #946300; background: #f8f1e2; }
     .query-box {
       background: #f4efe6;
@@ -337,6 +346,26 @@
     }
     .query-box span { display: block; font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
     .query-box p { margin: 0; font-size: 16px; line-height: 1.65; }
+    .refined.false .query-box {
+      background: #f8f4fc;
+      border-left-color: #caa8eb;
+    }
+    .refined.false .query-box span {
+      color: #65428a;
+    }
+    .seal-badge-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .seal-icon {
+      width: 46px;
+      height: 46px;
+      object-fit: contain;
+      filter: drop-shadow(0 3px 6px rgba(40, 20, 70, 0.12));
+      transform: rotate(3deg);
+    }
     .summary-line { margin: 0 0 8px; font-size: 16px; line-height: 1.8; }
     .summary-line b { margin-right: 6px; }
     .detail-block {
@@ -360,7 +389,21 @@
       padding: 12px 14px;
     }
     .compare span { display: block; font-size: 12px; font-weight: 600; color: #6c5b42; margin-bottom: 6px; }
-    .compare p { margin: 0; font-size: 14px; line-height: 1.65; }
+    .compare p { margin: 0 0 2px; font-size: 14px; line-height: 1.65; }
+    .compare p:last-child { margin-bottom: 0; }
+    .compare blockquote.diary-quote {
+      margin: 10px 0;
+      padding: 10px 14px;
+      background: #f4ecdf;
+      border-left: 3px solid var(--gold-deep);
+      border-radius: 4px;
+      color: #2c2214;
+      font-family: var(--serif);
+      font-size: 14px;
+      line-height: 1.75;
+      white-space: pre-line;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.03);
+    }
     .card-foot {
       display: flex;
       justify-content: space-between;
@@ -758,8 +801,36 @@
       return `${parts.join(" × ")}共有${currentMatches().length}个条目`;
     }
 
+    function renderComparisonText(text) {
+      if (!text) return "";
+      const lines = String(text).split("\n");
+      let html = "";
+      const quoteLines = [];
+
+      function flushQuote() {
+        if (quoteLines.length) {
+          html += `<blockquote class="diary-quote">${esc(quoteLines.join("\n"))}</blockquote>`;
+          quoteLines.length = 0;
+        }
+      }
+
+      for (const line of lines) {
+        if (/^>\s?/.test(line)) {
+          quoteLines.push(line.replace(/^>\s?/, ""));
+        } else {
+          flushQuote();
+          if (line.trim()) {
+            html += `<p>${esc(line)}</p>`;
+          }
+        }
+      }
+      flushQuote();
+      return html;
+    }
+
     function cardHtml(record) {
       const verdict = verdictOf(record.verdict);
+      const iconUrl = record.icon || verdict.icon || "";
       const pills = [
         `<span class="pill code">${esc(record.id)}</span>`,
         `<span class="pill kind">${esc(nameOf("categories", record.category))}</span>`,
@@ -768,7 +839,7 @@
         ...(record.others || []).map((id) => `<span class="pill">${esc(nameOf("others", id))}</span>`)
       ].join("");
       const comparisons = (record.comparisons || []).map((item) =>
-        `<div><span>${esc(item.source)}</span><p>${esc(item.text)}</p></div>`
+        `<div><span>${esc(item.source)}</span>${renderComparisonText(item.text)}</div>`
       ).join("");
       const shots = (record.images || []).map((image) => {
         const src = typeof image === "string" ? image : image.src;
@@ -776,11 +847,15 @@
         return `<img class="shot" src="${esc(src)}" alt="">${caption ? `<p class="shot-cap">${esc(caption)}</p>` : ""}`;
       }).join("");
       const related = (record.see || []).map((id) => `<button type="button" class="linkish" data-open="${esc(id)}">${esc(id)}</button>`).join("");
+      const badgeHtml = iconUrl ? `<img class="seal-icon" src="${esc(iconUrl)}" alt="装饰徽章">` : "";
       return `
         <article class="refined ${esc(verdict.id)}" data-hold="1">
           <div class="meta-row">
             <div class="pills">${pills}</div>
-            <div class="seal ${esc(verdict.id)}">${esc(verdict.name)}</div>
+            <div class="seal-badge-group">
+              <div class="seal ${esc(verdict.id)}">${esc(verdict.name)}</div>
+              ${badgeHtml}
+            </div>
           </div>
           <div class="query-box">
             <span>关注点</span>
@@ -952,7 +1027,11 @@
           ].filter(Boolean),
           verdict: verdict.name,
           tone: verdict.id,
-          color: verdict.id === "true" ? "#1b6e38" : verdict.id === "false" ? "#a82222" : "#946300",
+          color: record.color || verdict.color,
+          sealBg: record.sealBg || verdict.sealBg,
+          boxBg: record.boxBg || verdict.boxBg,
+          border: record.border || verdict.border,
+          icon: record.icon || verdict.icon || "",
           claim: record.claim,
           summary: record.summary || "",
           details: record.details || "",

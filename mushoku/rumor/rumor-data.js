@@ -43,9 +43,33 @@ const RUMOR_CATEGORIES = [
 ];
 
 const RUMOR_VERDICTS = [
-  { id: "true", name: "属实" },
-  { id: "false", name: "不实" },
-  { id: "open", name: "未定性" }
+  {
+    id: "true",
+    name: "属实",
+    color: "#1b6e38",
+    sealBg: "#e7f4ec",
+    border: "#b8d9c1",
+    boxBg: "#f2f8f4",
+    icon: "rumor/assets/icons/future_diary.png"
+  },
+  {
+    id: "false",
+    name: "不实",
+    color: "#6d38b5",
+    sealBg: "#f5eefc",
+    border: "#caa8eb",
+    boxBg: "#f8f4fc",
+    icon: "rumor/assets/icons/magic_crystal.png"
+  },
+  {
+    id: "open",
+    name: "未定性",
+    color: "#946300",
+    sealBg: "#f8f1e2",
+    border: "#dfcfb0",
+    boxBg: "#fbf7ef",
+    icon: "rumor/assets/icons/crystal_rat.png"
+  }
 ];
 
 const RUMOR_RECORDS = [
@@ -120,6 +144,7 @@ const RUMOR_RECORDS = [
     id: "R-0005-s3e13",
     category: "canon",
     verdict: "false",
+    icon: "rumor/assets/icons/crystal_rat.png",
     chapters: ["diary"],
     characters: ["cliff", "rudeus"],
     others: [],
@@ -135,6 +160,7 @@ const RUMOR_RECORDS = [
     id: "R-0006-s3e13",
     category: "canon",
     verdict: "false",
+    icon: "rumor/assets/icons/crystal_rat.png",
     chapters: ["diary"],
     characters: ["rudeus", "cliff", "zanoba", "roxy"],
     others: ["episode"],
@@ -218,6 +244,7 @@ const RUMOR_RECORDS = [
     id: "R-0011-s3e13",
     category: "study",
     verdict: "true",
+    icon: "rumor/assets/icons/blue_earrings.png",
     chapters: ["diary"],
     characters: ["sylphy", "rudeus"],
     others: ["language"],
@@ -313,7 +340,8 @@ const RUMOR_RECORDS = [
   {
     id: "R-0017-s3e13",
     category: "canon",
-    verdict: "open",
+    verdict: "false",
+    icon: "rumor/assets/icons/crystal_rat.png",
     chapters: ["diary"],
     characters: ["hitogami", "zanoba", "rudeus", "aisha"],
     others: [],
@@ -321,7 +349,26 @@ const RUMOR_RECORDS = [
     summary: "这是推测，原文没有对应描述。看日记的鲁迪认为，扎诺巴的死似乎和人神没有关系。",
     details: "扎诺巴是神子，物理抗性拉满，没有魔法防御，而且非常怕火。人神透露位置和怕火，原文没有写。米里斯在得知神经解毒之后还来追杀，仍是去偷神经解毒之后的连锁反应。",
     comparisons: [
-      { source: "日记正文", text: "【扎诺巴死了。】【神殿骑士团在不知不觉间就侵入了拉诺亚王国。】【当我赶到的时候，一切都太迟了。房屋遭到烧毁，扎诺巴在地下室的门口被烧成焦炭，金洁和茱丽，还有麻烦扎诺巴照顾的爱夏，她们躺在门后，全身都是刀伤。】【我把还在拉诺亚王国的神殿骑士团赶尽杀绝了。】但即使如此，这个我还是没有去找过家人吗？也对，毕竟事到如今，他或许也不知道该用什么脸去面对露西。……还是说，在这本日记没有写到的地方，莉莉雅她们也已经死了？连诺伦的名字也没有出现，这表示……不，别乱想了。没有写的事情代表没有发生，我就这样想吧。不过话又说回来，扎诺巴的死看起来似乎和人神没有关系……" }
+      { source: "日记正文", text: `下一段长文，很明显写在纸质不同的地方——
+
+> 札诺巴死了。
+> 神殿骑士团在不知不觉间就侵入了拉诺亚王国。
+> 当我赶到的时候，一切都太迟了。房屋遭到烧毁，札诺巴在地下室的门口被烧成焦炭，金洁和茱丽，还有麻烦札诺巴照顾的爱夏，她们躺在门后，全身都是刀伤。
+> 我把还在拉诺亚王国的神殿骑士团赶尽杀绝了。然而，就算杀了他们，也已经没有任何意义。
+> 札诺巴始终为了我尽心尽力，为什么我在那家伙危机的时候却没有陪着他？我究竟是为了什么才获得这样的力量？
+> 我，太无力了。
+>
+> 结果，大家都死了。
+> 活下来的，只有我一个人。身边已经没有任何人了。我没有保护到任何人。
+>
+> 都是人神的错。
+> 至少，我必须要杀了人神……
+
+内容突然沉重起来。
+连札诺巴和爱夏都死了吗……太难受了。
+但即使如此，这个我还是没有去找过家人吗？也对，毕竟事到如今，他或许也不知道该用什么脸去面对露西。
+……还是说，在这本日记没有写到的地方，莉莉雅她们也已经死了？
+连诺伦的名字也没有出现，这表示……不，别乱想了。没有写的事情代表没有发生，我就这样想吧。不过话又说回来，札诺巴的死看起来似乎和人神没有关系……` }
     ],
     images: [],
     cite: "",
@@ -346,6 +393,7 @@ const RUMOR_RECORDS = [
     id: "R-0019-s3e13",
     category: "study",
     verdict: "false",
+    icon: "rumor/assets/icons/future_diary.png",
     chapters: ["diary"],
     characters: ["zanoba", "aisha"],
     others: ["language"],

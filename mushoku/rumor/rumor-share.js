@@ -61,21 +61,24 @@
       .replace(/"/g, "&quot;");
   }
 
-  function drawImageData(src) {
+  function drawImageData(src, forcePng) {
     return new Promise(function (resolve) {
       var img = new Image();
+      img.crossOrigin = "anonymous";
       img.onload = function () {
         try {
           var canvas = document.createElement("canvas");
           canvas.width = img.naturalWidth;
           canvas.height = img.naturalHeight;
-          canvas.getContext("2d").drawImage(img, 0, 0);
-          resolve(canvas.toDataURL("image/jpeg", 0.92));
+          var ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0);
+          var isPng = Boolean(forcePng || /\.png($|\?)/i.test(src) || String(src).indexOf("icons/") !== -1);
+          resolve(canvas.toDataURL(isPng ? "image/png" : "image/jpeg", isPng ? undefined : 0.92));
         } catch (err) {
-          resolve("");
+          resolve(src);
         }
       };
-      img.onerror = function () { resolve(""); };
+      img.onerror = function () { resolve(src); };
       img.src = src;
     });
   }
@@ -85,6 +88,7 @@
     if (String(src).indexOf("data:") === 0) return Promise.resolve(src);
     var table = global.RUMOR_INLINE || {};
     if (table[src]) return Promise.resolve(table[src]);
+    var isPng = /\.png($|\?)/i.test(src) || String(src).indexOf("icons/") !== -1;
     return new Promise(function (resolve) {
       var xhr = new XMLHttpRequest();
       xhr.open("GET", src, true);
@@ -92,29 +96,91 @@
       xhr.onload = function () {
         var blob = xhr.response;
         if (!blob || !blob.size) {
-          drawImageData(src).then(resolve);
+          drawImageData(src, isPng).then(resolve);
           return;
         }
+        var blobIsPng = isPng || (blob.type === "image/png");
         var url = URL.createObjectURL(blob);
-        drawImageData(url).then(function (data) {
+        drawImageData(url, blobIsPng).then(function (data) {
           URL.revokeObjectURL(url);
-          resolve(data || "");
+          resolve(data || src);
         });
       };
-      xhr.onerror = function () { drawImageData(src).then(resolve); };
+      xhr.onerror = function () { drawImageData(src, isPng).then(resolve); };
       xhr.send();
     });
   }
 
+  function resolveRecordIcon(record, meta) {
+    if (meta && meta.icon) return meta.icon;
+    if (record && record.icon) return record.icon;
+    var verdicts = global.RUMOR_VERDICTS || [];
+    var v = verdicts.find(function (item) { return item.id === (record && record.verdict); });
+    return (v && v.icon) || "";
+  }
+
+  function renderComparisonHtml(text) {
+    if (!text) return "";
+    var lines = String(text).split("\n");
+    var html = "";
+    var quoteLines = [];
+
+    function flushQuote() {
+      if (quoteLines.length) {
+        html += '<blockquote style="margin:10px 0;padding:10px 14px;background:#f4ecdf;border-left:3px solid #8c6a2f;border-radius:4px;color:#2c2214;font-family:\'Noto Serif SC\',\'Songti SC\',SimSun,serif;font-size:14px;line-height:1.75;white-space:pre-line;">' +
+          esc(quoteLines.join("\n")) +
+          '</blockquote>';
+        quoteLines = [];
+      }
+    }
+
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i];
+      if (/^>\s?/.test(line)) {
+        quoteLines.push(line.replace(/^>\s?/, ""));
+      } else {
+        flushQuote();
+        if (line.trim()) {
+          html += '<p style="margin:0 0 8px;line-height:1.65;">' + esc(line) + '</p>';
+        }
+      }
+    }
+    flushQuote();
+    return html;
+  }
+
   async function posterHtml(record, meta) {
-    var sealBg = meta.tone === "true" ? "#e7f4ec" : meta.tone === "false" ? "#fbeceb" : "#f8f1e2";
-    var pills = '<span style="display:inline-block;font-size:12px;font-weight:700;letter-spacing:0.4px;border:1px solid #e6dccb;background:#fff;border-radius:4px;padding:2px 10px;margin:0 8px 8px 0;">' + esc(record.id) + "</span>";
-    (meta.tags || []).forEach(function (tag, index) {
+    var verdicts = global.RUMOR_VERDICTS || [];
+    var verdictDef = verdicts.find(function (item) { return item.id === meta.tone; }) || {};
+    var primaryColor = meta.color || verdictDef.color || "#1c2430";
+    var sealBg = meta.sealBg || verdictDef.sealBg || "#f4efe6";
+    var queryBoxBg = meta.boxBg || verdictDef.boxBg || "#f4efe6";
+    var queryBoxBorder = meta.border || verdictDef.border || "#d1c5b0";
+    var queryTitleColor = meta.tone === "false" ? "#65428a" : "#5c6b7a";
+
+    var iconSrc = resolveRecordIcon(record, meta);
+    var iconData = iconSrc ? await loadInline(iconSrc) : "";
+    var finalIconSrc = iconData || iconSrc;
+    var paperweightBadge = finalIconSrc
+      ? '<img alt="镇纸" src="' + esc(finalIconSrc) + '" style="position:absolute;right:26px;top:20px;width:64px;height:64px;object-fit:contain;filter:drop-shadow(0 4px 8px rgba(35,15,60,0.22)) drop-shadow(0 1px 2px rgba(0,0,0,0.12));transform:rotate(4deg);pointer-events:none;z-index:5;">'
+      : "";
+
+    var tagsHtml = (meta.tags || []).map(function (tag, index) {
+      var isFalse = meta.tone === "false";
       var style = index === 0
-        ? "background:#eae3d4;color:#4a3e2c;font-weight:600;"
+        ? (isFalse ? "background:#ede4f7;color:#492677;font-weight:600;" : "background:#eae3d4;color:#4a3e2c;font-weight:600;")
         : "background:#f4efe6;color:#5c6b7a;";
-      pills += '<span style="display:inline-block;font-size:12px;border-radius:4px;padding:2px 10px;margin:0 8px 8px 0;' + style + '">' + esc(tag) + "</span>";
-    });
+      return '<span style="display:inline-block;font-size:12px;border-radius:4px;padding:2px 10px;margin:0 6px 6px 0;' + style + '">' + esc(tag) + "</span>";
+    }).join("");
+
+    var headHtml = '' +
+      '<div style="margin-bottom:14px;padding-right:76px;">' +
+        '<div style="font-size:13px;font-weight:700;color:#5c6b7a;margin-bottom:8px;letter-spacing:0.4px;">' +
+          '编号：<span style="display:inline-block;font-size:12px;font-weight:700;letter-spacing:0.4px;border:1px solid #e6dccb;background:#fff;border-radius:4px;padding:2px 10px;color:#1c2430;">' + esc(record.id) + '</span>' +
+        '</div>' +
+        '<div style="display:flex;flex-wrap:wrap;">' + tagsHtml + '</div>' +
+      '</div>';
+
     var pictures = "";
     var images = record.images || [];
     for (var i = 0; i < images.length; i++) {
@@ -129,7 +195,7 @@
     var comparisons = (meta.comparisons || []).map(function (item) {
       return '<div style="flex:1 1 170px;background:#faf7f2;border:1px solid #e8dfd0;border-radius:6px;padding:12px 14px;box-sizing:border-box;">' +
         '<div style="font-size:12px;font-weight:600;color:#6c5b42;margin-bottom:6px;">' + esc(item.source) + "</div>" +
-        '<div style="font-size:14px;line-height:1.65;">' + esc(item.text) + "</div></div>";
+        renderComparisonHtml(item.text) + "</div>";
     }).join("");
     var extra = "";
     if (meta.details || comparisons) {
@@ -138,22 +204,19 @@
         (comparisons ? '<div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:14px;">' + comparisons + "</div>" : "") +
         "</div>";
     }
-    var related = (meta.see || []).filter(Boolean);
-    var relatedHtml = related.length
-      ? '<div style="margin-top:4px;">相关 ' + esc(related.join("、")) + "</div>"
-      : "";
     var cite = meta.cite
       ? '<div style="font-size:13px;color:#5c6b7a;margin:-8px 0 14px;">' + esc(meta.cite) + "</div>"
       : "";
     return '' +
       '<div style="width:640px;box-sizing:border-box;padding:28px;background:#f6f1e8;font-family:\'PingFang SC\',\'Microsoft YaHei\',sans-serif;color:#1c2430;">' +
-        '<div style="background:#fffdf8;border:1px solid #e6dccb;border-left:6px solid ' + meta.color + ';border-radius:8px;padding:28px 28px 20px;">' +
-          '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:14px;">' +
-            '<div>' + pills + "</div>" +
-            '<div style="border:1.5px solid ' + meta.color + ';color:' + meta.color + ';background:' + sealBg + ';border-radius:4px;padding:4px 12px;font-size:13px;font-weight:700;letter-spacing:1.5px;white-space:nowrap;transform:rotate(-1.5deg);">' + esc(meta.verdict) + "</div>" +
-          "</div>" +
-          '<div style="background:#f4efe6;border-left:3px solid #d1c5b0;border-radius:6px;padding:14px 18px;margin-bottom:16px;">' +
-            '<div style="font-size:12px;font-weight:600;color:#5c6b7a;margin-bottom:4px;">关注点</div>' +
+        '<div style="background:#fffdf8;border:1px solid #e6dccb;border-left:6px solid ' + primaryColor + ';border-radius:8px;padding:28px 28px 20px;position:relative;overflow:hidden;">' +
+          paperweightBadge +
+          headHtml +
+          '<div style="background:' + queryBoxBg + ';border-left:3px solid ' + queryBoxBorder + ';border-radius:6px;padding:14px 18px;margin-bottom:16px;">' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
+              '<div style="font-size:12px;font-weight:600;color:' + queryTitleColor + ';">关注点</div>' +
+              '<div style="border:1.5px solid ' + primaryColor + ';color:' + primaryColor + ';background:' + sealBg + ';border-radius:4px;padding:2px 10px;font-size:12px;font-weight:700;letter-spacing:1.5px;white-space:nowrap;">' + esc(meta.verdict) + '</div>' +
+            '</div>' +
             '<div style="font-size:16px;line-height:1.65;">' + esc(meta.claim) + "</div>" +
           "</div>" +
           '<p style="margin:0 0 8px;font-size:16px;line-height:1.8;"><b style="margin-right:6px;">查证结论</b>' + esc(meta.summary) + "</p>" +
@@ -161,7 +224,7 @@
           pictures +
           extra +
           '<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;border-top:1px solid #e4d8c4;padding-top:14px;margin-top:18px;">' +
-            '<div style="font-size:14px;line-height:1.7;color:#5c6b7a;">第 ' + esc(meta.index) + " 条 / 共 " + esc(meta.total) + " 条" + relatedHtml + "</div>" +
+            '<div style="font-size:14px;line-height:1.7;color:#5c6b7a;">第 ' + esc(meta.index) + " 条 / 共 " + esc(meta.total) + " 条</div>" +
             '<img alt="" src="' + qrDataUrl(traceText(record)) + '" style="width:96px;height:96px;display:block;background:#fff;">' +
           "</div>" +
         "</div>" +
@@ -254,11 +317,23 @@
     holder.innerHTML = await posterHtml(record, meta);
     document.body.appendChild(holder);
     try {
+      var imgs = Array.prototype.slice.call(holder.querySelectorAll("img"));
+      await Promise.all(imgs.map(function (img) {
+        if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+        if (img.decode) {
+          return img.decode().catch(function () { return Promise.resolve(); });
+        }
+        return new Promise(function (resolve) {
+          img.onload = resolve;
+          img.onerror = resolve;
+        });
+      }));
+
       var canvas = await global.html2canvas(holder.firstElementChild, {
         backgroundColor: "#f6f1e8",
         scale: 2,
-        useCORS: false,
-        allowTaint: false,
+        useCORS: true,
+        allowTaint: true,
         logging: false
       });
       var blob = await new Promise(function (resolve) { canvas.toBlob(resolve, "image/png"); });
